@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- iOS 13+ 需要這個權限，表示應用程式始終需要使用藍牙 -->
+    <key>NSBluetoothAlwaysUsageDescription</key>
+    <string>此應用程式需要使用藍牙來連接和通訊</string>
+
+    <!-- iOS 14+ 可選，表示應用程式在前台時使用藍牙 -->
+    <key>NSBluetoothWhenInUseUsageDescription</key>
+    <string>此應用程式需要藍牙來搜尋和連接設備</string>
+
+    <!-- 連接健康設備或 IoT 裝置 -->
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>bluetooth-central</string>
+        <string>bluetooth-peripheral</string>
+    </array>
+</dict>
+</plist>
