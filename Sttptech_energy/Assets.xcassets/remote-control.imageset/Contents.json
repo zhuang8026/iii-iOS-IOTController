@@ -1,17 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "arrowLeft.png",
+      "filename" : "remote-control.png",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
-      "filename" : "arrowLeft@2x.png",
+      "filename" : "remote-control@2x.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
-      "filename" : "arrowLeft@3x.png",
+      "filename" : "remote-control@3x.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

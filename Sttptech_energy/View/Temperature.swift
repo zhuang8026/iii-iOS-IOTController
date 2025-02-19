@@ -67,9 +67,9 @@ struct Temperature: View {
                Spacer()
            }
            .fullScreenCover(isPresented: $isShowingNewDeviceView) {
-           BluetoothView(isPresented: $isShowingNewDeviceView, selectedTab: $selectedTab, isConnected: $isConnected)
-               .transition(.move(edge: .trailing))  // 讓畫面從右進來
-               .background(Color(hex: "#DEEBEA").opacity(1))
+               BluetoothView(isPresented: $isShowingNewDeviceView, selectedTab: $selectedTab, isConnected: $isConnected)
+                   .transition(.move(edge: .trailing))  // 讓畫面從右進來
+                   .background(Color(hex: "#DEEBEA").opacity(1))
            }
        }
     }

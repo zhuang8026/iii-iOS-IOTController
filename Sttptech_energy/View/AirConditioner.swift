@@ -12,12 +12,12 @@ struct AirConditioner: View {
     @State private var selectedMode = "冷氣"
     @State private var fanSpeed: Double = 2
     @State private var temperature: Int = 24
-
+    
+    let titleWidth = 8.0;
+    let titleHeight = 20.0;
+    
     /// HStack 控制水平排列，VStack 控制垂直排列
     var body: some View {
-        let titleWidth = 8.0;
-        let titleHeight = 20.0;
-
         PowerToggle(isPowerOn: $isPowerOn)
         
         if isPowerOn {

@@ -16,7 +16,7 @@ struct HeaderName: View {
     var body: some View {
         HStack {
             if status {
-                Image("arrowLeft") // 改成返回按鈕
+                Image("arrow-left") // 改成返回按鈕
                     .font(.system(size: 20))
                 Spacer()
                 if (isAIControl) {
@@ -44,7 +44,7 @@ struct HeaderName: View {
                         status = false // ✅ 點擊後切換 status
                     }
             } else {
-                Image("arrowLeft") // 改成返回按鈕
+                Image("arrow-left") // 改成返回按鈕
                     .font(.system(size: 20))
 
                 Spacer() // 推動其他內容到右側

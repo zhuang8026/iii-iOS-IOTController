@@ -24,7 +24,6 @@ struct PowerToggle: View {
                 }
                     .tint(Color(hex:"#1FA2A0"))
                     .toggleStyle(.switch)
-//                    .toggleStyle(CustomToggleStyle())
                     .padding(0)
                     // .labelsHidden() // 隱藏label
             }
@@ -32,32 +31,7 @@ struct PowerToggle: View {
         }
         .padding()
         .background(Color(hex:"#F2F2F2"))
-        .cornerRadius(12)
+        .cornerRadius(10)
         .shadow(color: .gray.opacity(0.2), radius: 4, x: 0, y: 2)
-    }
-}
-
-
-struct CustomToggleStyle: ToggleStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        HStack {
-            // 确保 "开" 或 "关" 的文字显示在左侧
-            configuration.label
-            Spacer()
-            RoundedRectangle(cornerRadius: 16)
-                .fill(configuration.isOn ? Color(hex: "#1FA2A0") : .red)
-                .frame(width: 50, height: 30)
-                .overlay(
-                    Circle()
-                        .fill(Color.white)
-                        .padding(2)
-                        .offset(x: configuration.isOn ? 10 : -10)
-                        .animation(.easeInOut(duration: 0.2), value: configuration.isOn)
-                )
-                .onTapGesture {
-                    configuration.isOn.toggle()
-                }
-        }
-        .padding()
     }
 }
