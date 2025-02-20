@@ -10,7 +10,7 @@ import SwiftUI
 struct ACnumber: View {
     @Binding var fanSpeed: Double // 滑桿的當前值
     @Binding var temperature: Int // 初始溫度
-
+ 
     var body: some View {
         /// 風速和空調溫度顯示
         VStack(alignment: .leading, spacing: 0) { // .leading: 左对齐, .trailing: 右对齐, .center: 水平居中对齐
