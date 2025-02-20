@@ -24,8 +24,8 @@ struct ModeSelector: View {
                             .font(.body)
                             .frame(width: buttonSize, height: buttonSize) // 使用容器的高度設置寬高
 //                            .aspectRatio(1, contentMode: .fit) // 寬高比為 1:1，確保正方形
-                            .background(selectedMode == mode ? .g_blue : Color(hex:"#F2F2F2"))
-                            .foregroundColor(selectedMode == mode ? .white : Color(hex:"#7C7C7C"))
+                            .background(selectedMode == mode ? .g_blue : Color.light_gray)
+                            .foregroundColor(selectedMode == mode ? .white : Color.heavy_gray)
                     }
                     .buttonStyle(NoAnimationButtonStyle()) // 使用自訂樣式，完全禁用動畫
                     .cornerRadius(10)

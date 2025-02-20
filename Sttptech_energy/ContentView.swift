@@ -8,14 +8,14 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var selectedTab = "溫濕度"
+    @State private var selectedTab = "除濕機"
     @State private var status = false // 控制顯示標題名稱（內含 返回 icon）
     
-    @AppStorage("isTempConnected") private var isTempConnected = false  // ✅ 溫濕度 記住連線狀態
+    @AppStorage("isTempConnected") private var isTempConnected = true  // ✅ 溫濕度 記住連線狀態
     @AppStorage("isACConnected") private var isACConnected = true      // ✅ 冷氣 記住連線狀態
-    @AppStorage("isDFConnected") private var isDFConnected = false      // ✅ 除濕機 記住連線狀態
+    @AppStorage("isDFConnected") private var isDFConnected = true      // ✅ 除濕機 記住連線狀態
     @AppStorage("isREMCConnected") private var isREMCConnected = true  // ✅ 遙控器 記住連線狀態
-    @AppStorage("isESTConnected") private var isESTConnected = false    // ✅ 插座 記住連線狀態
+    @AppStorage("isESTConnected") private var isESTConnected = true    // ✅ 插座 記住連線狀態
     
     // ✅ 根據 selectedTab 動態決定 `status`
     private func bindingForSelectedTab() -> Binding<Bool> {
@@ -38,12 +38,12 @@ struct ContentView: View {
             switch self.selectedTab {
                 case "溫濕度":
                     Temperature(isConnected: $isTempConnected)
-                case "冷氣":
+                case "空調":
                     AirConditioner()
                 case "除濕機":
                     Dehumidifier()
                 case "遙控器":
-                    RemoteControl()
+                    RemoteControl(isConnected: $isREMCConnected)
                 case "插座":
                     ElectricSocket()
                 default:

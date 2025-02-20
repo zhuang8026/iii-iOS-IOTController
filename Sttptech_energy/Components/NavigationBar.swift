@@ -13,7 +13,7 @@ struct NavigationBar: View {
 
     var body: some View {
         HStack(spacing: 0) { // 確保選項完全貼合，間距為 0
-            ForEach(["溫濕度", "冷氣", "除濕機", "遙控器", "插座"], id: \.self) { tab in
+            ForEach(["溫濕度", "空調", "除濕機", "遙控器", "插座"], id: \.self) { tab in
                 VStack {
                     Image(systemName: getTabIcon(for: tab))
                         .font(.system(size: 24))
@@ -38,7 +38,7 @@ struct NavigationBar: View {
     private func getTabIcon(for tab: String) -> String {
         switch tab {
             case "溫濕度": return "thermometer"
-            case "冷氣": return "snowflake"
+            case "空調": return "air.conditioner.horizontal"
             case "除濕機": return "drop.degreesign.slash"
             case "遙控器": return "appletvremote.gen1"
             case "插座": return "poweroutlet.type.b"
