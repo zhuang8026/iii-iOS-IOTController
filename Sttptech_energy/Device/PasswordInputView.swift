@@ -84,7 +84,8 @@ struct PasswordInputSheet: View {
             } // if end
         }
         .padding()
-        .presentationDetents([.height(200)]) // 固定高度
+        .presentationDetents([.height(200.0), .height(200.0)]) // 固定高度
+//        .presentationDetents([.height(200), .medium, .large]) // 高度最小200，超過 200 自適應
         .presentationDragIndicator(.visible) // 顯示拖曳指示條
     }
 }

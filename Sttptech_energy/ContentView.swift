@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var selectedTab = "除濕機"
+    @State private var selectedTab = "插座"
     @State private var status = false // 控制顯示標題名稱（內含 返回 icon）
     
     @AppStorage("isTempConnected") private var isTempConnected = true  // ✅ 溫濕度 記住連線狀態
