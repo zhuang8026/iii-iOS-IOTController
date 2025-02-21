@@ -72,6 +72,6 @@ struct AirConditioner: View {
     }
 }
 
-//#Preview {
-//    AirConditioner()
-//}
+#Preview {
+    AirConditioner()
+}

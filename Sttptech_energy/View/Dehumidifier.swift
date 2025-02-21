@@ -133,6 +133,17 @@ struct Dehumidifier: View {
                 }
                 FanSpeedSlider(fanSpeed: $fanSpeed) /// 風速控制
             }
+        } else {
+            /// 請開始電源
+            VStack {
+                Spacer()
+                Image("open-power-hint")
+                Text("請先啟動設備")
+                    .font(.body)
+                    .multilineTextAlignment(.center)
+                Spacer()
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 }

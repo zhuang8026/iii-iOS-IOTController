@@ -87,6 +87,6 @@ struct RemoteControl: View {
     }
 }
 
-//#Preview {
-//    RemoteControl()
-//}
+#Preview {
+    RemoteControl(isConnected: .constant(false))
+}

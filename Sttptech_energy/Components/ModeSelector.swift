@@ -18,6 +18,7 @@ struct ModeSelector: View {
                 GeometryReader { geometry in
                     let buttonSize = geometry.size.width
                     Button(action: {
+                        triggerHapticFeedback() // 觸發震動
                         selectedMode = mode
                     }) {
                         Text(mode)
@@ -28,7 +29,7 @@ struct ModeSelector: View {
                             .foregroundColor(selectedMode == mode ? .white : Color.heavy_gray)
                     }
                     .buttonStyle(NoAnimationButtonStyle()) // 使用自訂樣式，完全禁用動畫
-                    .cornerRadius(10)
+                    .cornerRadius(40)
                 }
                 .shadow(color: selectedMode == mode ? .blue.opacity(0.3) : .clear, radius: 4, x: 0, y: 2)
             }

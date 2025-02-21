@@ -21,7 +21,7 @@ struct ContentView: View {
     private func bindingForSelectedTab() -> Binding<Bool> {
         switch selectedTab {
             case "溫濕度": return $isTempConnected
-            case "冷氣": return $isACConnected
+            case "空調": return $isACConnected
             case "除濕機": return $isDFConnected
             case "遙控器": return $isREMCConnected
             case "插座": return $isESTConnected
@@ -33,7 +33,7 @@ struct ContentView: View {
         VStack(spacing: 20) {
             // ✅ 傳遞 selectedTab 和 status
             HeaderName(selectedTab: $selectedTab, status: bindingForSelectedTab())
-            
+
             // 根據 selectedTab 顯示對應元件
             switch self.selectedTab {
                 case "溫濕度":

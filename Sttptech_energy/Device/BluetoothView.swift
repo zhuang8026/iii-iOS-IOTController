@@ -21,7 +21,7 @@ struct BluetoothView: View {
     @State private var isEmpty: Bool = false
 
     @State private var deviceType = [
-       "1": "冷氣機",
+        "1": "冷氣機",
         "2": "電冰箱",
         "3": "洗衣機",
         "4": "除濕機",
