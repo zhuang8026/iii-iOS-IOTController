@@ -13,13 +13,13 @@ struct BluetoothView: View {
     @Binding var selectedTab: String // 標題名稱
     @Binding var isConnected: Bool // 設備藍芽是否已連線
     @State private var isRotating = false // loading 旋轉動畫控制
-
+    
     @StateObject private var bluetoothManager = BluetoothManager()
     @State private var selectedDevice: DiscoveredPeripheral? = nil // 存取選取藍芽裝置
     @State private var selectedSSID: String = ""
     @State private var wifiPassword: String = ""
     @State private var isEmpty: Bool = false
-
+    
     @State private var deviceType = [
         "1": "冷氣機",
         "2": "電冰箱",
@@ -61,17 +61,17 @@ struct BluetoothView: View {
         let typeCode = String(components[1]) // 例如 "FF"
         let modelCode = String(components[2]) // 例如 "GR2000"
         let identifier = String(components[3]) // 例如 "A4F144"
-
+        
         // 查找設備類型名稱
         let deviceTypeName = deviceType[typeCode] ?? "未知設備"
         
         // 提取型號（去掉 "GR"，但保留後面的數字）
         let formattedModel = modelCode.hasPrefix("GR") ? "G" + modelCode.dropFirst(2) : modelCode
-
+        
         // 組合最終顯示名稱
         return "\(deviceTypeName)(\(formattedModel))\(identifier)"
     }
-
+    
     var body: some View {
         VStack(spacing: 20) {
             HStack {
@@ -87,9 +87,9 @@ struct BluetoothView: View {
                         }
                     }
             }
-
-//            if bluetoothManager.isBluetoothEnabled { Text("✅ 藍牙已開啟") } else { Text("❌ 藍牙未開啟") }
-        
+            
+            //            if bluetoothManager.isBluetoothEnabled { Text("✅ 藍牙已開啟") } else { Text("❌ 藍牙未開啟") }
+            
             if (bluetoothManager.discoveredPeripherals.isEmpty) { // 空藍芽資料
                 VStack {
                     Spacer()
@@ -122,8 +122,8 @@ struct BluetoothView: View {
                                 }
                                 .padding()
                                 .frame(maxWidth: .infinity)
-//                                .background(Color.light_gray) // 按鈕背景顏色
-//                                .cornerRadius(5) // 圓角
+                                //                                .background(Color.light_gray) // 按鈕背景顏色
+                                //                                .cornerRadius(5) // 圓角
                             }
                             
                             // 🔹 分割線（新增）
@@ -174,7 +174,7 @@ struct BluetoothView: View {
                                 if let name = discovered.name {
                                     // 解析名稱
                                     let formattedName = formatDeviceName(name)
-
+                                    
                                     Button(action: {
                                         self.isRotating = false // loading動畫還原
                                         selectedDevice = discovered // 設置選擇的設備
@@ -191,9 +191,9 @@ struct BluetoothView: View {
                                                     .font(.subheadline)
                                                     .foregroundColor(Color.heavy_gray) // 設備 UUID
                                             }
-        //                                    Spacer()
-        //                                    Text("RSSI: \(discovered.rssi)") // 訊號強度
-        //                                        .foregroundColor(.yellow)
+                                            //                                    Spacer()
+                                            //                                    Text("RSSI: \(discovered.rssi)") // 訊號強度
+                                            //                                        .foregroundColor(.yellow)
                                         }
                                         .padding()
                                         .frame(maxWidth: .infinity)
@@ -207,57 +207,57 @@ struct BluetoothView: View {
                 }
                 .background(Color.clear) // 設定整個 `ScrollView` 背景
             }
-         
-
+            
+            
             // ✅ 顯示設備 MAC
-//            if let mac = bluetoothManager.deviceMac {
-//                VStack(alignment: .leading) {
-//                    Text("📶 設備 Wi-Fi MAC")
-//                        .font(.headline)
-//                    Text(mac)
-//                        .font(.body)
-//                        .padding()
-//                        .background(Color.gray.opacity(0.2))
-//                        .cornerRadius(10)
-//                }
-//                .padding()
-//            }
-
+            //            if let mac = bluetoothManager.deviceMac {
+            //                VStack(alignment: .leading) {
+            //                    Text("📶 設備 Wi-Fi MAC")
+            //                        .font(.headline)
+            //                    Text(mac)
+            //                        .font(.body)
+            //                        .padding()
+            //                        .background(Color.gray.opacity(0.2))
+            //                        .cornerRadius(10)
+            //                }
+            //                .padding()
+            //            }
+            
             // ✅ 輸入 Wi-Fi 密碼/Test-ok
-//            TextField("輸入 Wi-Fi 密碼", text: $wifiPassword)
-//                .textFieldStyle(RoundedBorderTextFieldStyle())
-//                .autocorrectionDisabled(true)
-//                .textInputAutocapitalization(.never)
-//                .padding()
-
+            //            TextField("輸入 Wi-Fi 密碼", text: $wifiPassword)
+            //                .textFieldStyle(RoundedBorderTextFieldStyle())
+            //                .autocorrectionDisabled(true)
+            //                .textInputAutocapitalization(.never)
+            //                .padding()
+            
             // ✅ 按鈕 -> 寫入 SSID & 密碼/Test-ok
-//            Button(action: {
-//               if !selectedSSID.isEmpty && !wifiPassword.isEmpty {
-//                   print("開始寫入 SSID & 密碼")
-//                   bluetoothManager.writeSSID("\(selectedSSID)")
-//                   DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { // ✅ 等待 1 秒寫入密碼
-//                       bluetoothManager.writePassword("\(wifiPassword)")
-//                   }
-//               }
-//            }) {
-//               Text("設定 Wi-Fi")
-//                   .font(.body)
-//                   .frame(minWidth: 0, maxWidth: .infinity)
-//                   .padding()
-//                   .foregroundColor(.white)
-//                   .background(selectedSSID.isEmpty || wifiPassword.isEmpty ? Color.gray : Color.blue)
-//                   .cornerRadius(10)
-//            }
-//            .disabled(selectedSSID.isEmpty || wifiPassword.isEmpty)
-
+            //            Button(action: {
+            //               if !selectedSSID.isEmpty && !wifiPassword.isEmpty {
+            //                   print("開始寫入 SSID & 密碼")
+            //                   bluetoothManager.writeSSID("\(selectedSSID)")
+            //                   DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) { // ✅ 等待 1 秒寫入密碼
+            //                       bluetoothManager.writePassword("\(wifiPassword)")
+            //                   }
+            //               }
+            //            }) {
+            //               Text("設定 Wi-Fi")
+            //                   .font(.body)
+            //                   .frame(minWidth: 0, maxWidth: .infinity)
+            //                   .padding()
+            //                   .foregroundColor(.white)
+            //                   .background(selectedSSID.isEmpty || wifiPassword.isEmpty ? Color.gray : Color.blue)
+            //                   .cornerRadius(10)
+            //            }
+            //            .disabled(selectedSSID.isEmpty || wifiPassword.isEmpty)
+            
             // ✅ 顯示設定狀態/Test-ok
-//            if let status = bluetoothManager.wifiSetupStatus {
-//               Text(status)
-//                   .font(.headline)
-//                   .foregroundColor(status.contains("成功") ? .green : .red)
-//                   .padding()
-//            }
-    
+            //            if let status = bluetoothManager.wifiSetupStatus {
+            //               Text(status)
+            //                   .font(.headline)
+            //                   .foregroundColor(status.contains("成功") ? .green : .red)
+            //                   .padding()
+            //            }
+            
             // 「開始搜索」按鈕
             if( bluetoothManager.wifiNetworks.isEmpty ) {
                 Button(action: {
@@ -269,7 +269,7 @@ struct BluetoothView: View {
                     self.isEmpty = false             // 隱藏「無資料」訊息
                     bluetoothManager.startScanning() // 啟動藍芽掃描
                     triggerHapticFeedback(model: .heavy) // 觸發震動
-                  
+                    
                 }) {
                     Text("開始搜尋")
                         .font(.body)
@@ -282,7 +282,7 @@ struct BluetoothView: View {
                 }
                 .cornerRadius(5)
             }
-               
+            
         }
         .padding()
     }

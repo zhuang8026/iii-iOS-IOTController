@@ -46,7 +46,7 @@ struct CircularProgressBar: View {
             // 百分比文字和標籤（圓形區塊）
             ZStack {
                 Circle()
-                    .fill(Color(hex:"DEEBEA")) // 圓形背景
+                    .fill(Color.light_green) // 圓形背景
                     .shadow(color: Color.black.opacity(0.3), radius: 6, x: -4, y: 4) // 陰影效果
                     .overlay(
                         Circle()

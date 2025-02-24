@@ -77,7 +77,7 @@ struct EnvironmentalCardView: View {
                 .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
         }
 //            .padding()
-//        .background(Color(hex: "DEEBEA")) // 背景顏色
+//        .background(Color.light_green) // 背景顏色
             .ignoresSafeArea()
     }
 }

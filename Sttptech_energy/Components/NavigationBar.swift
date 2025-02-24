@@ -25,7 +25,7 @@ struct NavigationBar: View {
                 .frame(maxWidth: .infinity, maxHeight: 80) // 確保每個 VStack 寬度相等
                 .background(tab == selectedTab ? Color.white : Color(hex: "#F2F2F2"))
                 .onTapGesture {
-                    triggerHapticFeedback() // 觸發震動
+//                    triggerHapticFeedback() // 觸發震動
                     selectedTab = tab // 更新 selectedTab
                 }
             }

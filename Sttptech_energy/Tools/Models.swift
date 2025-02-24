@@ -9,11 +9,14 @@ import SwiftUI
 
 // MARK: - 自定義 Color 擴展以支援 Hex 顏色
 extension Color {
-    static let g_blue = Color(hex: "#3D668F") // 文字深藍色
-    static let g_green = Color(hex: "#1FA2A0") // 主要綠色
-    static let light_gray = Color(hex: "#F2F2F2") // 淺灰色
-    static let heavy_gray = Color(hex: "#7C7C7C") // 深灰色
-    static let warning = Color(hex: "#FC6559") // 危險紅色
+    static let g_blue = Color(hex: "#3D668F")       // 主要 文字深藍色
+    static let g_green = Color(hex: "#1FA2A0")      // 主要綠色
+    static let light_green = Color(hex: "#DEEBEA")  // 主要背景淡綠色
+    static let light_gray = Color(hex: "#F2F2F2")   // 淺灰色
+    static let heavy_gray = Color(hex: "#7C7C7C")   // 深灰色  次等 文字顏色
+    static let light_blue = Color(hex: "#EEF1FB")   // 深灰藍色 
+    static let warning = Color(hex: "#FC6559")      // 危險紅色
+
 
     init(hex: String, alpha: CGFloat = 1.0) {
         var hex = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
