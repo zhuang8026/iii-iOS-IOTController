@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-struct PasswordInputSheet: View {
+struct PasswordInputDialog: View { 
     @ObservedObject var bluetoothManager: BluetoothManager // 父層傳入
 
-    let selectedSSID: String  // 父層傳入 (單向傳遞，不會更改)
+    @Binding var selectedSSID: String  // 父層傳入 (單向傳遞，不會更改)
     @Binding var password: String  // 父層傳入 (密碼需要雙向綁定)
     @Binding var isConnected: Bool // 父層傳入 (設備藍芽是否已連線)
     @State private var isWiFiLoading: Bool = false // 送出Wifi密碼狀態

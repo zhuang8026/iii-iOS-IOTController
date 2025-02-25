@@ -56,9 +56,9 @@ struct WiFiListView: View {
         .sheet(isPresented: $showPasswordSheet, onDismiss: {
             password = "" // ✅ 關閉彈窗並清空密碼
         }) {
-            PasswordInputSheet(
+            PasswordInputDialog(
                 bluetoothManager: bluetoothManager,
-                selectedSSID: selectedSSID,
+                selectedSSID: $selectedSSID,
                 password: $password,
                 isConnected: $isConnected
             ) {

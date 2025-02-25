@@ -8,17 +8,21 @@
 import SwiftUI
 
 struct AddCustomRemoteListView: View {
-    @Binding var isPresented: Bool  // 是否要開始藍芽配對介面，默認：關閉
+    @Binding var isRemoteConnected: Bool  // 是否要開始藍芽配對介面，默認：關閉
+    @Binding var isRemoteType: String // 父層管理選中的 遙控器類型
+    @Binding var editRemoteName: String // 父層管理選中的 自定義遙控器
     
-    @State private var remoteTypeName = "PANASONIC" // 是否為空值
-    @State private var isPowerOn: Bool = false // 開關控制（父控制）
-    @State private var index = 0  // 追蹤目前文字的索引
+    @State private var remoteTypeName: String = "PANASONIC" // 是否為空值
+    @State private var isPowerOn: Bool = false              // 開關控制（父控制）
+    @State private var index = 0                            // 追蹤目前文字的索引
+    @State private var showRemoteSheet: Bool = false        // 自定義遙控器名稱視窗開關
     
     let brands = ["SANYO_A", "TECO_A", "PANASONIC_A","SANYO_B", "TECO_B", "PANASONIC_B", "SANYO_C", "TECO_C", "PANASONIC_C","SANYO_D", "TECO_D", "PANASONIC_D","SANYO_E", "TECO_E", "PANASONIC_E"]
-    let items = ["PANASONIC HT001XCP01", "PANASONIC HT001XCP02", "PANASONIC HT001XCP03", "PANASONIC HT001XCP04"]
+    let deviceItems = ["PANASONIC HT001XCP01", "PANASONIC HT001XCP02", "PANASONIC HT001XCP03", "PANASONIC HT001XCP04"]
     
     var body: some View {
         VStack(spacing: 20) {
+            // 遙控器列表
             if(remoteTypeName == "") {
                 HStack {
                     Text("選擇遙控器") // 「標題」
@@ -60,20 +64,22 @@ struct AddCustomRemoteListView: View {
                 .background(Color.clear) // 設定整個 `ScrollView` 背景
             } else {
                 VStack() {
-                    
+                    // top: 文字說明
                     VStack(spacing: 9) {
                         Text("選擇遙控器") // 「標題」
                             .font(.body)
                         Text("品牌：\(remoteTypeName)")
                             .font(.body)
                         Text(" 請點擊中心按鈕，確認裝置有回應再點擊保存")
-                            .font(.body)
+                            .multilineTextAlignment(.center) // 文字換行置中
+                            .font(.subheadline)
                         
                     }
-                    
-                    
+                    .padding(.horizontal, 20) // 左右邊距，確保刻度在滑桿範圍內
+
                     Spacer()
                     
+                    // 測試按鈕
                     Button(action: {
                         withAnimation(.easeInOut(duration: 0.1)) { // 設定動畫時間為 0.1 秒
                             isPowerOn.toggle()
@@ -96,12 +102,13 @@ struct AddCustomRemoteListView: View {
                     
                     Spacer()
                     
+                    // 左右選擇欄位
                     VStack(spacing: 20) {
                         // 文字切換區塊
                         HStack {
                             // 左按鈕
                             Button(action: {
-                                index = (index - 1 + items.count) % items.count // 向左切換
+                                index = (index - 1 + deviceItems.count) % deviceItems.count // 向左切換
                             }) {
                                 Image(systemName: "arrow.left")
                                     .foregroundColor(.white)
@@ -111,16 +118,14 @@ struct AddCustomRemoteListView: View {
                             .padding(.leading, 6) // 靠左邊
                             
                             // 中間的文字
-                            Text(items[index])
+                            Text(deviceItems[index])
                                 .font(.body)
                                 .foregroundColor(Color.gray)
-                                .frame(maxWidth: .infinity, maxHeight: 60.0)
-//                                .padding()
-//                                .cornerRadius(10)
+                                .frame(maxWidth: .infinity, maxHeight: 80.0, alignment: .center) // .leading 讓文字靠左
                             
                             // 右按鈕
                             Button(action: {
-                                index = (index + 1) % items.count // 向右切換
+                                index = (index + 1) % deviceItems.count // 向右切換
                             }) {
                                 Image(systemName: "arrow.right")
                                     .foregroundColor(.white)
@@ -131,11 +136,12 @@ struct AddCustomRemoteListView: View {
                         }
                         .background(Color.light_blue)
                         .cornerRadius(5)
-                        //                        .padding(.horizontal)
                         
                         // 底部按鈕
                         Button(action: {
                             print("保存按鈕點擊")
+                            isRemoteType = deviceItems[index]
+                            showRemoteSheet = true
                         }) {
                             Text("保存")
                                 .font(.body)
@@ -147,11 +153,21 @@ struct AddCustomRemoteListView: View {
                         .shadow(color: .gray.opacity(0.3), radius: 8, x: 0, y: -2)
                         //                    .padding(.horizontal, 20)
                     }
-                    //                .padding()
                 }
                 .padding(.horizontal, 20) // 左右邊距，確保刻度在滑桿範圍內
             }
-            
+        }
+        // 🚀 自定義遙控器 輸入彈窗
+        .sheet(isPresented: $showRemoteSheet, onDismiss: {
+            // isRemoteType = "" // ✅ 關閉彈窗並清空密碼 配合 onSend()
+        }) {
+            RemoteInputDialog(
+                isRemoteType: $isRemoteType,
+                editRemoteName: $editRemoteName,
+                isRemoteConnected: $isRemoteConnected
+            ){
+                showRemoteSheet = false // 點擊送出後關閉
+            }
         }
     }
 }
