@@ -8,19 +8,18 @@
 import SwiftUI
 
 struct RemoteControl: View {
-    @Binding var isConnected: Bool // 設備藍芽是否已連線
-    
+    @Binding var isConnected: Bool       // 設備藍芽是否已連線
     @State private var isRemoteType = "" // 設備名稱， 默認：空
-    @State private var editRemoteName: String = "" // 自定義設備名稱
+    @AppStorage("editRemoteName") private var editRemoteName: String = ""   // ✅ 自定義設備名稱 記住連線狀態
+    @AppStorage("hasControl") private var hasControl = false                // ✅ 自定義遙控器開關 記住連線狀態
     @State private var isRemoteConnected: Bool = false // 自定義遙控器是否開始設定
-    
-    @State private var isShowingNewDeviceView = false // 是否要開始藍芽配對介面，默認：關閉
-    @State private var selectedTab = "冷氣" // 設備控制選項，默認冷氣
+    @State private var isShowingNewDeviceView = false  // 是否要開始藍芽配對介面，默認：關閉
+    @State private var selectedTab = "冷氣"             // 設備控制選項，默認冷氣
     @State private var fanSpeed: Double = 1
     @State private var temperature: Int = 21
-    @State private var hasControl = false // 自定義遙控器名稱，默認：關閉
     @State private var isPowerOn = false // 設備控制， 默認：關閉
     
+    @State private var showPopup = true
     
     let titleWidth = 8.0;
     let titleHeight = 20.0;
@@ -29,9 +28,9 @@ struct RemoteControl: View {
         VStack {
             if (isConnected) {
                 // ✅ 設備連結完成
-                VStack() {
+                VStack(alignment: .leading, spacing: 20) {
                     // 自定義遙控器名稱
-                    RemoteHeader(hasControl: $hasControl)
+                    RemoteHeader(hasControl: $hasControl, editRemoteName: $editRemoteName, isRemoteConnected: $isRemoteConnected)
                     
                     /// ✅ 設備已連線
                     if (hasControl) {
@@ -108,16 +107,9 @@ struct RemoteControl: View {
                 AddDeviceView(isShowingNewDeviceView: $isShowingNewDeviceView, selectedTab: $selectedTab, isConnected: $isConnected)
             }
         }
-        .task {
-            await MainActor.run {
-                print("初始化時 isConnected = \(isConnected)")
-                if(isConnected && editRemoteName.isEmpty) {
-                    isRemoteConnected = true
-                }
-            }
-        }
-        .onChange(of: isConnected) { oldValue, newValue in
-            print("父層監聽: isConnected 從 \(oldValue) 變為 \(newValue)")
+        // AI決策啟動 視窗
+        .fullScreenCover(isPresented: $showPopup) {
+            CustomPopupView(isPresented: $showPopup)
         }
     }
 }

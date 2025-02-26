@@ -16,7 +16,7 @@ struct Dehumidifier: View {
     @State private var selectedTimer: Int = 2
     @State private var selectedWaterLevel: String = "正常"
     @State private var selectedMode: String = "自動除濕"
-
+    
     // 選項列表
     let humidityOptions = Array(stride(from: 20, through: 60, by: 10)) // 40% - 80%
     let timerOptions = Array(1...6) // 1 - 12 小時
@@ -51,9 +51,9 @@ struct Dehumidifier: View {
                             .tint(Color.g_blue) // 🔴 修改點擊時的選單顏色
                             .pickerStyle(MenuPickerStyle()) // 下拉選單
                             .onChange(of: selectedHumidity) { // ✅ iOS 17 兼容
-
+                                
                             }
-                       }
+                        }
                         .frame(maxWidth: .infinity, minHeight: 60.0)
                         .background(Color.light_gray)
                         .cornerRadius(5)
@@ -93,7 +93,7 @@ struct Dehumidifier: View {
                 }
                 .frame(maxWidth: .infinity)
             }
-
+            
             /// 模式
             VStack(alignment: .leading, spacing: 9) {
                 HStack {
@@ -102,7 +102,7 @@ struct Dehumidifier: View {
                         .frame(width: titleWidth, height: titleHeight) // 控制長方形的高度，寬度根據內容自動調整
                     Text("模式")
                 }
-
+                
                 // 模式選擇
                 HStack(spacing: 8) { // 調整間距
                     ForEach(modeOptions, id: \.self) { mode in
@@ -120,7 +120,7 @@ struct Dehumidifier: View {
                         .shadow(color: selectedMode == mode ? .blue.opacity(0.3) : .clear, radius: 4, x: 0, y: 2)
                     }
                 }
-//                .aspectRatio(5, contentMode: .fit) // 根據按鈕數量讓高度自適應寬度
+                //                .aspectRatio(5, contentMode: .fit) // 根據按鈕數量讓高度自適應寬度
             }
             
             /// 風速

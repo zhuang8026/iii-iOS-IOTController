@@ -9,15 +9,18 @@ import SwiftUI
 
 struct RemoteHeader: View {
     @Binding var hasControl: Bool // 設備藍芽是否已連線
+    @Binding var editRemoteName: String // 自定義設備名稱
+    @Binding var isRemoteConnected: Bool  // 自定義遙控器是否開始設定
 
     var body: some View {
         HStack {
-            if (hasControl) {
+            if (hasControl && !editRemoteName.isEmpty) {
                 Image("remote-control")
-                Text("是誰搶走我的遙控器")
+                Text("\(editRemoteName)")
                 Spacer()
                 Button(action: {
                     hasControl = false
+                    isRemoteConnected = false
                     triggerHapticFeedback(model: .heavy) // 觸發震動
                 }) {
                     Image(systemName: "trash") // 垃圾桶
@@ -42,7 +45,9 @@ struct RemoteHeader: View {
                     .cornerRadius(20) // 圓角
                 Button(action: {
                     hasControl = true
+                    isRemoteConnected = true
                     triggerHapticFeedback(model: .heavy) // 觸發震動
+                    print("🎮 自定義遙控器名稱:\(editRemoteName)")
                 }) {
                     Image(systemName: "plus") // 垃圾桶
                         .foregroundColor(Color.blue) // 確保顏色存在
