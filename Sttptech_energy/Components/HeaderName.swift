@@ -9,9 +9,11 @@ import SwiftUI
 
 /// 頂部標題視圖
 struct HeaderName: View {
+    @EnvironmentObject var appStore: AppStore  // 使用全域狀態
+    
     @Binding var selectedTab: String // 標題名稱
     @Binding var status: Bool // 是否要顯示返回（false -> back, true -> show title）
-    @State private var isAIControl: Bool = false
+//    @State private var isAIControl: Bool = false
     
     var body: some View {
         HStack {
@@ -19,7 +21,9 @@ struct HeaderName: View {
                 Image("arrow-left") // 改成返回按鈕
                     .font(.system(size: 20))
                 Spacer()
-                if (isAIControl) {
+
+                // [顯示] 是否啟動AI決策
+                if (appStore.isAIControl) {
                     HStack(alignment: .center, spacing: 10) {
                         Text("AI決策執行中")
 //                            .font(.body)
@@ -36,6 +40,7 @@ struct HeaderName: View {
                     Text("\(selectedTab)設定")
                     .font(.body)
                 }
+
                 Spacer()
                 Image(systemName: "trash") // 垃圾桶
                     .foregroundColor(Color.blue) // 確保顏色存在
@@ -46,9 +51,14 @@ struct HeaderName: View {
             } else {
                 Image("arrow-left") // 改成返回按鈕
                     .font(.system(size: 20))
+//                    .onTapGesture {
+//                        status = true // ✅ 點擊後切換 status
+//                    }
 
                 Spacer() // 推動其他內容到右側
             }
         }
+        .frame(height: 30.0)
+        
     }
 }

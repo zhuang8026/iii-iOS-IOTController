@@ -8,73 +8,44 @@
 import SwiftUI
 
 struct CustomPopupView: View {
-    @Binding var isPresented: Bool
+    @EnvironmentObject var appStore: AppStore  // 使用全域狀態
+    
+    @Binding var isPresented: Bool  // 控制提示視窗顯示
+    @Binding var title: String // title
+    @Binding var message: String // content
+    
+    // 移除黑色透明背景
+    private func removeDimmingView(isCheck: Bool) {
+        appStore.isAIControl = isCheck
+        withAnimation {
+            isPresented = false
+        }
+    }
     
     var body: some View {
         ZStack {
             // 半透明黑色背景，擋住點擊事件
-            Color.black.opacity(0.5) // 這是半透明背景
-                .edgesIgnoringSafeArea(.all)
-                .onTapGesture {
-                    // 不讓點擊背景關閉
-                }
+            Color.black.opacity(0)
+                .edgesIgnoringSafeArea(.all) // 覆蓋整個螢幕
+                .transition(.opacity) // 添加淡入淡出效果
+                .animation(.easeInOut, value: true)
+                .onTapGesture { } // 阻止点击事件穿透
+                .allowsHitTesting(false) // 禁用所有触摸事件，防止触发按钮缩放
             
-            VStack(spacing: 20) {
-                Text("是否要執行AI決策？")
-                    .font(.subheadline)
-                    .padding()
-                
-                VStack(spacing: 10) {
-                    ForEach(["1.OOOOOOOOOOOOOOOOOOOOOOOOOOOO", "2.OOOOOOOOOOOOOO", "3.OOOOOOOOOOOOOOOOOOOOOOOO"], id: \.self) { data in
-                        Text("\(data)")
-                            .font(.body)
-//                            .padding()
+            // 警告框 (Alert)
+                .alert("\(title)", isPresented: $isPresented) {
+                    Button("確認", role: .none) {
+                        removeDimmingView(isCheck: true)
+                        print("用戶按了確認")
                     }
-                    .frame(maxWidth: .infinity) // 確保 HStack 撐滿父容器
+                    Button("取消", role: .cancel) {
+                        removeDimmingView(isCheck: false)
+                        print("用戶按了取消")
+                    }
+                } message: {
+                    Text("\(message)")
                 }
-                .padding(.bottom, 20)
-                
-                HStack {
-                    Button("取消") {
-                        isPresented = false
-                    }
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color.gray.opacity(0.2))
-                    .cornerRadius(30)
-                    
-                    Button("確定") {
-                        isPresented = false
-                    }
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(30)
-                }
-            }
-            .padding()
-            .frame(width: 300)
-            .background(Color.white)
-            .cornerRadius(12)
-            .shadow(radius: 10)
         }
-        .background(BackgroundBlurView())
+        
     }
 }
-
-struct BackgroundBlurView: UIViewRepresentable {
-    func makeUIView(context: Context) -> UIView {
-        let view = UIVisualEffectView(effect: UIBlurEffect(style: .light))
-        DispatchQueue.main.async {
-            view.superview?.superview?.backgroundColor = .clear
-        }
-        return view
-    }
-    
-    func updateUIView(_ uiView: UIView, context: Context) {}
-}
-
-//#Preview {
-//    PopupWindow()
-//}
