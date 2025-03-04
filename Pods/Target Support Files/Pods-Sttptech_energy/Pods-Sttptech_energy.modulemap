@@ -1,0 +1,6 @@
+framework module Pods_Sttptech_energy {
+  umbrella header "Pods-Sttptech_energy-umbrella.h"
+
+  export *
+  module * { export * }
+}

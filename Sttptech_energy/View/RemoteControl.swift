@@ -127,7 +127,7 @@ struct RemoteControl: View {
         .animation(.easeInOut, value: appStore.showPopup)
         // 🔥 監聽 isPowerOn 的變化
         .onChange(of: isPowerOn) { oldVal, newVal in
-            print(oldVal, newVal)
+            print("isPowerOn -> \(newVal)")
             if newVal {
                 appStore.showPopup = true // 開啟提示窗
             }
