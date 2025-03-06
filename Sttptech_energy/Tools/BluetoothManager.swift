@@ -33,7 +33,6 @@ struct DeviceWiFiInfo: Codable {
 class BluetoothManager: NSObject, ObservableObject, CBCentralManagerDelegate, CBPeripheralDelegate {
     @Published var isScanning: Bool = false // 藍芽搜尋狀態
     @Published var isBluetoothEnabled: Bool = false // // 藍芽是否被開啟
-//    @Published var discoveredPeripherals: [CBPeripheral] = [] // v1
     @Published var discoveredPeripherals: [DiscoveredPeripheral] = [] // v2
     @Published var connectedPeripheral: CBPeripheral?
     @Published var deviceMac: String? // ✅ 設備 Wi-Fi MAC

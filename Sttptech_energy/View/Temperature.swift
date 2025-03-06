@@ -8,37 +8,43 @@
 import SwiftUI
 
 struct Temperature: View {
-    @StateObject private var mqttManager = MQTTManager() // MQTT
+    @StateObject private var apiService = APIService() // ✅ 讓 SwiftUI 監聽 API 回應
+    @State private var roomData: RoomData?
     
     @State private var isShowingNewDeviceView = false // 是否要開始藍芽配對介面，默認：關閉
     @State private var selectedTab = "溫濕度"
     @Binding var isConnected: Bool // 設備藍芽是否已連線
-    //    @AppStorage("isConnected") private var isConnected = false // ✅ 記住連線狀態
     
     var body: some View {
-        Text(mqttManager.loginResponse ?? "等待登入回應...")
         if (isConnected) {
-            /// ✅ 設備已連線
+            /// 🟢 設備已「連線」
             VStack(spacing: 9) {
                 Spacer()
-                CircularProgressBar(progress: 0.75)
-                Spacer()
-                EnvironmentalCardView()
-            }
-            .onAppear {
-                mqttManager.connectMQTT() // 當 isConnected 變為 true，啟動 MQTT
-            }
-            .onDisappear {
-                mqttManager.disconnectMQTT() // 離開畫面 斷開 MQTT 連線
-            }
-            .onChange(of: mqttManager.isConnected) { oldConnect, newConnect in
-                // 連線MQTT
-                if newConnect {
-                    mqttManager.publishLogin(username: "user", password: "user+user")
+                if let roomData = roomData {
+                    if let humidity = Double(roomData.sensor.humidity_r) {
+                        CircularProgressBar(progress: humidity / 100.0)
+                    } else {
+                        // 处理无法将 temperature_r 转换为 Double 的情况
+                        CircularProgressBar(progress: 0.0)
+                    }
+                    Spacer()
+                    EnvironmentalCardView(co2: "1631", temperature: roomData.sensor.temperature_r)
+                } else {
+//                    Loading(text: "連線中")
+                    CircularProgressBar(progress: 0.0)
+                    Spacer()
+                    EnvironmentalCardView(co2: "0", temperature:"0")
                 }
             }
+            .onAppear {
+                Task {
+                    roomData = await apiService.apiGetTemperatureInfo() // ✅ 自動載入設備資料
+//                    print("roomData:\(roomData.sensor)")
+                }
+            }
+            
         } else {
-            /// ✅ 設備已斷線
+            /// 🔴 設備已「斷線」
             AddDeviceView(
                 isShowingNewDeviceView: $isShowingNewDeviceView,
                 selectedTab: $selectedTab,
@@ -48,7 +54,3 @@ struct Temperature: View {
     }
 }
 
-//
-//#Preview {
-//    Temperature(isConnected: .constant(false))
-//}

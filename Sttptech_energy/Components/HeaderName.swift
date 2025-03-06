@@ -18,8 +18,8 @@ struct HeaderName: View {
     var body: some View {
         HStack {
             if status {
-                Image("arrow-left") // 改成返回按鈕
-                    .font(.system(size: 20))
+//                Image("arrow-left") // 改成返回按鈕
+//                    .font(.system(size: 20))
                 Spacer()
 
                 // [顯示] 是否啟動AI決策
@@ -42,12 +42,12 @@ struct HeaderName: View {
                 }
 
                 Spacer()
-                Image(systemName: "trash") // 垃圾桶
-                    .foregroundColor(Color.blue) // 確保顏色存在
-                    .font(.system(size: 20)) // 調整圖示大小
-                    .onTapGesture {
-                        status = false // ✅ 點擊後切換 status
-                    }
+//                Image(systemName: "trash") // 垃圾桶
+//                    .foregroundColor(Color.blue) // 確保顏色存在
+//                    .font(.system(size: 20)) // 調整圖示大小
+//                    .onTapGesture {
+//                        status = false // ✅ 點擊後切換 status
+//                    }
             } else {
                 Image("arrow-left") // 改成返回按鈕
                     .font(.system(size: 20))

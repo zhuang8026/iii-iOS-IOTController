@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct Dehumidifier: View {
+    @StateObject private var apiService = APIService() // ✅ 讓 SwiftUI 監聽 API 回應
+    @State private var roomData: RoomData?
+    
     // 控制提示
     @EnvironmentObject var appStore: AppStore  // 使用全域狀態
     
@@ -15,16 +18,16 @@ struct Dehumidifier: View {
     @State private var fanSpeed: Double = 2
     
     // 選項結果
-    @State private var selectedHumidity: Int = 50
-    @State private var selectedTimer: Int = 2
+    @State private var selectedHumidity: Int = 40
+    @State private var selectedTimer: Int = 0
     @State private var selectedWaterLevel: String = "正常"
-    @State private var selectedMode: String = "自動除濕"
+    @State private var selectedMode: String = ""
     
     // 選項列表
-    let humidityOptions = Array(stride(from: 20, through: 60, by: 10)) // 40% - 80%
-    let timerOptions = Array(1...6) // 1 - 12 小時
+    let humidityOptions = Array(stride(from: 40, through: 70, by: 5)) // 40% - 70%
+    let timerOptions = Array(0...12) // 1 - 12 小時
     let waterLevelOptions = ["正常", "過低", "滿水"]
-    let modeOptions = ["自動除濕", "連續除濕"]
+    let modeOptions = ["設定除濕", "低濕乾燥"] // 1 & 8
     
     let titleWidth = 8.0;
     let titleHeight = 20.0;
@@ -129,15 +132,15 @@ struct Dehumidifier: View {
                     }
                     
                     /// 風速
-                    VStack(alignment: .leading, spacing: 9) {
-                        HStack {
-                            // tag
-                            RoundedRectangle(cornerRadius: 4)
-                                .frame(width: titleWidth, height: titleHeight) // 控制長方形的高度，寬度根據內容自動調整
-                            Text("風速")
-                        }
-                        FanSpeedSlider(fanSpeed: $fanSpeed) /// 風速控制
-                    }
+                    //                    VStack(alignment: .leading, spacing: 9) {
+                    //                        HStack {
+                    //                            // tag
+                    //                            RoundedRectangle(cornerRadius: 4)
+                    //                                .frame(width: titleWidth, height: titleHeight) // 控制長方形的高度，寬度根據內容自動調整
+                    //                            Text("風速")
+                    //                        }
+                    //                        FanSpeedSlider(fanSpeed: $fanSpeed) /// 風速控制
+                    //                    }
                 } else {
                     /// 請開始電源
                     VStack {
@@ -165,11 +168,23 @@ struct Dehumidifier: View {
                     appStore.showPopup = true // 開啟提示窗
                 }
             }
+            .onAppear {
+                Task {
+                    roomData = await apiService.apiGetDehumidifierInfo() // ✅ 自動載入設備資料
+                    //                    print("roomData:\(roomData?.dehumidifier)")
+                    guard let dehumidifier = roomData?.dehumidifier else { return }
+                    
+                    isPowerOn = dehumidifier.power_rw == "1"
+                    selectedHumidity = Int(dehumidifier.humidity_cfg_rw) ?? 50
+                    selectedMode = (dehumidifier.op_mode_rw == "1") ? "設定除濕" : "低濕乾燥"
+                }
+            }
         }
         
     }
 }
 
-#Preview {
-    Dehumidifier()
-}
+//
+//#Preview {
+//    Dehumidifier()
+//}

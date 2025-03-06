@@ -7,31 +7,32 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct ContentView: View {    
     @State private var selectedTab = "溫濕度"
     @State private var status = false // 控制顯示標題名稱（內含 返回 icon）
     
-    @AppStorage("isTempConnected") private var isTempConnected = true  // ✅ 溫濕度 記住連線狀態
-    @AppStorage("isACConnected") private var isACConnected = true      // ✅ 冷氣 記住連線狀態
-    @AppStorage("isDFConnected") private var isDFConnected = true      // ✅ 除濕機 記住連線狀態
-    @AppStorage("isREMCConnected") private var isREMCConnected = true  // ✅ 遙控器 記住連線狀態
-    @AppStorage("isESTConnected") private var isESTConnected = true    // ✅ 插座 記住連線狀態
+//    @AppStorage("isTempConnected") private var isTempConnected = true  // ✅ 溫濕度 記住連線狀態
+    @State private var isTempConnected: Bool = true  // ✅ 溫濕度 記住連線狀態
+    @State private var isACConnected: Bool = true      // ✅ 冷氣 記住連線狀態
+    @State private var isDFConnected: Bool = true      // ✅ 除濕機 記住連線狀態
+    @State private var isREMCConnected: Bool = true  // ✅ 遙控器 記住連線狀態
+    @State private var isESTConnected: Bool = true    // ✅ 插座 記住連線狀態
     
     // ✅ 根據 selectedTab 動態決定 `status`
     private func bindingForSelectedTab() -> Binding<Bool> {
         switch selectedTab {
-            case "溫濕度":
-                return $isTempConnected
-            case "空調":
-                return $isACConnected
-            case "除濕機":
-                return $isDFConnected
-            case "遙控器":
-                return $isREMCConnected
-            case "插座":
-                return $isESTConnected
-            default:
-                return .constant(false)
+        case "溫濕度":
+            return $isTempConnected
+        case "空調":
+            return $isACConnected
+        case "除濕機":
+            return $isDFConnected
+        case "遙控器":
+            return $isREMCConnected
+        case "插座":
+            return $isESTConnected
+        default:
+            return .constant(false)
         }
     }
     
@@ -63,7 +64,6 @@ struct ContentView: View {
         }
         .padding()
         .background(Color.light_green.opacity(1))
-        
     }
 }
 

@@ -8,13 +8,16 @@
 import SwiftUI
 
 struct AirConditioner: View {
+    @StateObject private var apiService = APIService() // ✅ 讓 SwiftUI 監聽 API 回應
+    @State private var roomData: RoomData?
+    
     // 控制提示
     @EnvironmentObject var appStore: AppStore  // 使用全域狀態
     
     @State private var isPowerOn = true
-    @State private var selectedMode = "冷氣"
-    @State private var fanSpeed: Double = 2
-    @State private var temperature: Int = 24
+    @State private var selectedMode = 0
+    @State private var fanSpeed: Double = 1.0
+    @State private var temperature: Int = 16
     
     let titleWidth = 8.0;
     let titleHeight = 20.0;
@@ -87,6 +90,18 @@ struct AirConditioner: View {
                 print(oldVal, newVal)
                 if newVal {
                     appStore.showPopup = true // 開啟提示窗
+                }
+            }
+            .onAppear {
+                Task {
+                    roomData = await apiService.apiGetDehumidifierInfo() // ✅ 自動載入設備資料
+//                    print("roomData:\(roomData?.ac)")
+                    guard let ac = roomData?.ac else { return }
+                    //
+                    isPowerOn = ac.power_rw == "1"
+                    selectedMode = Int(ac.op_mode_rw) ?? 0
+                    temperature = Int(ac.temperature_cfg_rw) ?? 16
+                    fanSpeed = Double(ac.fan_level_rw) ?? 1.0
                 }
             }
         }

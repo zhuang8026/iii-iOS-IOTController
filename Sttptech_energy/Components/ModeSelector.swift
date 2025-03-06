@@ -9,29 +9,30 @@ import SwiftUI
 
 /// 模式選擇視圖
 struct ModeSelector: View {
-    @Binding var selectedMode: String
+    @Binding var selectedMode: Int  // 传入的模式索引
     
-    let modes = ["冷氣", "暖風", "除濕", "送風", "自動"]
+    let modes = ["冷氣", "暖風", "除濕", "自動", "送風"] // 修正索引对照关系
     
     var body: some View {
         HStack(spacing: 8) {
-            ForEach(modes, id: \.self) { mode in
+            ForEach(modes.indices, id: \.self) { index in
                 Button(action: {
                     triggerHapticFeedback() // 震動控制
-                    selectedMode = mode
+                    selectedMode = index // 存储索引
                 }) {
-                    Text(mode)
+                    Text(modes[index])
                         .font(.body)
-//                        .frame(height: 60.0) // 直接指定固定大小
+                    //                        .frame(height: 60.0) // 直接指定固定大小
                         .frame(maxWidth: .infinity, maxHeight: .infinity) // 按钮填充
-                        .background(selectedMode == mode ? .g_blue : Color.light_gray)
-                        .foregroundColor(selectedMode == mode ? .white : Color.heavy_gray)
+                        .background(selectedMode == index ? Color.g_green : Color.light_gray)
+                        .foregroundColor(selectedMode == index ? Color.white : Color.gray)
                 }
                 .frame(maxWidth: .infinity) // 让每个按钮均分 HStack
                 .aspectRatio(1, contentMode: .fit) // 保证按钮宽高相等
                 .cornerRadius(UIScreen.main.bounds.width / CGFloat(modes.count) / 2) // 圆角 = 宽度一半
-//                .buttonStyle(NoAnimationButtonStyle())
-                .shadow(color: selectedMode == mode ? .blue.opacity(0.3) : .clear, radius: 4, x: 0, y: 2)
+                //                .buttonStyle(NoAnimationButtonStyle())
+                //                .buttonStyle(NoAnimationButtonStyle())
+                .shadow(color: selectedMode == index ? Color.blue.opacity(0.3) : .clear, radius: 4, x: 0, y: 2)
             }
         }
         .padding(.horizontal, 0) // 适当增加两侧边距，防止贴边
