@@ -12,7 +12,7 @@ struct ElectricSocket: View {
     
     @State private var isPowerOn: Bool = false // 開關控制（父控制）
     @State private var apiData: ApiResponse?
-
+    
     var body: some View {
         VStack () {
             Spacer()
@@ -24,16 +24,16 @@ struct ElectricSocket: View {
                 
                 // ✅ 發送 API 請求
                 Task {
-                    
                     let payload: [String: Any] = [
                         "socket": [
                             "power_w": isPowerOn ? "1" : "0"
                         ]
                     ]
                     
-                    apiData = await apiService.apiPostSettingSocket(payload: payload)
+                    apiData = try await apiService.apiPostSettingSocket(payload: payload)
+
                     
-                    print("✅ API -> \(apiData)")
+                    //                    print("✅ API -> \(apiData)")
                 }
                 
             }) {

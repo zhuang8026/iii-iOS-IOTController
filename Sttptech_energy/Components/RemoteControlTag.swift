@@ -10,12 +10,14 @@ import SwiftUI
 struct RemoteControlTag: View {
     @Binding var selectedTab: String // 標題名稱
     @Binding var isPowerOn: Bool // 開關控制（父控制）
+    var triggerAPI: (String) -> Void  // ✅ 傳入觸發 API 的方法
 
     var body: some View {
         HStack () {
             Button(action: {
                 isPowerOn.toggle()
                 triggerHapticFeedback() // 觸發震動
+                triggerAPI("power_rw") // 觸發 POST API -> power_rw
             }) {
                 Image(systemName: "power")
                     .font(.largeTitle)
@@ -42,6 +44,7 @@ struct RemoteControlTag: View {
                     .onTapGesture {
                         selectedTab = tab // 更新 selectedTab
                         triggerHapticFeedback() // 觸發震動
+                        triggerAPI("op_mode_rw") // 觸發 POST API -> op_mode_rw
                     }
                 }
             }

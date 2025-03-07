@@ -6,26 +6,11 @@
 //
 import Foundation
 
+
+
+// MARK: - basic data
 let website = "https://energyhub-dev.notiii.com/api/v2/energy-etl/iii/iot"
 let roomID = "042dcafa-ef92-46b8-be51-a86d8c777a00"
-
-// MARK: - Response Parsing Strategies
-
-//protocol ResponseParsingStrategy {
-//    func parse(data: Data) -> Decodable?
-//}
-//
-//struct ApiResponseParsingStrategy: ResponseParsingStrategy {
-//    func parse(data: Data) -> Decodable? {
-//        return try? JSONDecoder().decode(ApiResponse.self, from: data)
-//    }
-//}
-//
-//struct RawDataParsingStrategy: ResponseParsingStrategy {
-//    func parse(data: Data) -> Decodable? {
-//        return String(data: data, encoding: .utf8)
-//    }
-//}
 
 // MARK: - API Service
 
@@ -33,7 +18,7 @@ let roomID = "042dcafa-ef92-46b8-be51-a86d8c777a00"
 class APIService: ObservableObject {
     
     // 通用的 API 請求函數
-    func sendRequest<T: Decodable>(endpoint: String, method: HTTPMethod, payload: [String: Any]? = nil, decodingType: T.Type) async -> T? {
+    func sendRequest<T: Decodable>(endpoint: String, method: HTTPMethod, payload: [String: Any]? = nil, decodingType: T.Type) async throws -> T? {
         let urlString = "\(website)\(endpoint)?access_token=000000"
         guard let url = URL(string: urlString) else {
             print("❌ 無效的 URL")

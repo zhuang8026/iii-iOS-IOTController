@@ -46,9 +46,9 @@ struct ContentView: View {
             case "溫濕度":
                 Temperature(isConnected: $isTempConnected)
             case "空調":
-                AirConditioner()
+                AirConditioner(isConnected: $isACConnected)
             case "除濕機":
-                Dehumidifier()
+                Dehumidifier(isConnected: $isDFConnected)
             case "遙控器":
                 RemoteControl(isConnected: $isREMCConnected)
             case "插座":

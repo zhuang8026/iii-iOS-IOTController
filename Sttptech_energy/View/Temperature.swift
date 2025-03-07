@@ -30,16 +30,16 @@ struct Temperature: View {
                     Spacer()
                     EnvironmentalCardView(co2: "1631", temperature: roomData.sensor.temperature_r)
                 } else {
-//                    Loading(text: "連線中")
-                    CircularProgressBar(progress: 0.0)
+                    Loading(text: "檢查設備")
+                    //                    CircularProgressBar(progress: 0.0)
                     Spacer()
-                    EnvironmentalCardView(co2: "0", temperature:"0")
+                    //                    EnvironmentalCardView(co2: "0", temperature:"0")
                 }
             }
             .onAppear {
                 Task {
-                    roomData = await apiService.apiGetTemperatureInfo() // ✅ 自動載入設備資料
-//                    print("roomData:\(roomData.sensor)")
+                    roomData = try await apiService.apiGetTemperatureInfo() // ✅ 自動載入設備資料
+                    //                    print("roomData:\(roomData.sensor)")
                 }
             }
             

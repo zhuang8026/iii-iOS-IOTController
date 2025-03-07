@@ -9,9 +9,9 @@ import Foundation
 
 extension APIService {
     // 去的資料
-    func apiGetTemperatureInfo() async -> RoomData? {
+    func apiGetTemperatureInfo() async throws -> RoomData? {
         let endpoint = "/extractor/processing-values/room/\(roomID)/"
-        return await sendRequest(endpoint: endpoint, method: .GET, decodingType: RoomData.self)
+        return try await sendRequest(endpoint: endpoint, method: .GET, decodingType: RoomData.self)
     }
-    
+
 }

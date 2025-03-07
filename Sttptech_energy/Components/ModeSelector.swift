@@ -10,7 +10,8 @@ import SwiftUI
 /// 模式選擇視圖
 struct ModeSelector: View {
     @Binding var selectedMode: Int  // 传入的模式索引
-    
+    var triggerAPI: () -> Void  // ✅ 傳入觸發 API 的方法
+
     let modes = ["冷氣", "暖風", "除濕", "自動", "送風"] // 修正索引对照关系
     
     var body: some View {
@@ -22,7 +23,6 @@ struct ModeSelector: View {
                 }) {
                     Text(modes[index])
                         .font(.body)
-                    //                        .frame(height: 60.0) // 直接指定固定大小
                         .frame(maxWidth: .infinity, maxHeight: .infinity) // 按钮填充
                         .background(selectedMode == index ? Color.g_green : Color.light_gray)
                         .foregroundColor(selectedMode == index ? Color.white : Color.gray)
@@ -30,14 +30,15 @@ struct ModeSelector: View {
                 .frame(maxWidth: .infinity) // 让每个按钮均分 HStack
                 .aspectRatio(1, contentMode: .fit) // 保证按钮宽高相等
                 .cornerRadius(UIScreen.main.bounds.width / CGFloat(modes.count) / 2) // 圆角 = 宽度一半
-                //                .buttonStyle(NoAnimationButtonStyle())
-                //                .buttonStyle(NoAnimationButtonStyle())
                 .shadow(color: selectedMode == index ? Color.blue.opacity(0.3) : .clear, radius: 4, x: 0, y: 2)
             }
         }
         .padding(.horizontal, 0) // 适当增加两侧边距，防止贴边
         .frame(height: 70) // ✅ 确保整个 HStack 有固定高度
         .frame(maxWidth: .infinity) // 设置 HStack 的固定高度
+        .onChange(of: selectedMode) { _ in  // ✅ 當 isPowerOn 變更時觸發 API
+            triggerAPI()
+        }
     }
 }
 

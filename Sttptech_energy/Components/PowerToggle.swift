@@ -10,7 +10,8 @@ import SwiftUI
 /// 電源切換視圖
 struct PowerToggle: View {
     @Binding var isPowerOn: Bool
-
+    var triggerAPI: () -> Void  // ✅ 傳入觸發 API 的方法
+    
     var body: some View {
         HStack {
             Image(systemName: "power")
@@ -22,10 +23,13 @@ struct PowerToggle: View {
                         .foregroundColor(isPowerOn ? Color(hex:"#1FA2A0") : .gray)  // 更改文字顏色
                     // .padding(.trailing, 3)  // 讓 Text 與 Toggle 之間有 6px 間距
                 }
-                    .tint(Color(hex:"#1FA2A0"))
-                    .toggleStyle(.switch)
-                    .padding(0)
-                    // .labelsHidden() // 隱藏label
+                .tint(Color(hex:"#1FA2A0"))
+                .toggleStyle(.switch)
+                .padding(0)
+                // .labelsHidden() // 隱藏label
+                .onChange(of: isPowerOn) { _ in  // ✅ 當 isPowerOn 變更時觸發 API
+                    triggerAPI()
+                }
             }
             .frame(width: 80)
         }

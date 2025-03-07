@@ -10,9 +10,13 @@ import SwiftUI
 /// 風速控制視圖
 struct FanSpeedSlider: View {
     @Binding var fanSpeed: Double // 滑桿的當前值
+    var triggerAPI: () -> Void  // ✅ 傳入觸發 API 的方法
+
     @State private var previousFanSpeed: Double = 2.0 // 記錄上一個值
     private let step: Double = 1.0
     
+
+
     var body: some View {
         VStack() {
             // 滑桿
@@ -35,10 +39,13 @@ struct FanSpeedSlider: View {
                 .accentColor(.g_blue)
                 .onChange(of: fanSpeed) { oldValue, newValue in
                     print("風速: \(newValue)")
+
+                    triggerAPI() // 觸發 POST API
+
                     guard newValue != previousFanSpeed else { return } // 防止重複觸發
                     triggerHapticFeedback(for: newValue)
                     previousFanSpeed = newValue
-
+                    
                 }
                 .padding(.horizontal, 2)
             

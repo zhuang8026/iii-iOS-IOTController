@@ -9,16 +9,17 @@ import Foundation
 
 extension APIService {
     // 去的資料
-//    func apiGetDehumidifierInfo() async throws -> RoomData? {
+//    func apiGetAirConditionerInfo() async -> RoomData? {
 //        let endpoint = "/extractor/processing-values/room/\(roomID)/"
 //        return await sendRequest(endpoint: endpoint, method: .GET, decodingType: RoomData.self)
 //    }
-    func apiGetDehumidifierInfo() async throws -> RoomData? {
+    
+    func apiGetAirConditionerInfo() async throws -> RoomData? {
         let endpoint = "/extractor/processing-values/room/\(roomID)/"
         return try await sendRequest(endpoint: endpoint, method: .GET, decodingType: RoomData.self)
     }
     
-    func apiPostSettingDehumidifier(payload: [String: Any]) async throws -> ApiResponse? {
+    func apiPostSettingAirConditioner(payload: [String: Any]) async throws -> ApiResponse? {
         let endpoint = "/loader/rooms/\(roomID)/script"
         return try await sendRequest(endpoint: endpoint, method: .POST, payload: payload, decodingType: ApiResponse.self)
     }
