@@ -13,50 +13,56 @@ struct HeaderName: View {
     
     @Binding var selectedTab: String // 標題名稱
     @Binding var status: Bool // 是否要顯示返回（false -> back, true -> show title）
-//    @State private var isAIControl: Bool = false
+    //    @State private var isAIControl: Bool = false
     
     var body: some View {
         HStack {
             if status {
-//                Image("arrow-left") // 改成返回按鈕
-//                    .font(.system(size: 20))
+                //                Image("arrow-left") // 改成返回按鈕
+                //                    .font(.system(size: 20))
                 Spacer()
-
+                
                 // [顯示] 是否啟動AI決策
                 if (appStore.isAIControl) {
                     HStack(alignment: .center, spacing: 10) {
                         Text("AI決策執行中")
-//                            .font(.body)
+                        //                            .font(.body)
                             .font(.system(size: 14))
                             .foregroundColor(.white)
                     }
                     .frame(height: 30.0)
                     .padding(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 20))
+                    .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
                     .background(Color.warning)
                     .cornerRadius(100.0)
-                    .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
-                   
+                    .onTapGesture {
+                        print("title: \(appStore.showPopup)")
+                        withAnimation {
+                            appStore.showPopup = true // ⚡ 點擊後改變狀態
+                            appStore.title = "中斷AI決策"
+                        }
+                    }
                 } else {
                     Text("\(selectedTab)設定")
-                    .font(.body)
+                        .font(.body)
                 }
-
+                
                 Spacer()
-//                Image(systemName: "trash") // 垃圾桶
-//                    .foregroundColor(Color.blue) // 確保顏色存在
-//                    .font(.system(size: 20)) // 調整圖示大小
-//                    .onTapGesture {
-//                        status = false // ✅ 點擊後切換 status
-//                    }
+                //                Image(systemName: "trash") // 垃圾桶
+                //                    .foregroundColor(Color.blue) // 確保顏色存在
+                //                    .font(.system(size: 20)) // 調整圖示大小
+                //                    .onTapGesture {
+                //                        status = false // ✅ 點擊後切換 status
+                //                    }
             } else {
                 Image("arrow-left") // 改成返回按鈕
                     .font(.system(size: 20))
-//                    .onTapGesture {
-//                        status = true // ✅ 點擊後切換 status
-//                    }
-
+                //                    .onTapGesture {
+                //                        status = true // ✅ 點擊後切換 status
+                //                    }
+                
                 Spacer() // 推動其他內容到右側
-            }
+            }            
         }
         .frame(height: 30.0)
         

@@ -35,17 +35,18 @@ struct CustomPopupView: View {
             // 警告框 (Alert)
                 .alert("\(title)", isPresented: $isPresented) {
                     Button("確認", role: .none) {
-                        removeDimmingView(isCheck: true)
+                        removeDimmingView(isCheck: title == "執行AI決策" ? true: false)
                         print("用戶按了確認")
                     }
                     Button("取消", role: .cancel) {
-                        removeDimmingView(isCheck: false)
+                        removeDimmingView(isCheck: title == "執行AI決策" ? false: true)
                         print("用戶按了取消")
                     }
                 } message: {
                     Text("\(message)")
                 }
         }
+        
         
     }
 }

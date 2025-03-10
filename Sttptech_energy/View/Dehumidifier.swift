@@ -26,7 +26,7 @@ struct Dehumidifier: View {
     @State private var selectedMode: String = ""
     
     // 選項列表
-    let humidityOptions = Array(stride(from: 40, through: 70, by: 5)) // 40% - 70%
+    let humidityOptions = Array(stride(from: 0, through: 70, by: 5)) // 40% - 70%
     let timerOptions = Array(0...12) // 1 - 12 小時
     let waterLevelOptions = ["正常", "過低", "滿水"]
     let modeOptions = ["設定除濕", "低濕乾燥"] // 1 & 8
@@ -170,18 +170,21 @@ struct Dehumidifier: View {
                 }
                 
                 
-                if appStore.showPopup {
-                    CustomPopupView(isPresented: $appStore.showPopup, title: $appStore.title, message: $appStore.message)
-                        .transition(.opacity) // 淡入淡出效果
-                        .zIndex(1) // 確保彈窗在最上層
-                }
+                // if appStore.showPopup {
+                //     CustomPopupView(isPresented: $appStore.showPopup, title: $appStore.title, message: $appStore.message)
+                //         .transition(.opacity) // 淡入淡出效果
+                //         .zIndex(1) // 確保彈窗在最上層
+                // }
             }
             .animation(.easeInOut, value: appStore.showPopup)
             // 🔥 監聽 isPowerOn 的變化
             .onChange(of: isPowerOn) { oldVal, newVal in
                 //                print(oldVal, newVal)
                 if newVal {
-                    appStore.showPopup = true // 開啟提示窗
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                        appStore.title = "執行AI決策"
+                        appStore.showPopup = true // 延遲3秒後開啟提示窗
+                    }
                 }
             }
             .onAppear {

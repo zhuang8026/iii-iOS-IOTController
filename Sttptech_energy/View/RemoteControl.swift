@@ -120,23 +120,22 @@ struct RemoteControl: View {
                     AddDeviceView(isShowingNewDeviceView: $isShowingNewDeviceView, selectedTab: $selectedTab, isConnected: $isConnected)
                 }
             }
-            // AI決策啟動 視窗
-            //            .fullScreenCover(isPresented: $showPopup) {
-            //                CustomPopupView(isPresented: $showPopup)
-            //            }
             // 👉 這裡放自訂彈窗，只在 showPopup == true 時顯示
-            if appStore.showPopup {
-                CustomPopupView(isPresented: $appStore.showPopup, title: $appStore.title, message: $appStore.message)
-                    .transition(.opacity) // 淡入淡出效果
-                    .zIndex(1) // 確保彈窗在最上層
-            }
+            // if appStore.showPopup {
+            //     CustomPopupView(isPresented: $appStore.showPopup, title: $appStore.title, message: $appStore.message)
+            //         .transition(.opacity) // 淡入淡出效果
+            //         .zIndex(1) // 確保彈窗在最上層
+            // }
         }
         .animation(.easeInOut, value: appStore.showPopup)
         // 🔥 監聽 isPowerOn 的變化
         .onChange(of: isPowerOn) { oldVal, newVal in
             print("isPowerOn -> \(newVal)")
-            if newVal {
-                appStore.showPopup = true // 開啟提示窗
+            if newVal && !appStore.isAIControl {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    appStore.title = "執行AI決策"
+                    appStore.showPopup = true // 延遲3秒後開啟提示窗
+                }
             }
         }
         //        .onChange(of: isPowerOn) { _, _ in triggerAPI(for:  "power_rw") }
