@@ -14,6 +14,8 @@ struct CustomPopupView: View {
     @Binding var title: String // title
     @Binding var message: String // content
     
+    var onConfirm: (() -> Void)? // ✅ 新增確認按鈕回調
+    
     // 移除黑色透明背景
     private func removeDimmingView(isCheck: Bool) {
         appStore.isAIControl = isCheck
@@ -35,12 +37,13 @@ struct CustomPopupView: View {
             // 警告框 (Alert)
                 .alert("\(title)", isPresented: $isPresented) {
                     Button("確認", role: .none) {
-                        removeDimmingView(isCheck: title == "執行AI決策" ? true: false)
-                        print("用戶按了確認")
+                        removeDimmingView(isCheck: title == "是否執行以下AI決策?" ? true: false)
+                        if title == "是否執行以下AI決策?" { onConfirm?() }// ✅ 觸發父層 API 請求
+                        print("用戶按了「確認」")
                     }
                     Button("取消", role: .cancel) {
-                        removeDimmingView(isCheck: title == "執行AI決策" ? false: true)
-                        print("用戶按了取消")
+                        removeDimmingView(isCheck: title == "是否執行以下AI決策?" ? false: true)
+                        print("用戶按了「取消」")
                     }
                 } message: {
                     Text("\(message)")

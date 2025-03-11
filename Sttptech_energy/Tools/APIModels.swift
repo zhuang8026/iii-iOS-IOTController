@@ -7,12 +7,13 @@
 
 import Foundation
 
+// MARK: - HTTP 方法 Enum
 enum HTTPMethod: String {
     case GET
     case POST
 }
 
-// ✅ API 回應模型
+// MARK: -API 回應模型
 struct ApiResponse: Codable {
     let success: Bool
     let originalData: OriginalData
@@ -33,13 +34,14 @@ struct OriginalData: Codable {
     let success: Bool
 }
 
-struct TemperatureData: Decodable {
+// MARK: -API 送出模型
+struct TemperatureData: Codable {
     let temperature_r: String
     let humidity_r: String
     let update_time: String
 }
 
-struct ACData: Decodable {
+struct ACData: Codable {
     let power_rw: String
     let op_mode_rw: String
     let temperature_cfg_rw: String
@@ -49,7 +51,7 @@ struct ACData: Decodable {
     let update_time: String
 }
 
-struct DehumidifierData: Decodable {
+struct DehumidifierData: Codable {
     let power_rw: String
     let op_mode_rw: String
     let humidity_cfg_rw: String
@@ -59,9 +61,23 @@ struct DehumidifierData: Decodable {
     let update_time: String
 }
 
-struct RoomData: Decodable {
+struct SocketData: Codable {
+    let power_w: String
+}
+
+struct RoomData: Codable {
     let roomid: String
     let sensor: TemperatureData
     let ac: ACData
     let dehumidifier: DehumidifierData
+    var socket: [String: String]? // ✅ 新增 socket 欄位
 }
+
+// MARK: - 擴展 Encodable 轉換為 Dictionary
+extension Encodable {
+    func toDictionary() -> [String: Any]? {
+        guard let data = try? JSONEncoder().encode(self) else { return nil }
+        return try? JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed) as? [String: Any]
+    }
+}
+

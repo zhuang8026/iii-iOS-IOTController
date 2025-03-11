@@ -11,11 +11,10 @@ struct AirConditioner: View {
     @Binding var isConnected: Bool // 設備藍芽是否已連線
     
     @StateObject private var apiService = APIService() // ✅ 讓 SwiftUI 監聽 API 回應
-    @State private var roomData: RoomData?
-    
-    // 控制提示
     @EnvironmentObject var appStore: AppStore  // 使用全域狀態
-    
+
+    // 控制提示
+    @State private var ACData: RoomData? // Get API Data
     @State private var isPowerOn = false
     @State private var selectedMode = 0
     @State private var fanSpeed: Double = 1.0
@@ -28,7 +27,7 @@ struct AirConditioner: View {
     var body: some View {
         ZStack {
             VStack(spacing: 20) {
-                if let roomData = roomData {
+                if let ACData = ACData {
                     PowerToggle(isPowerOn: $isPowerOn) {
                         triggerAPI(for: "power_rw")
                     }
@@ -103,18 +102,19 @@ struct AirConditioner: View {
             }
             .animation(.easeInOut, value: appStore.showPopup)
             // 🔥 監聽 isPowerOn 的變化
-            .onChange(of: isPowerOn) { prevVal, nextVal in
-                if nextVal {
+            .onChange(of: isPowerOn) { prevVal, newVal in
+                if newVal && !appStore.isAIControl {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                        appStore.title = "執行AI決策"
+                        appStore.title = "是否執行以下AI決策?"
+                        appStore.message = "冷氣: 27度 \n 除濕機: 開啟55%濕度 \n 電風扇: 開啟"
                         appStore.showPopup = true // 延遲3秒後開啟提示窗
                     }
                 }
             }
             .onAppear {
                 Task {
-                    roomData = try await apiService.apiGetAirConditionerInfo() // ✅ 取得設備資料
-                    guard let ac = roomData?.ac else { return }
+                    ACData = try await apiService.apiGetAirConditionerInfo() // ✅ 取得設備資料
+                    guard let ac = ACData?.ac else { return }
                     
                     print("GET-API-AC:", ac)
                     // 先暫時解除綁定，避免觸發 POST API
@@ -173,6 +173,7 @@ extension AirConditioner {
         
         do {
             if let response = try await apiService.apiPostSettingAirConditioner(payload: payload) {
+                closeAIControllerFeedback(appStore: appStore) // 關閉AI決策
                 print("✅ 冷氣 API 回應: \(response)")
             } else {
                 print("❌ API 回應失敗")

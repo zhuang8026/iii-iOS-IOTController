@@ -14,8 +14,9 @@ extension Color {
     static let light_green = Color(hex: "#DEEBEA")  // 主要背景淡綠色
     static let light_gray = Color(hex: "#F2F2F2")   // 淺灰色
     static let heavy_gray = Color(hex: "#7C7C7C")   // 深灰色  次等 文字顏色
-    static let light_blue = Color(hex: "#EEF1FB")   // 深灰藍色
+    static let light_blue = Color(hex: "#EEF1FB")   // 淺灰藍色
     static let warning = Color(hex: "#FC6559")      // 危險紅色
+    static let ai_green = Color(hex: "#1DFF6C")     // AI決策綠
     
     
     init(hex: String, alpha: CGFloat = 1.0) {

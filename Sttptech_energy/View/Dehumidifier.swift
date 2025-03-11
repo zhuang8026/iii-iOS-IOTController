@@ -9,12 +9,12 @@ import SwiftUI
 
 struct Dehumidifier: View {
     @StateObject private var apiService = APIService() // ✅ 讓 SwiftUI 監聽 API 回應
-    @State private var roomData: RoomData?
+    @State private var DFData: RoomData?
     
     @Binding var isConnected: Bool // 設備藍芽是否已連線
 
     // 控制提示
-    @EnvironmentObject var appStore: AppStore  // 使用全域狀態
+//    @EnvironmentObject var appStore: AppStore  // [暫不使用] 使用全域狀態
     
     @State private var isPowerOn = true
     @State private var fanSpeed: Double = 2
@@ -37,7 +37,7 @@ struct Dehumidifier: View {
     var body: some View {
         ZStack {
             VStack(spacing: 20) {
-                if let roomData = roomData {
+                if let DFData = DFData {
                     PowerToggle(isPowerOn: $isPowerOn) {
                         triggerAPI(for: "power_rw")
                     }
@@ -168,30 +168,23 @@ struct Dehumidifier: View {
                     Loading(text: "檢查設備")
                     Spacer()
                 }
-                
-                
-                // if appStore.showPopup {
-                //     CustomPopupView(isPresented: $appStore.showPopup, title: $appStore.title, message: $appStore.message)
-                //         .transition(.opacity) // 淡入淡出效果
-                //         .zIndex(1) // 確保彈窗在最上層
-                // }
             }
-            .animation(.easeInOut, value: appStore.showPopup)
-            // 🔥 監聽 isPowerOn 的變化
-            .onChange(of: isPowerOn) { oldVal, newVal in
-                //                print(oldVal, newVal)
-                if newVal {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                        appStore.title = "執行AI決策"
-                        appStore.showPopup = true // 延遲3秒後開啟提示窗
-                    }
-                }
-            }
+//            // [暫不使用] 🔥 監聽 isPowerOn 的變化
+//            .animation(.easeInOut, value: appStore.showPopup)
+//            .onChange(of: isPowerOn) { oldVal, newVal in
+//                //                print(oldVal, newVal)
+//                if newVal {
+//                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+//                        appStore.title = "執行AI決策"
+//                        appStore.showPopup = true // 延遲3秒後開啟提示窗
+//                    }
+//                }
+//            }
             .onAppear {
                 Task {
-                    roomData = try await apiService.apiGetDehumidifierInfo() // ✅ 取得設備資料
+                    DFData = try await apiService.apiGetDehumidifierInfo() // ✅ 取得設備資料
 
-                    guard let dehumidifier = roomData?.dehumidifier else { return }
+                    guard let dehumidifier = DFData?.dehumidifier else { return }
                     print("GET-API-DFR:", dehumidifier)
                     // 先暫時解除綁定，避免觸發 POST API
                     let tempPowerOn = dehumidifier.power_rw == "1"
@@ -239,7 +232,8 @@ extension Dehumidifier {
         print("PAYLOAD-DFR:\(payload)")
 
         do {
-            if let response = try await apiService.apiPostSettingRemote(payload: payload) {
+            if let response = try await apiService.apiPostSettingDehumidifier(payload: payload) {
+//                closeAIControllerFeedback(appStore: appStore) // [暫不使用] 關閉AI決策
                 print("✅ 除濕機 API 回應: \(response)")
             } else {
                 print("❌ API 回應失敗")

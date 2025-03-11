@@ -6,8 +6,6 @@
 //
 import Foundation
 
-
-
 // MARK: - basic data
 let website = "https://energyhub-dev.notiii.com/api/v2/energy-etl/iii/iot"
 let roomID = "042dcafa-ef92-46b8-be51-a86d8c777a00"
@@ -18,7 +16,11 @@ let roomID = "042dcafa-ef92-46b8-be51-a86d8c777a00"
 class APIService: ObservableObject {
     
     // 通用的 API 請求函數
-    func sendRequest<T: Decodable>(endpoint: String, method: HTTPMethod, payload: [String: Any]? = nil, decodingType: T.Type) async throws -> T? {
+    func sendRequest<T: Decodable>(
+        endpoint: String,
+        method: HTTPMethod,
+        payload: [String: Any]? = nil,
+        decodingType: T.Type) async throws -> T? {
         let urlString = "\(website)\(endpoint)?access_token=000000"
         guard let url = URL(string: urlString) else {
             print("❌ 無效的 URL")

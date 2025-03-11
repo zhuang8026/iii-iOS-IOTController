@@ -11,6 +11,6 @@ import SwiftUI
 class AppStore: ObservableObject {
     @Published var showPopup: Bool = false // 提示窗顯示 開關
     @Published var isAIControl: Bool = false // AI決策顯示 開關
-    @Published var title: String = "執行AI決策"
-    @Published var message: String  = "你確定要執行此操作嗎？"
+    @Published var title: String = "TITLE"
+    @Published var message: String  = "MESSAGE"
 }

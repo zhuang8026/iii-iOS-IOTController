@@ -129,11 +129,12 @@ struct RemoteControl: View {
         }
         .animation(.easeInOut, value: appStore.showPopup)
         // 🔥 監聽 isPowerOn 的變化
-        .onChange(of: isPowerOn) { oldVal, newVal in
+        .onChange(of: isPowerOn) {  prevVal, newVal in
             print("isPowerOn -> \(newVal)")
             if newVal && !appStore.isAIControl {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                    appStore.title = "執行AI決策"
+                    appStore.title = "是否執行以下AI決策?"
+                    appStore.message = "冷氣: 27度 \n 除濕機: 開啟55%濕度 \n 電風扇: 開啟"
                     appStore.showPopup = true // 延遲3秒後開啟提示窗
                 }
             }
@@ -195,6 +196,7 @@ extension RemoteControl {
         
         do {
             if let response = try await apiService.apiPostSettingRemote(payload: payload) {
+                closeAIControllerFeedback(appStore: appStore) // 關閉AI決策
                 print("✅ 遙控器 API 回應: \(response)")
             } else {
                 print("❌ API 回應失敗")

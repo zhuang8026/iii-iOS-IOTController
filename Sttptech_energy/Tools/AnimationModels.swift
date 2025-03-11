@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-// 震動效果
+// MARK: - 震動效果
 // .light（輕） / .medium（中）/ .heavy（重）
 // .soft（柔和）/ .rigid（剛硬）
 func triggerHapticFeedback(model: UIImpactFeedbackGenerator.FeedbackStyle = .medium) {
@@ -15,4 +15,12 @@ func triggerHapticFeedback(model: UIImpactFeedbackGenerator.FeedbackStyle = .med
     let generator = UIImpactFeedbackGenerator(style: model) // 震動樣式（輕、中、重）
     generator.prepare()
     generator.impactOccurred() // 觸發震動
+}
+
+// MARK: - 檢查AI決策是否關閉
+func closeAIControllerFeedback(appStore: AppStore) {
+    if (appStore.isAIControl) {
+        appStore.isAIControl.toggle()
+    }
+
 }
