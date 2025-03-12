@@ -47,22 +47,16 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		AB719F2B2D36636E006DD1C0 /* Sttptech_energy */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = Sttptech_energy;
 			sourceTree = "<group>";
 		};
 		AB719F3C2D366373006DD1C0 /* Sttptech_energyTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = Sttptech_energyTests;
 			sourceTree = "<group>";
 		};
 		AB719F462D366373006DD1C0 /* Sttptech_energyUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = Sttptech_energyUITests;
 			sourceTree = "<group>";
 		};

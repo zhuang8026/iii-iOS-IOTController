@@ -8,9 +8,19 @@
 import SwiftUI
 import CocoaMQTT
 
+// [對外] 核心功能
 class MQTTManager: NSObject, ObservableObject {
+    @EnvironmentObject var appStore: AppStore  // 使用全域狀態
+    
+    // MARK: - MQTT連線狀態
     @Published var isConnected = false
+    // MARK: - 登入狀態
     @Published var loginResponse: String? // 儲存「登入」結果
+    // MARK: - 家電總資料
+    @Published var availables: [String] = [] // 可使用的家電名稱
+    @Published var appliances: [String: [String: ApplianceData]] = [:] // 安裝的家電參數狀態
+    
+    let AppID = "1d51e92d-e623-41dd-b367-d955a0d44d66" // 測試使用
     
     var mqtt: CocoaMQTT?
     
@@ -29,14 +39,15 @@ class MQTTManager: NSObject, ObservableObject {
         print("🔴 MQTT 已斷線")
     }
     
-    /// 「登入」訂閱結果的 topic
+    // MARK: - 登入
+    // 訂閱「登入」訂閱結果的 topic
     func subscribeToAuthentication() {
-        mqtt?.subscribe("to/app/authentication", qos: .qos1)
-        print("📡 開始訂閱「登入」頻道：to/app/authentication")
+        mqtt?.subscribe("to/app/\(AppID)/authentication", qos: .qos1)
+        print("📡 開始訂閱「登入」頻道：to/app/\(AppID)authentication")
         print("📡 訂閱登入頻道: 成功")
     }
     
-    /// 「登入」發送指令
+    // 發布「登入」發送指令
     func publishLogin(username: String, password: String) {
         guard isConnected else {
             print("❌ MQTT 未連線，無法發送登入指令")
@@ -52,15 +63,42 @@ class MQTTManager: NSObject, ObservableObject {
         
         if let jsonData = try? JSONSerialization.data(withJSONObject: loginPayload, options: []),
            let jsonString = String(data: jsonData, encoding: .utf8) {
-            mqtt?.publish("from/app/authentication", withString: jsonString, qos: .qos1, retained: false)
-            print("📤 發送登入指令至 from/app/authentication")
+            mqtt?.publish("from/app/\(AppID)/authentication", withString: jsonString, qos: .qos1, retained: false)
+            print("📤 發送登入指令至 from/app/\(AppID)authentication")
         } else {
             print("❌ JSON 轉換失敗")
         }
     }
     
+    // MARK: - 溫濕度
+    // 訂閱家電資訊
+    func subscribeToApplianceTelemetry() {
+        let topic = "to/app/\(AppID)/appliances/telemetry"
+        mqtt?.subscribe(topic)
+        print("📡 訂閱家電資訊: \(topic)")
+    }
+    
+    //  發布 開始 or 停止 接收家電資訊指令
+    func publishApplianceTelemetryCommand(subscribe: Bool) {
+        let topic = "from/app/\(AppID)/appliances/telemetry"
+        var uerToken:String = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9....." // 測試 Token
+        let payload: [String: Any] = ["token": uerToken, "subscribe": subscribe]
+        
+        if let token = UserDefaults.standard.string(forKey: "MQTTAccessToken") {
+            print("🔑 讀取到存儲的 Token: \(token)")
+            uerToken = token
+        }
+        print("🔑 讀取到存儲的 payload: \(payload)")
+        if let jsonData = try? JSONSerialization.data(withJSONObject: payload),
+           let jsonString = String(data: jsonData, encoding: .utf8) {
+            mqtt?.publish(topic, withString: jsonString)
+            print("🚀 發送 \(subscribe ? "開始" : "停止") 接收家電資訊指令: \(jsonString)")
+        }
+    }
+    
 }
 
+// [對內] 負責 MQTT 代理方法
 extension MQTTManager: CocoaMQTTDelegate {
     func mqtt(_ mqtt: CocoaMQTT, didConnectAck ack: CocoaMQTTConnAck) {
         print("1️⃣ MQTT 連線成功: \(ack)")
@@ -70,6 +108,7 @@ extension MQTTManager: CocoaMQTTDelegate {
                 self.isConnected = true
             }
             subscribeToAuthentication() // 「登入」連線後自動訂閱登入結果
+            subscribeToApplianceTelemetry() //「溫濕度」連線後自動訂閱登入結果
         } else {
             print("❌ MQTT 連線失敗: \(ack)")
         }
@@ -87,21 +126,40 @@ extension MQTTManager: CocoaMQTTDelegate {
         print("MQTT 發布收到的 id 確認: \(id)")
     }
     
+    // MARK: - 取得 API 回應
+    // response data
     func mqtt(_ mqtt: CocoaMQTT, didReceiveMessage message: CocoaMQTTMessage, id: UInt16) {
-        print("成功發送訊息:  \(message.string ?? "") 到 \(message.topic)")
+        print("MQTT 成功發送訊息:  \(message.string ?? "") 到 \(message.topic)")
         
-        if message.topic == "to/app/authentication", let payload = message.string {
+        // [token] 確保是訂閱的 topic
+        if message.topic == "to/app/\(AppID)/authentication", let payload = message.string {
             DispatchQueue.main.async {
-                self.loginResponse = payload
+                
+                // 解析 JSON 取得 Token
+                if let data = payload.data(using: .utf8),
+                   let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                    
+                    // 取得 `success` 欄位的值
+                    if let success = json["success"] as? Bool {
+                        self.loginResponse =  String(success)
+                    }
+                    
+                    // 取得 `application_access_token` 並存入 UserDefaults
+                    if let token = json["application_access_token"] as? String {
+                        UserDefaults.standard.set(token, forKey: "MQTTAccessToken")
+                        print("✅ Token 已儲存：\(token)")
+                    }
+                }
             }
+            //            print("✅ 登入回應: \(payload)")
         }
         
     }
     
     func mqtt(_ mqtt: CocoaMQTT, didSubscribeTopics success: NSDictionary, failed: [String]) {
-        print("成功訂閱的 topic: \(success.allKeys)")
+        print("🎉 成功訂閱的 topic: \(success.allKeys)")
         if !failed.isEmpty {
-            print("訂閱失敗的 topic: \(failed)")
+            print("🛑 訂閱失敗的 topic: \(failed)")
         }
     }
     
