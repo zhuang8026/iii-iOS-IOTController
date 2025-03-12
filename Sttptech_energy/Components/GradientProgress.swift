@@ -11,7 +11,7 @@ import SwiftUI
 struct GradientProgress: View {
     @Binding var currentTemperature: Int // 初始溫度
     var triggerAPI: () -> Void  // ✅ 傳入觸發 API 的方法
-
+    
     private let minTemperature: Int = 16 // 最小溫度
     private let maxTemperature: Int = 30 // 最大溫度
     @State private var lastHapticTime = Date() // 上次震動的時間
@@ -64,19 +64,21 @@ struct GradientProgress: View {
                         let segmentWidth = barWidth / CGFloat(totalSegments) // 每段寬度
                         let newTemperature = Int(clampedX / segmentWidth) + minTemperature
                         
-
-
+                        
+                        
                         // 只在溫度值實際改變時觸發震動
                         if currentTemperature != newTemperature {
                             let now = Date()
                             if now.timeIntervalSince(lastHapticTime) > 0.1 { // 至少間隔 100 毫秒
                                 lastHapticTime = now
                                 triggerHapticFeedback() // 觸發震動
-                                triggerAPI() // 觸發 POST API
                             }
                             
                             currentTemperature = min(maxTemperature, max(minTemperature, newTemperature))
                         }
+                    }
+                    .onEnded { _ in
+                        triggerAPI() // ✅ 只有在用戶停止拖動後才觸發 API 呼叫
                     }
             )
         }
