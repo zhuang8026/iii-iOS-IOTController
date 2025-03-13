@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct EnvironmentalCardView: View {
+    let temperature: String // ✅ 這樣 UI 會隨著數據變化
+    let co2: String
+
     var body: some View {
         HStack(alignment: .center, spacing: 10) {
             // 第一個卡片 (CO₂)
@@ -36,7 +39,7 @@ struct EnvironmentalCardView: View {
                     Text("二氧化碳")
                        .font(.system(size: 14))
         
-                    Text("1636")
+                    Text("\(co2)")
                         .font(.system(size: 30, weight: .bold))
                     +
                     Text("ppm")
@@ -60,7 +63,7 @@ struct EnvironmentalCardView: View {
                         .font(.system(size: 14))
                         .foregroundColor(.white)
         
-                    Text("26")
+                    Text("\(temperature)")
                         .font(.system(size: 30, weight: .bold))
                         .foregroundColor(.white)
                     +
@@ -84,8 +87,8 @@ struct EnvironmentalCardView: View {
 
 
 
-struct EnvironmentalCardView_Previews: PreviewProvider {
-    static var previews: some View {
-        EnvironmentalCardView()
-    }
-}
+//struct EnvironmentalCardView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        EnvironmentalCardView()
+//    }
+//}

@@ -27,7 +27,7 @@ struct HeaderName: View {
                     HStack(alignment: .center, spacing: 10) {
                         Text("AI決策執行中")
                             .font(.system(size: 14))
-                            .foregroundColor(Color.heavy_gray)
+                            .foregroundColor(Color.g_blue)
                     }
                     .frame(height: 30.0)
                     .padding(EdgeInsets(top: 5, leading: 20, bottom: 5, trailing: 20))

@@ -8,8 +8,10 @@
 import SwiftUI
 import CocoaMQTT
 
-// [對外] 核心功能
+// MARK: - [對外] 核心功能
 class MQTTManager: NSObject, ObservableObject {
+    static let shared = MQTTManager()
+    
     @EnvironmentObject var appStore: AppStore  // 使用全域狀態
     
     // MARK: - MQTT連線狀態
@@ -42,7 +44,7 @@ class MQTTManager: NSObject, ObservableObject {
     // MARK: - 登入
     // 訂閱「登入」訂閱結果的 topic
     func subscribeToAuthentication() {
-        mqtt?.subscribe("to/app/\(AppID)/authentication", qos: .qos1)
+        mqtt?.subscribe("to/app/\(AppID)/authentication", qos: .qos1) // API
         print("📡 開始訂閱「登入」頻道：to/app/\(AppID)authentication")
         print("📡 訂閱登入頻道: 成功")
     }
@@ -70,25 +72,26 @@ class MQTTManager: NSObject, ObservableObject {
         }
     }
     
-    // MARK: - 溫濕度
+    // MARK: - 溫濕度API
     // 訂閱家電資訊
     func subscribeToApplianceTelemetry() {
-        let topic = "to/app/\(AppID)/appliances/telemetry"
+        let topic = "to/app/\(AppID)/appliances/telemetry" // API
         mqtt?.subscribe(topic)
         print("📡 訂閱家電資訊: \(topic)")
     }
     
     //  發布 開始 or 停止 接收家電資訊指令
     func publishApplianceTelemetryCommand(subscribe: Bool) {
-        let topic = "from/app/\(AppID)/appliances/telemetry"
-        var uerToken:String = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9....." // 測試 Token
-        let payload: [String: Any] = ["token": uerToken, "subscribe": subscribe]
-        
+        let topic = "from/app/\(AppID)/appliances/telemetry" // API
+        var uerToken:String = "----------- William testing token -----------" // 測試 Token
         if let token = UserDefaults.standard.string(forKey: "MQTTAccessToken") {
             print("🔑 讀取到存儲的 Token: \(token)")
             uerToken = token
         }
-        print("🔑 讀取到存儲的 payload: \(payload)")
+        // 確保 payload 在 uerToken 更新後才建立
+        let payload: [String: Any] = ["token": uerToken, "subscribe": subscribe]
+        
+        print("⭐ 讀取到存儲的 payload: \(payload)")
         if let jsonData = try? JSONSerialization.data(withJSONObject: payload),
            let jsonString = String(data: jsonData, encoding: .utf8) {
             mqtt?.publish(topic, withString: jsonString)
@@ -98,7 +101,7 @@ class MQTTManager: NSObject, ObservableObject {
     
 }
 
-// [對內] 負責 MQTT 代理方法
+// MARK: - [對內] 負責 MQTT 代理方法
 extension MQTTManager: CocoaMQTTDelegate {
     func mqtt(_ mqtt: CocoaMQTT, didConnectAck ack: CocoaMQTTConnAck) {
         print("1️⃣ MQTT 連線成功: \(ack)")
@@ -129,12 +132,12 @@ extension MQTTManager: CocoaMQTTDelegate {
     // MARK: - 取得 API 回應
     // response data
     func mqtt(_ mqtt: CocoaMQTT, didReceiveMessage message: CocoaMQTTMessage, id: UInt16) {
-        print("MQTT 成功發送訊息:  \(message.string ?? "") 到 \(message.topic)")
+//        print("MQTT 成功發送訊息:  \(message.string ?? "") 到 \(message.topic)")
+        print("MQTT 成功發送訊息到 -> \(message.topic)")
         
         // [token] 確保是訂閱的 topic
         if message.topic == "to/app/\(AppID)/authentication", let payload = message.string {
             DispatchQueue.main.async {
-                
                 // 解析 JSON 取得 Token
                 if let data = payload.data(using: .utf8),
                    let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
@@ -147,11 +150,48 @@ extension MQTTManager: CocoaMQTTDelegate {
                     // 取得 `application_access_token` 並存入 UserDefaults
                     if let token = json["application_access_token"] as? String {
                         UserDefaults.standard.set(token, forKey: "MQTTAccessToken")
-                        print("✅ Token 已儲存：\(token)")
+                        //                        print("✅ Token 已儲存：\(token)")
                     }
                 }
             }
             //            print("✅ 登入回應: \(payload)")
+        }
+        
+        if message.topic == "to/app/\(AppID)/appliances/telemetry", let payload = message.string {
+            DispatchQueue.main.async {
+                if let data = payload.data(using: .utf8),
+                   let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                    
+                    // MARK: - MenuBAR
+                    // 解析 availables
+                    if let availableDevices = json["availables"] as? [String] {
+                        self.availables = availableDevices
+                        //                        print("✅ 可用家電: \(availableDevices)")
+                    }
+                    
+                    // MARK: - 所有電器資料
+                    /// 解析 appliances
+                    if let appliancesData = json["appliances"] as? [String: [String: [String: String]]] {
+                        var parsedAppliances: [String: [String: ApplianceData]] = [:]
+                        
+                        for (device, parameters) in appliancesData {
+                            var deviceData: [String: ApplianceData] = [:]
+                            for (param, values) in parameters {
+                                if let value = values["value"], let updated = values["updated"] {
+                                    deviceData[param] = ApplianceData(value: value, updated: updated)
+                                }
+                            }
+                            parsedAppliances[device] = deviceData
+                        }
+                        
+                        self.appliances = parsedAppliances
+//                        print("✅ 總家電參數更新: \(parsedAppliances)")
+                        if let dehumidifierData = parsedAppliances["sensor"] {
+                            print("✅ 溫濕度數據: \(dehumidifierData)")
+                        }
+                    }
+                }
+            }
         }
         
     }

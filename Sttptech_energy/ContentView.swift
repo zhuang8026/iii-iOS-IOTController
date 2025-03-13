@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject private var mqttManager = MQTTManager() // MQTT
+    @EnvironmentObject var mqttManager: MQTTManager // 從環境取得 MQTTManager
     
-    @State private var selectedTab = "溫濕度"
+    @State private var selectedTab = ""
     @State private var status = false // 控制顯示標題名稱（內含 返回 icon）
     
     @AppStorage("isTempConnected") private var isTempConnected = true  // ✅ 溫濕度 記住連線狀態
@@ -41,29 +41,32 @@ struct ContentView: View {
         VStack(spacing: 20) {
             // ✅ 傳遞 selectedTab 和 status
             HeaderName(selectedTab: $selectedTab, status: bindingForSelectedTab())
-            
-            Text(mqttManager.loginResponse ?? "等待登入回應...")
+                
+            // 測試使用，可去除
+            // Text(mqttManager.loginResponse ?? "等待登入回應...")
             
             // 根據 selectedTab 顯示對應元件
             switch self.selectedTab {
-            case "溫濕度":
-                Temperature(isConnected: $isTempConnected)
-            case "空調":
-                AirConditioner()
-            case "除濕機":
-                Dehumidifier()
-            case "遙控器":
-                RemoteControl(isConnected: $isREMCConnected)
-            case "插座":
-                ElectricSocket()
-            default:
-                Text("未定義的功能") // 處理未預期的選項
+                case "溫濕度":
+                    Temperature(isConnected: $isTempConnected)
+                case "空調":
+                    AirConditioner()
+                case "除濕機":
+                    Dehumidifier()
+                case "遙控器":
+                    RemoteControl(isConnected: $isREMCConnected)
+                case "插座":
+                    ElectricSocket()
+                default:
+                    Spacer()
+                    Loading(text: "Loading..")
             }
             
             Spacer()
             
+            // 底部導航欄
             NavigationBar(selectedTab: $selectedTab)
-            
+                .environmentObject(mqttManager) // 確保能讀取 availables
         }
         .padding()
         .background(Color.light_green.opacity(1))

@@ -4,16 +4,25 @@
 //
 //  Created by 莊杰翰 on 2025/1/17.
 //
-
 import SwiftUI
 
 /// 底部導航欄
 struct NavigationBar: View {
-    @Binding var selectedTab: String // 標題名稱
-
+    @Binding var selectedTab: String // 目前選中的標籤
+    @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
+    
+    // 家電類型對應的名稱
+    private let deviceMapping: [String: String] = [
+        "sensor": "溫濕度",
+        "air_conditioner": "空調",
+        "dehumidifier": "除濕機",
+        "remote": "遙控器",
+        "ac_outlet": "插座"
+    ]
+    
     var body: some View {
-        HStack(spacing: 0) { // 確保選項完全貼合，間距為 0
-            ForEach(["溫濕度", "空調", "除濕機", "遙控器", "插座"], id: \.self) { tab in
+        HStack(spacing: 0) { // 水平排列按鈕
+            ForEach(getAvailableTabs(), id: \.self) { tab in
                 VStack {
                     Image(systemName: getTabIcon(for: tab))
                         .font(.system(size: 24))
@@ -21,29 +30,44 @@ struct NavigationBar: View {
                     Text(tab)
                         .font(.caption)
                 }
-                .foregroundColor(tab == selectedTab ? .g_blue : Color.gray)
-                .frame(maxWidth: .infinity, maxHeight: 80) // 確保每個 VStack 寬度相等
+                .foregroundColor(tab == selectedTab ? .blue : .gray)
+                .frame(maxWidth: .infinity, maxHeight: 80) // 確保每個 VStack 均等寬度
                 .background(tab == selectedTab ? Color.white : Color(hex: "#F2F2F2"))
                 .onTapGesture {
-//                    triggerHapticFeedback() // 觸發震動
                     selectedTab = tab // 更新 selectedTab
                 }
             }
         }
         .frame(maxWidth: .infinity) // 確保 HStack 撐滿父容器
-//        .background(Color(hex: "#F2F2F2"))
         .cornerRadius(10)
         .shadow(color: .gray.opacity(0.3), radius: 8, x: 0, y: -2)
+        .onAppear {
+            updateSelectedTab() // 頁面出現時執行
+        }
+        .onChange(of: mqttManager.availables) { _, _ in
+            updateSelectedTab() // 當 MQTT 數據更新時執行
+        }
     }
     
+    /// 取得可用的標籤名稱（從 MQTTManager 解析）
+    private func getAvailableTabs() -> [String] {
+        mqttManager.availables.compactMap { deviceMapping[$0] }
+    }
+    /// 當 availables 更新時，確保 selectedTab 有正確的值
+    private func updateSelectedTab() {
+        if selectedTab.isEmpty, let firstAvailable = getAvailableTabs().first {
+            selectedTab = firstAvailable
+        }
+    }
+    /// 取得對應的 SF Symbols 圖示
     private func getTabIcon(for tab: String) -> String {
         switch tab {
-            case "溫濕度": return "thermometer"
-            case "空調": return "air.conditioner.horizontal"
-            case "除濕機": return "drop.degreesign.slash"
-            case "遙控器": return "appletvremote.gen1"
-            case "插座": return "poweroutlet.type.b"
-            default: return "questionmark"
+        case "溫濕度": return "thermometer"
+        case "空調": return "air.conditioner.horizontal"
+        case "除濕機": return "drop.degreesign.slash"
+        case "遙控器": return "appletvremote.gen1"
+        case "插座": return "poweroutlet.type.b"
+        default: return "questionmark"
         }
     }
 }
