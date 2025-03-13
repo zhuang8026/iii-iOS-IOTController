@@ -11,7 +11,7 @@ struct ContentView: View {
     // 控制提示
     @EnvironmentObject var appStore: AppStore  // 使用全域狀態
     @StateObject private var apiService = APIService() // ✅ 讓 SwiftUI 監聽 API 回應
-
+    
     @State private var selectedTab = "溫濕度"
     @State private var status = false // 控制顯示標題名稱（內含 返回 icon）
     
@@ -69,7 +69,7 @@ struct ContentView: View {
             }
             .padding()
             .background(Color.light_green.opacity(1))
-
+            
             if appStore.showPopup {
                 CustomPopupView(
                     isPresented: $appStore.showPopup,
@@ -80,6 +80,18 @@ struct ContentView: View {
                             do {
                                 var payload = try await apiService.apiGetAIControllerInfo() // ✅ 自動載入設備資料 (去除 original_data)
                                 payload.socket = ["power_w": "1"] // ✅ 加入 socket
+                                // ✅ 修改 air conditioner 的 power_rw
+                                var updatedAC = payload.ac
+                                updatedAC.power_rw = "1"
+                                updatedAC.temperature_cfg_rw = "27"
+                                payload.ac = updatedAC
+                                
+                                // ✅ 修改 Dehumidifier 的 power_rw
+                                var updatedDehumidifier = payload.dehumidifier
+                                updatedDehumidifier.power_rw = "1"
+                                updatedDehumidifier.humidity_cfg_rw = "55"
+                                payload.dehumidifier = updatedDehumidifier
+    
                                 let response = try await apiService.apiPostSettingAIController(payload: payload) // ✅ 發送 API
                                 print("API 請求成功: \(response!)")
                             } catch {

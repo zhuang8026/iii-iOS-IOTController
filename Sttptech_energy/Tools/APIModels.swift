@@ -42,9 +42,9 @@ struct TemperatureData: Codable {
 }
 
 struct ACData: Codable {
-    let power_rw: String
+    var power_rw: String
     let op_mode_rw: String
-    let temperature_cfg_rw: String
+    var temperature_cfg_rw: String
     let fan_level_rw: String
     let outdoor_unit_power_watt_r: String?
     let comfortable_rw: String?
@@ -52,9 +52,9 @@ struct ACData: Codable {
 }
 
 struct DehumidifierData: Codable {
-    let power_rw: String
+    var power_rw: String
     let op_mode_rw: String
-    let humidity_cfg_rw: String
+    var humidity_cfg_rw: String
     let fan_level_rw: String?
     let op_power_watt_r: String?
     let dehumidifier_level_rw: String
@@ -68,8 +68,8 @@ struct SocketData: Codable {
 struct RoomData: Codable {
     let roomid: String
     let sensor: TemperatureData
-    let ac: ACData
-    let dehumidifier: DehumidifierData
+    var ac: ACData
+    var dehumidifier: DehumidifierData
     var socket: [String: String]? // ✅ 新增 socket 欄位
 }
 
