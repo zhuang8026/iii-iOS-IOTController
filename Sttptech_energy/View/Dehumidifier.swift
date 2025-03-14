@@ -10,27 +10,61 @@ import SwiftUI
 struct Dehumidifier: View {
     // 控制提示
     @EnvironmentObject var appStore: AppStore  // 使用全域狀態
-    
-    @State private var isPowerOn = true
-    @State private var fanSpeed: Double = 2
-    
-    // 選項結果
-    @State private var selectedHumidity: Int = 50
-    @State private var selectedTimer: Int = 2
-    @State private var selectedWaterLevel: String = "正常"
-    @State private var selectedMode: String = "自動除濕"
+    @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
     
     // 選項列表
-    let humidityOptions = Array(stride(from: 20, through: 60, by: 10)) // 40% - 80%
-    let timerOptions = Array(1...6) // 1 - 12 小時
-    let waterLevelOptions = ["正常", "過低", "滿水"]
+    let humidityOptions = Array(stride(from: 30, through: 90, by: 1)) // 40% - 80%
+    let timerOptions = Array(1...24) // 1 - 12 小時
+    let waterLevelOptions = ["正常", "滿水"]
     let modeOptions = ["自動除濕", "連續除濕"]
+    
+    // 選項結果
+    @State private var isPowerOn = true
+    @State private var selectedMode: String = "自動除濕"  // ["自動除濕", "連續除濕"]
+    @State private var selectedHumidity: Int = 50
+    @State private var selectedTimer: Int = 2
+    @State private var checkWaterFullAlarm: String = "正常" // ["正常", "滿水"]
+    @State private var fanSpeed: Double = 2
+
     
     let titleWidth = 8.0;
     let titleHeight = 20.0;
     
+    /// 解析 MQTT 家電數據，更新 UI
+    private func updateDehumidifierData() {
+        guard let dehumidifierData = mqttManager.appliances["dehumidifier"] else { return }
+        
+        // 解析 `cfg_power` -> Bool (開 / 關)
+        if let power = dehumidifierData["cfg_power"]?.value {
+            isPowerOn = (power == "on")
+        }
+        
+        // 解析 `cfg_mode` -> String ("auto" -> "自動除濕", "continuous" -> "連續除濕")
+        if let mode = dehumidifierData["cfg_mode"]?.value {
+            selectedMode = (mode == "auto") ? "自動除濕" : "連續除濕"
+        }
+        
+        // 解析 `cfg_humidity` -> Int
+        if let humidity = dehumidifierData["cfg_humidity"]?.value, let humidityInt = Int(humidity) {
+            selectedHumidity = humidityInt
+        }
+        
+        // 解析 `cfg_humidity` -> Int
+        if let timer = dehumidifierData["cfg_timer"]?.value, let timerInt = Int(timer) {
+            selectedTimer = timerInt
+        }
+
+        // 解析 `op_water_full_alarm` -> String ("0" -> "正常", "1" -> "滿水")
+        if let waterAlarm = dehumidifierData["op_water_full_alarm"]?.value {
+            checkWaterFullAlarm = (waterAlarm == "1") ? "滿水" : "正常"
+        }
+    }
+    
     var body: some View {
         ZStack {
+            // 取得 dehumidifier 數據
+            //            let DHFRData = mqttManager.appliances["dehumidifier"]
+            
             VStack(spacing: 20) {
                 PowerToggle(isPowerOn: $isPowerOn)
                 if isPowerOn {
@@ -88,7 +122,7 @@ struct Dehumidifier: View {
                             VStack(alignment: .center, spacing: 10) {
                                 Text("水位")
                                 HStack() {
-                                    Text("正常")
+                                    Text("\(checkWaterFullAlarm)")
                                 }
                                 .frame(maxWidth: .infinity, minHeight: 60.0)
                                 .background(Color.light_gray)
@@ -159,15 +193,22 @@ struct Dehumidifier: View {
             }
             .animation(.easeInOut, value: appStore.showPopup)
             // 🔥 監聽 isPowerOn 的變化
-            .onChange(of: isPowerOn) { oldVal, newVal in
-                print(oldVal, newVal)
-                if newVal {
-                    appStore.showPopup = true // 開啟提示窗
-                }
+//            .onChange(of: isPowerOn) { oldVal, newVal in
+//                print(oldVal, newVal)
+//                if newVal {
+//                    appStore.showPopup = true // 開啟提示窗
+//                }
+//            }
+            .onAppear {
+                updateDehumidifierData() // 畫面載入時初始化數據
             }
+//            .onChange(of: mqttManager.appliances["dehumidifier"]) { _ in
+//                updateDehumidifierData() // 當 MQTT 資料變更時更新 UI
+//            }
+            
         }
-        
     }
+    
 }
 
 #Preview {

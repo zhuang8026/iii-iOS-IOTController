@@ -53,15 +53,15 @@ struct RemoteControl: View {
                             
                             // 電源開啟狀態
                             if (isPowerOn) {
-                                /// 風速
+                                /// 風量
                                 VStack(alignment: .leading, spacing: 9) {
                                     HStack {
                                         // tag
                                         RoundedRectangle(cornerRadius: 4)
                                             .frame(width: titleWidth, height: titleHeight) // 控制長方形的高度，寬度根據內容自動調整
-                                        Text("風速")
+                                        Text("風量")
                                     }
-                                    FanSpeedSlider(fanSpeed: $fanSpeed) /// 風速控制
+                                    FanSpeedSlider(fanSpeed: $fanSpeed) /// 風量控制
                                 }
                                 
                                 /// 溫度

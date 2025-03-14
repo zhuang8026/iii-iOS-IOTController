@@ -10,7 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject var mqttManager: MQTTManager // 從環境取得 MQTTManager
     
-    @State private var selectedTab = ""
+    @State private var selectedTab = "" // 選擇設備控制
     @State private var status = false // 控制顯示標題名稱（內含 返回 icon）
     
     @AppStorage("isTempConnected") private var isTempConnected = true  // ✅ 溫濕度 記住連線狀態
@@ -79,7 +79,7 @@ struct ContentView: View {
         .onChange(of: mqttManager.isConnected) { oldConnect, newConnect in
             // 連線MQTT
             if newConnect {
-                mqttManager.publishLogin(username: "user", password: "user+user")
+                mqttManager.publishApplianceUserLogin(username: "user", password: "user+user")
                 mqttManager.publishApplianceTelemetryCommand(subscribe: true)
             }
         }

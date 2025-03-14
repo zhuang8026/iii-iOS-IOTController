@@ -19,7 +19,7 @@ class MQTTManager: NSObject, ObservableObject {
     // MARK: - 登入狀態
     @Published var loginResponse: String? // 儲存「登入」結果
     // MARK: - 家電總資料
-    @Published var availables: [String] = [] // 可使用的家電名稱
+    @Published var availables: [String] = [] // MenuBar顯示家電控制
     @Published var appliances: [String: [String: ApplianceData]] = [:] // 安裝的家電參數狀態
     
     let AppID = "1d51e92d-e623-41dd-b367-d955a0d44d66" // 測試使用
@@ -50,7 +50,7 @@ class MQTTManager: NSObject, ObservableObject {
     }
     
     // 發布「登入」發送指令
-    func publishLogin(username: String, password: String) {
+    func publishApplianceUserLogin(username: String, password: String) {
         guard isConnected else {
             print("❌ MQTT 未連線，無法發送登入指令")
             return
@@ -132,7 +132,7 @@ extension MQTTManager: CocoaMQTTDelegate {
     // MARK: - 取得 API 回應
     // response data
     func mqtt(_ mqtt: CocoaMQTT, didReceiveMessage message: CocoaMQTTMessage, id: UInt16) {
-//        print("MQTT 成功發送訊息:  \(message.string ?? "") 到 \(message.topic)")
+        //        print("MQTT 成功發送訊息:  \(message.string ?? "") 到 \(message.topic)")
         print("MQTT 成功發送訊息到 -> \(message.topic)")
         
         // [token] 確保是訂閱的 topic
@@ -185,9 +185,10 @@ extension MQTTManager: CocoaMQTTDelegate {
                         }
                         
                         self.appliances = parsedAppliances
-//                        print("✅ 總家電參數更新: \(parsedAppliances)")
-                        if let dehumidifierData = parsedAppliances["sensor"] {
-                            print("✅ 溫濕度數據: \(dehumidifierData)")
+                        //  print("✅ 總家電參數更新: \(parsedAppliances)")
+                        if let dehumidifierData = parsedAppliances["dehumidifier"] {
+                            //  print("✅ 「sensor」溫濕度數據: \(dehumidifierData)")
+                            print("✅ 「dehumidifier」除濕機數據: \(dehumidifierData)")
                         }
                     }
                 }

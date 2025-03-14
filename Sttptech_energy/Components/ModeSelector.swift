@@ -10,9 +10,8 @@ import SwiftUI
 /// 模式選擇視圖
 struct ModeSelector: View {
     @Binding var selectedMode: String
-    
-    let modes = ["冷氣", "暖風", "除濕", "送風", "自動"]
-    
+    @Binding var modes: [String]
+
     var body: some View {
         HStack(spacing: 8) {
             ForEach(modes, id: \.self) { mode in

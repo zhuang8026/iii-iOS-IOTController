@@ -10,12 +10,14 @@ import SwiftUI
 struct AirConditioner: View {
     // 控制提示
     @EnvironmentObject var appStore: AppStore  // 使用全域狀態
-    
+    @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
+
     @State private var isPowerOn = true
     @State private var selectedMode = "冷氣"
     @State private var fanSpeed: Double = 2
     @State private var temperature: Int = 24
     
+    @State private var modes = ["冷氣", "暖風", "除濕", "送風", "自動"]
     let titleWidth = 8.0;
     let titleHeight = 20.0;
     
@@ -26,7 +28,7 @@ struct AirConditioner: View {
                 PowerToggle(isPowerOn: $isPowerOn)
                 
                 if isPowerOn {
-                    /// 風速和空調溫度顯示
+                    /// 風量和空調溫度顯示
                     ACnumber(fanSpeed:$fanSpeed, temperature: $temperature)
                     
                     /// 模式
@@ -37,18 +39,18 @@ struct AirConditioner: View {
                                 .frame(width: titleWidth, height: titleHeight) // 控制長方形的高度，寬度根據內容自動調整
                             Text("模式")
                         }
-                        ModeSelector(selectedMode: $selectedMode)
+                        ModeSelector(selectedMode: $selectedMode, modes: $modes)
                     }
                     
-                    /// 風速
+                    /// 風量
                     VStack(alignment: .leading, spacing: 9) {
                         HStack {
                             // tag
                             RoundedRectangle(cornerRadius: 4)
                                 .frame(width: titleWidth, height: titleHeight) // 控制長方形的高度，寬度根據內容自動調整
-                            Text("風速")
+                            Text("風量")
                         }
-                        FanSpeedSlider(fanSpeed: $fanSpeed) /// 風速控制
+                        FanSpeedSlider(fanSpeed: $fanSpeed) /// 風量控制
                     }
                     
                     /// 溫度
@@ -93,6 +95,6 @@ struct AirConditioner: View {
     }
 }
 
-#Preview {
-    AirConditioner()
-}
+//#Preview {
+//    AirConditioner()
+//}
