@@ -16,16 +16,18 @@ struct Dehumidifier: View {
     let humidityOptions = Array(stride(from: 30, through: 90, by: 1)) // 40% - 80%
     let timerOptions = Array(1...24) // 1 - 12 小時
     let waterLevelOptions = ["正常", "滿水"]
-    let modeOptions = ["自動除濕", "連續除濕"]
+    let modeOptions = [
+        "auto", "manual", "continuous", "clothes_drying",
+        "purification", "sanitize", "fan", "comfort", "low_drying"
+    ]
     
     // 選項結果
     @State private var isPowerOn = true
-    @State private var selectedMode: String = "自動除濕"  // ["自動除濕", "連續除濕"]
+    @State private var selectedMode: String = "auto"  // ["自動除濕", "連續除濕"]
     @State private var selectedHumidity: Int = 50
     @State private var selectedTimer: Int = 2
     @State private var checkWaterFullAlarm: String = "正常" // ["正常", "滿水"]
-    @State private var fanSpeed: Double = 2
-
+    @State private var fanSpeed: String = "low" // 風速設定變數-> API cfg_fan_level
     
     let titleWidth = 8.0;
     let titleHeight = 20.0;
@@ -41,7 +43,7 @@ struct Dehumidifier: View {
         
         // 解析 `cfg_mode` -> String ("auto" -> "自動除濕", "continuous" -> "連續除濕")
         if let mode = dehumidifierData["cfg_mode"]?.value {
-            selectedMode = (mode == "auto") ? "自動除濕" : "連續除濕"
+            selectedMode = mode
         }
         
         // 解析 `cfg_humidity` -> Int
@@ -53,10 +55,26 @@ struct Dehumidifier: View {
         if let timer = dehumidifierData["cfg_timer"]?.value, let timerInt = Int(timer) {
             selectedTimer = timerInt
         }
-
+        
         // 解析 `op_water_full_alarm` -> String ("0" -> "正常", "1" -> "滿水")
         if let waterAlarm = dehumidifierData["op_water_full_alarm"]?.value {
             checkWaterFullAlarm = (waterAlarm == "1") ? "滿水" : "正常"
+        }
+    }
+    
+    /// **模式轉換函式**
+    private func verifyMode(_ mode: String) -> String {
+        switch mode {
+        case "auto": return "自動除濕"
+        case "manual": return "手動除濕"
+        case "continuous": return "連續除濕"
+        case "clothes_drying": return "衣服烘乾"
+        case "purification": return "淨化空氣"
+        case "sanitize": return "消毒"
+        case "fan": return "送風"
+        case "comfort": return "舒適"
+        case "low_drying": return "低乾燥度"
+        default: return "無法辨識模式"
         }
     }
     
@@ -143,22 +161,40 @@ struct Dehumidifier: View {
                         }
                         
                         // 模式選擇
-                        HStack(spacing: 8) { // 調整間距
-                            ForEach(modeOptions, id: \.self) { mode in
-                                Button(action: {
-                                    selectedMode = mode
-                                }) {
-                                    Text(mode)
-                                        .font(.body)
-                                        .frame(maxWidth: .infinity, minHeight: 60.0)
-                                        .background(selectedMode == mode ? .g_blue : Color.light_gray)
-                                        .foregroundColor(selectedMode == mode ? .white : Color.heavy_gray)
+                        VStack(alignment: .center, spacing: 10) {
+                            HStack() {
+                                Picker("選擇時間", selection: $selectedMode) {
+                                    ForEach(modeOptions, id: \.self) { value in
+                                        Text(verifyMode(value)) // 顯示轉換後的中文
+                                            .tag(value) // 保持原始模式代號，確保 selection 維持一致
+                                    }
                                 }
-                                //                        .buttonStyle(NoAnimationButtonStyle()) // 使用自訂樣式，完全禁用動畫
-                                .cornerRadius(10)
-                                .shadow(color: selectedMode == mode ? .blue.opacity(0.3) : .clear, radius: 4, x: 0, y: 2)
+                                .tint(Color.g_blue) // 🔴 修改點擊時的選單顏色
+                                .pickerStyle(MenuPickerStyle()) // 下拉選單
                             }
+                            .frame(maxWidth: .infinity, minHeight: 60.0)
+                            .background(Color.light_gray)
+                            .cornerRadius(5)
                         }
+                        .frame(maxWidth: .infinity)
+                        
+                        // 模式選擇
+                        //                        HStack(spacing: 8) { // 調整間距
+                        //                            ForEach(modeOptions, id: \.self) { mode in
+                        //                                Button(action: {
+                        //                                    selectedMode = mode
+                        //                                }) {
+                        //                                    Text(mode)
+                        //                                        .font(.body)
+                        //                                        .frame(maxWidth: .infinity, minHeight: 60.0)
+                        //                                        .background(selectedMode == mode ? .g_blue : Color.light_gray)
+                        //                                        .foregroundColor(selectedMode == mode ? .white : Color.heavy_gray)
+                        //                                }
+                        //                                //                        .buttonStyle(NoAnimationButtonStyle()) // 使用自訂樣式，完全禁用動畫
+                        //                                .cornerRadius(10)
+                        //                                .shadow(color: selectedMode == mode ? .blue.opacity(0.3) : .clear, radius: 4, x: 0, y: 2)
+                        //                            }
+                        //                        }
                         //                .aspectRatio(5, contentMode: .fit) // 根據按鈕數量讓高度自適應寬度
                     }
                     
@@ -170,7 +206,8 @@ struct Dehumidifier: View {
                                 .frame(width: titleWidth, height: titleHeight) // 控制長方形的高度，寬度根據內容自動調整
                             Text("風速")
                         }
-                        FanSpeedSlider(fanSpeed: $fanSpeed) /// 風速控制
+                        //                        FanSpeedSlider(fanSpeed: $fanSpeed) /// 風速控制
+                        WindSpeedView(selectedSpeed: $fanSpeed) // 風速控制
                     }
                 } else {
                     /// 請開始電源
@@ -193,18 +230,18 @@ struct Dehumidifier: View {
             }
             .animation(.easeInOut, value: appStore.showPopup)
             // 🔥 監聽 isPowerOn 的變化
-//            .onChange(of: isPowerOn) { oldVal, newVal in
-//                print(oldVal, newVal)
-//                if newVal {
-//                    appStore.showPopup = true // 開啟提示窗
-//                }
-//            }
+            //            .onChange(of: isPowerOn) { oldVal, newVal in
+            //                print(oldVal, newVal)
+            //                if newVal {
+            //                    appStore.showPopup = true // 開啟提示窗
+            //                }
+            //            }
             .onAppear {
                 updateDehumidifierData() // 畫面載入時初始化數據
             }
-//            .onChange(of: mqttManager.appliances["dehumidifier"]) { _ in
-//                updateDehumidifierData() // 當 MQTT 資料變更時更新 UI
-//            }
+            //            .onChange(of: mqttManager.appliances["dehumidifier"]) { _ in
+            //                updateDehumidifierData() // 當 MQTT 資料變更時更新 UI
+            //            }
             
         }
     }

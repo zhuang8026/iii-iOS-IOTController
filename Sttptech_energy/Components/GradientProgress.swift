@@ -82,11 +82,13 @@ struct GradientProgress: View {
     private func gradientColors(for temperature: Int) -> [Color] {
         switch temperature {
         case 16...20:
-            return [Color(hex: "#6C83D0"), Color(hex: "#5574DD")]
+            return [Color(hex: "#1F9AF4"), Color(hex: "#2267EA")]
         case 21...26:
-            return [Color(hex: "#3DD5C3"), Color(hex: "#3D89AB")]
-        case 27...30:
-            return [Color(hex: "#FFD036"), Color(hex: "#FFA700")]
+            return [Color(hex: "#5DC2B8"), Color(hex: "#089B99")]
+        case 27...29:
+            return [Color(hex: "#FFA700"), Color(hex: "#FF8900")]
+        case 30:
+            return [Color(hex: "#FF8900"), Color(hex: "#FF6C00")]
         default:
             return [Color.gray, Color.gray] // 預設顏色
         }

@@ -16,6 +16,14 @@ extension Color {
     static let heavy_gray = Color(hex: "#7C7C7C")   // 深灰色  次等 文字顏色
     static let light_blue = Color(hex: "#EEF1FB")   // 深灰藍色
     static let warning = Color(hex: "#FC6559")      // 危險紅色
+
+    static let fan_purple = Color(hex: "#B7A8DE")
+    static let fan_blue = Color(hex: "#8DA8E3")
+    static let fan_cyan = Color(hex: "#A7E1E8")
+    static let fan_teal = Color(hex: "#5FC6BE")
+    static let fan_yellow = Color(hex: "#E0CE6D")
+    static let fan_orange = Color(hex: "#E0A26D")
+    
     
     
     init(hex: String, alpha: CGFloat = 1.0) {
