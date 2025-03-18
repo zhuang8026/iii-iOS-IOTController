@@ -13,8 +13,8 @@ struct Dehumidifier: View {
     @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
     
     // 選項列表
-    let humidityOptions = Array(stride(from: 30, through: 90, by: 1)) // 40% - 80%
-    let timerOptions = Array(1...24) // 1 - 12 小時
+    let humidityOptions = Array(stride(from: 1, through: 100, by: 1)) // 設定：40% - 80%
+    let timerOptions = Array(1...100) // 設定：1 - 12 小時
     let waterLevelOptions = ["正常", "滿水"]
     let modeOptions = [
         "auto", "manual", "continuous", "clothes_drying",
@@ -27,7 +27,7 @@ struct Dehumidifier: View {
     @State private var selectedHumidity: Int = 50
     @State private var selectedTimer: Int = 2
     @State private var checkWaterFullAlarm: String = "正常" // ["正常", "滿水"]
-    @State private var fanSpeed: String = "low" // 風速設定變數-> API cfg_fan_level
+    @State private var fanSpeed: String = "auto" // 風速設定變數-> API cfg_fan_level
     
     let titleWidth = 8.0;
     let titleHeight = 20.0;
@@ -60,21 +60,26 @@ struct Dehumidifier: View {
         if let waterAlarm = dehumidifierData["op_water_full_alarm"]?.value {
             checkWaterFullAlarm = (waterAlarm == "1") ? "滿水" : "正常"
         }
+        
+        // 解析 `op_water_full_alarm` -> String ("0" -> "正常", "1" -> "滿水")
+        if let fanLevel = dehumidifierData["cfg_fan_level"]?.value {
+            fanSpeed = fanLevel
+        }
     }
     
     /// **模式轉換函式**
     private func verifyMode(_ mode: String) -> String {
         switch mode {
         case "auto": return "自動除濕"
-        case "manual": return "手動除濕"
+        case "manual": return "自訂除濕"
         case "continuous": return "連續除濕"
-        case "clothes_drying": return "衣服烘乾"
-        case "purification": return "淨化空氣"
-        case "sanitize": return "消毒"
-        case "fan": return "送風"
-        case "comfort": return "舒適"
-        case "low_drying": return "低乾燥度"
-        default: return "無法辨識模式"
+        case "clothes_drying": return "強力乾衣"
+        case "purification": return "空氣淨化"
+        case "sanitize": return "防霉抗菌"
+        case "fan": return "空氣循環"
+        case "comfort": return "舒適除濕"
+        case "low_drying": return "低濕乾燥"
+        default: return "其他"
         }
     }
     
@@ -163,7 +168,7 @@ struct Dehumidifier: View {
                         // 模式選擇
                         VStack(alignment: .center, spacing: 10) {
                             HStack() {
-                                Picker("選擇時間", selection: $selectedMode) {
+                                Picker("選擇模式", selection: $selectedMode) {
                                     ForEach(modeOptions, id: \.self) { value in
                                         Text(verifyMode(value)) // 顯示轉換後的中文
                                             .tag(value) // 保持原始模式代號，確保 selection 維持一致
@@ -239,15 +244,17 @@ struct Dehumidifier: View {
             .onAppear {
                 updateDehumidifierData() // 畫面載入時初始化數據
             }
-            //            .onChange(of: mqttManager.appliances["dehumidifier"]) { _ in
-            //                updateDehumidifierData() // 當 MQTT 資料變更時更新 UI
-            //            }
-            
+//            .onChange(of: mqttManager.appliances["dehumidifier"]?.id) { _ in
+//                updateDehumidifierData()
+//            }
+            .onChange(of: mqttManager.appliances["dehumidifier"]) { _, _ in
+                updateDehumidifierData()
+            }
         }
     }
     
 }
-
-#Preview {
-    Dehumidifier()
-}
+//
+//#Preview {
+//    Dehumidifier()
+//}

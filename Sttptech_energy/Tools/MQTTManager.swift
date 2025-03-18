@@ -185,10 +185,10 @@ extension MQTTManager: CocoaMQTTDelegate {
                         }
                         
                         self.appliances = parsedAppliances
-                        //  print("✅ 總家電參數更新: \(parsedAppliances)")
-                        if let dehumidifierData = parsedAppliances["dehumidifier"] {
+                        //                          print("✅ 總家電參數更新: \(parsedAppliances)")
+                        if let air_conditioner = parsedAppliances["air_conditioner"] {
                             //  print("✅ 「sensor」溫濕度數據: \(dehumidifierData)")
-                            print("✅ 「dehumidifier」除濕機數據: \(dehumidifierData)")
+                            print("✅ 「air_conditioner」除濕機數據: \(air_conditioner)")
                         }
                     }
                 }

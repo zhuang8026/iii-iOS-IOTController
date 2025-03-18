@@ -74,6 +74,9 @@ struct GradientProgress: View {
                             currentTemperature = min(maxTemperature, max(minTemperature, newTemperature))
                         }
                     }
+                    .onEnded { _ in
+                        // ✅ 只有在用戶停止拖動後才觸發 API 呼叫
+                    }
             )
         }
     }
@@ -81,7 +84,9 @@ struct GradientProgress: View {
     /// 根據溫度範圍選擇對應的漸層顏色
     private func gradientColors(for temperature: Int) -> [Color] {
         switch temperature {
-        case 16...20:
+        case 16...17:
+            return [Color(hex: "#8DA8E3"), Color(hex: "#B7A8DE")]
+        case 18...20:
             return [Color(hex: "#1F9AF4"), Color(hex: "#2267EA")]
         case 21...26:
             return [Color(hex: "#5DC2B8"), Color(hex: "#089B99")]

@@ -74,9 +74,9 @@ struct HeaderName: View {
             } else {
                 Image("arrow-left") // 改成返回按鈕
                     .font(.system(size: 20))
-                //                    .onTapGesture {
-                //                        status = true // ✅ 點擊後切換 status
-                //                    }
+                    .onTapGesture {
+                        status = true // ✅ 點擊後切換 status
+                    }
                 
                 Spacer() // 推動其他內容到右側
             }

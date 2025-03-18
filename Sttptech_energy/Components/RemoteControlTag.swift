@@ -13,22 +13,21 @@ struct RemoteControlTag: View {
 
     var body: some View {
         HStack () {
-            Button(action: {
-                isPowerOn.toggle()
-                triggerHapticFeedback() // 觸發震動
-            }) {
-                Image(systemName: "power")
-                    .font(.largeTitle)
-                    .foregroundColor(isPowerOn ? Color.white : Color.heavy_gray)
-                    .padding()
-//                    .shadow(radius: 3)
-            }
-            .frame(width: 80, height: 80)
-            .background(isPowerOn ? Color.g_green : Color.light_gray)
-            .cornerRadius(10)
+//            Button(action: {
+//                isPowerOn.toggle()
+//                triggerHapticFeedback() // 觸發震動
+//            }) {
+//                Image(systemName: "power")
+//                    .font(.largeTitle)
+//                    .foregroundColor(isPowerOn ? Color.white : Color.heavy_gray)
+//                    .padding()
+//            }
+//            .frame(width: 80, height: 80)
+//            .background(isPowerOn ? Color.g_green : Color.light_gray)
+//            .cornerRadius(10)
 
             HStack(spacing: 0) { // 確保選項完全貼合，間距為 0
-                ForEach(["冷氣", "暖氣", "除濕", "送風"], id: \.self) { tab in
+                ForEach(["冷氣", "暖氣", "除濕", "送風", "自動"], id: \.self) { tab in
                     VStack {
                         Image(systemName: getTabIcon(for: tab))
                             .font(.system(size: 24))
@@ -58,6 +57,7 @@ struct RemoteControlTag: View {
             case "暖氣": return "sun.max"
             case "除濕": return "drop"
             case "送風": return "wind"
+            case "自動": return "autostartstop"
             default: return "questionmark"
         }
     }

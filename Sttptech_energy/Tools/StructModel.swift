@@ -8,7 +8,13 @@
 import Foundation
 
 /// 家電數據結構
-struct ApplianceData: Codable {
-    let value: String
-    let updated: String
+//struct ApplianceData: Codable {
+//    let value: String
+//    let updated: String
+//}
+
+/// 家電數據結構
+struct ApplianceData: Equatable {
+    var value: String
+    var updated: String
 }

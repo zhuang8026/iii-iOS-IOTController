@@ -12,6 +12,18 @@ struct ModeSelector: View {
     @Binding var selectedMode: String
     @Binding var modes: [String]
 
+    /// **模式轉換函式**
+    private func verifyMode(_ mode: String) -> String {
+        switch mode {
+        case "cool": return "冷氣"
+        case "heat": return "暖風"
+        case "dry": return "除濕"
+        case "fan": return "送風"
+        case "auto": return "自動"
+        default: return "其他"
+        }
+    }
+
     var body: some View {
         HStack(spacing: 8) {
             ForEach(modes, id: \.self) { mode in
@@ -19,7 +31,7 @@ struct ModeSelector: View {
                     triggerHapticFeedback() // 震動控制
                     selectedMode = mode
                 }) {
-                    Text(mode)
+                    Text(verifyMode(mode))
                         .font(.body)
 //                        .frame(height: 60.0) // 直接指定固定大小
                         .frame(maxWidth: .infinity, maxHeight: .infinity) // 按钮填充
