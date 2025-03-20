@@ -99,6 +99,51 @@ class MQTTManager: NSObject, ObservableObject {
         }
     }
     
+    // MARK: - 發送與設定設備
+    // 訂閱「設定裝置」資訊
+    func subscribeToSetDeviceControl() {
+        let topic = "to/app/\(AppID)/appliances/control" // API
+        mqtt?.subscribe(topic)
+        print("📡 訂閱「設定裝置」資訊: \(topic)")
+    }
+
+    // 發布「設定裝置」發送指令
+    func publishSetDeviceControl(model: [String: Any]) {
+        guard isConnected else {
+            print("❌ MQTT 未連線，無法發送登入指令")
+            return
+        }
+        
+        var uerToken:String = "----------- William testing token -----------" // 測試 Token
+        if let token = UserDefaults.standard.string(forKey: "MQTTAccessToken") {
+            print("🔑 讀取到存儲的 Token: \(token)")
+            uerToken = token
+        }
+        // 確保 payload 在 uerToken 更新後才建立
+        let payload: [String: Any] = [
+            "token": uerToken,
+            "appliances": model,  // ✅ 正確使用 Dictionary
+//            "appliances": [
+//                "air_conditioner": [
+//                    "ac_outlet": [
+//                        "cfg_power": "off"
+//                    ]
+//                    
+//                ]
+//            ],
+            "success": true
+        ]
+        
+        print("⭐ 讀取到存儲的 「設定裝置: \(payload)")
+
+        if let jsonData = try? JSONSerialization.data(withJSONObject: payload, options: []),
+           let jsonString = String(data: jsonData, encoding: .utf8) {
+            mqtt?.publish("from/app/\(AppID)/appliances/control", withString: jsonString, qos: .qos1, retained: false)
+            print("📤 發送「設定裝置」指令至 from/app/\(AppID)/appliances/control")
+        } else {
+            print("❌ JSON 轉換失敗")
+        }
+    }
 }
 
 // MARK: - [對內] 負責 MQTT 代理方法
@@ -110,8 +155,9 @@ extension MQTTManager: CocoaMQTTDelegate {
             DispatchQueue.main.async {
                 self.isConnected = true
             }
-            subscribeToAuthentication() // 「登入」連線後自動訂閱登入結果
+            subscribeToAuthentication()     // 「登入」連線後自動訂閱登入結果
             subscribeToApplianceTelemetry() //「溫濕度」連線後自動訂閱登入結果
+            subscribeToSetDeviceControl()   //「設定裝置」連線後自動訂閱登入結果
         } else {
             print("❌ MQTT 連線失敗: \(ack)")
         }
@@ -188,7 +234,7 @@ extension MQTTManager: CocoaMQTTDelegate {
                         //                          print("✅ 總家電參數更新: \(parsedAppliances)")
                         if let air_conditioner = parsedAppliances["air_conditioner"] {
                             //  print("✅ 「sensor」溫濕度數據: \(dehumidifierData)")
-                            print("✅ 「air_conditioner」除濕機數據: \(air_conditioner)")
+                            //  print("✅ 「air_conditioner」除濕機數據: \(air_conditioner)")
                         }
                     }
                 }

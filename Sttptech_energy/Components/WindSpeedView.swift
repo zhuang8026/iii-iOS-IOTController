@@ -73,13 +73,20 @@ struct WindSpeedView: View {
                             // 風速按鈕
                             Text(verifyMode(speed))
                                 .font(.system(size: 16, weight: .medium))
-                            
-                            Image(systemName: getTabIcon(for: speed))
-                                .font(.system(size: 24))
-                                .frame(width: 30, height: 30, alignment: .center)
-                                .symbolEffect(.rotate.clockwise.byLayer, options: .repeat(.continuous))
-                                .opacity(selectedSpeed == speed ? 1.0 : 0.5) // 最高速時讓圖標變亮
-                                .animation(.easeInOut(duration: getSpeed(for: selectedSpeed)), value: selectedSpeed)
+                            if selectedSpeed == speed {
+                                Image(systemName: getTabIcon(for: speed))
+                                    .font(.system(size: 24))
+                                    .frame(width: 30, height: 30, alignment: .center)
+                                    .symbolEffect(.rotate.clockwise.byLayer, options: .repeat(.continuous))
+                                    .opacity(1.0) // 透明度1
+                                    .animation(.easeInOut(duration: getSpeed(for: selectedSpeed)), value: selectedSpeed)
+                            } else {
+                                Image(systemName: getTabIcon(for: speed))
+                                    .font(.system(size: 24))
+                                    .frame(width: 30, height: 30, alignment: .center)
+                                    .opacity(0.5) // 透明度0.5
+                            }
+
                         }
                             .foregroundColor(.white)
                             .frame(maxWidth: 60, minHeight: 90)

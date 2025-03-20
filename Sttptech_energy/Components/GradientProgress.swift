@@ -11,14 +11,14 @@ import SwiftUI
 struct GradientProgress: View {
     @Binding var currentTemperature: Int // 初始溫度
     
-    private let minTemperature: Int = 16 // 最小溫度
-    private let maxTemperature: Int = 30 // 最大溫度
+    private let minTemperature: Int = 16 // 最小溫度 default:16
+    private let maxTemperature: Int = 30 // 最大溫度 default:30
     @State private var lastHapticTime = Date() // 上次震動的時間
     
     var body: some View {
         GeometryReader { geometry in
             let barWidth = geometry.size.width * 1.0 // 畫面寬度的 90%
-            let totalSegments = 15 // 15 段均分
+            let totalSegments = (maxTemperature - minTemperature) + 1 // 15 段均分 default:15
             
             ZStack(alignment: .leading) {
                 // 背景容器
@@ -84,7 +84,7 @@ struct GradientProgress: View {
     /// 根據溫度範圍選擇對應的漸層顏色
     private func gradientColors(for temperature: Int) -> [Color] {
         switch temperature {
-        case 16...17:
+        case 0...17:
             return [Color(hex: "#8DA8E3"), Color(hex: "#B7A8DE")]
         case 18...20:
             return [Color(hex: "#1F9AF4"), Color(hex: "#2267EA")]
@@ -92,7 +92,7 @@ struct GradientProgress: View {
             return [Color(hex: "#5DC2B8"), Color(hex: "#089B99")]
         case 27...29:
             return [Color(hex: "#FFA700"), Color(hex: "#FF8900")]
-        case 30:
+        case 30...100:
             return [Color(hex: "#FF8900"), Color(hex: "#FF6C00")]
         default:
             return [Color.gray, Color.gray] // 預設顏色

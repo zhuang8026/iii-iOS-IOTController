@@ -22,10 +22,10 @@ struct RemoteHeader: View {
                     Image(systemName: "power")
                         .padding()
                         .font(.largeTitle)
-                        .foregroundColor(Color.heavy_gray)
+                        .foregroundColor(Color.white)
                 }
                 .frame(maxWidth: 60, maxHeight: 60)
-                .background(Color.light_gray)
+                .background(Color.light_gray2)
                 .cornerRadius(10)
                 .shadow(color: .gray.opacity(0.2), radius: 4, x: 0, y: 2)
             }
@@ -41,7 +41,7 @@ struct RemoteHeader: View {
                         triggerHapticFeedback(model: .heavy) // 觸發震動
                     }) {
                         Image(systemName: "trash") // 垃圾桶
-                            .foregroundColor(Color.blue) // 確保顏色存在
+                            .foregroundColor(Color.g_blue) // 確保顏色存在
                             .frame(width: 30, height: 30) // 設定按鈕大小
                             .background(Color.white) // 白色背景
                             .clipShape(Circle()) // 設定為圓形

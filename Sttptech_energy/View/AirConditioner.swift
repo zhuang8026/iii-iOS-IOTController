@@ -11,13 +11,13 @@ struct AirConditioner: View {
     // 控制提示
     @EnvironmentObject var appStore: AppStore  // 使用全域狀態
     @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
-
+    
     @State private var isPowerOn = true
     @State private var selectedMode = "cool"
     @State private var fanSpeed: String = "auto"
     @State private var temperature: Int = 24
     @State private var modes = ["cool", "heat", "dry", "fan", "auto"]
-
+    
     let titleWidth = 8.0;
     let titleHeight = 20.0;
     
@@ -39,14 +39,14 @@ struct AirConditioner: View {
         if let fanLevel = airConditionerData["cfg_fan_level"]?.value {
             fanSpeed = fanLevel
         }
-
+        
         // 解析 `cfg_temperature` -> Int
         if let temp = airConditionerData["cfg_temperature"]?.value, let tempInt = Int(temp) {
             temperature = tempInt
         }
-    
         
-
+        
+        
     }
     
     /// HStack 控制水平排列，VStack 控制垂直排列
@@ -54,10 +54,24 @@ struct AirConditioner: View {
         ZStack {
             VStack(spacing: 20) {
                 PowerToggle(isPowerOn: $isPowerOn)
+                // 🔥 監聽 isPowerOn 的變化
+                    .onChange(of: isPowerOn) { oldVal, newVal in
+                        if newVal {
+                            appStore.showPopup = true // 開啟提示窗
+                        }
+                        let paylodModel: [String: Any] = [
+                            "air_conditioner": [
+                                "ac_outlet": [
+                                    "cfg_power": newVal
+                                ]
+                            ]
+                        ]
+                        mqttManager.publishSetDeviceControl(model: paylodModel)
+                    }
                 
                 if isPowerOn {
                     /// 風量和空調溫度顯示
-//                    ACnumber(fanSpeed:$fanSpeed, temperature: $temperature)
+                    //                    ACnumber(fanSpeed:$fanSpeed, temperature: $temperature)
                     
                     /// 模式
                     VStack(alignment: .leading, spacing: 9) {
@@ -78,7 +92,7 @@ struct AirConditioner: View {
                                 .frame(width: titleWidth, height: titleHeight) // 控制長方形的高度，寬度根據內容自動調整
                             Text("風速")
                         }
-//                        FanSpeedSlider(fanSpeed: $fanSpeed) /// 風量控制
+                        //                        FanSpeedSlider(fanSpeed: $fanSpeed) /// 風量控制
                         WindSpeedView(selectedSpeed: $fanSpeed) // 風速控制
                     }
                     
@@ -113,19 +127,12 @@ struct AirConditioner: View {
                 }
             }
             .animation(.easeInOut, value: appStore.showPopup)
-            // 🔥 監聽 isPowerOn 的變化
-            .onChange(of: isPowerOn) { oldVal, newVal in
-                print(oldVal, newVal)
-                if newVal {
-                    appStore.showPopup = true // 開啟提示窗
-                }
-            }
             .onAppear {
                 updateAirConditionerData() // 畫面載入時初始化數據
             }
-//            .onChange(of: mqttManager.appliances["dehumidifier"]?.id) { _ in
-//                updateDehumidifierData()
-//            }
+            //            .onChange(of: mqttManager.appliances["dehumidifier"]?.id) { _ in
+            //                updateDehumidifierData()
+            //            }
             .onChange(of: mqttManager.appliances["air_conditioner"]) { _, _ in
                 updateAirConditionerData()
             }
