@@ -83,13 +83,26 @@ struct Dehumidifier: View {
         }
     }
     
+    private func postDehumidifierSetting(mode: [String: Any]) {
+        let paylod: [String: Any] = [
+            "dehumidifier": mode
+        ]
+        mqttManager.publishSetDeviceControl(model: paylod)
+    }
+
     var body: some View {
         ZStack {
             // 取得 dehumidifier 數據
-            //            let DHFRData = mqttManager.appliances["dehumidifier"]
+            // let DHFRData = mqttManager.appliances["dehumidifier"]
             
             VStack(spacing: 20) {
                 PowerToggle(isPowerOn: $isPowerOn)
+                    // 🔥 監聽 isPowerOn 的變化
+                    .onChange(of: isPowerOn) { oldVal, newVal in
+                        print("isPowerOn: \(newVal)")
+                        let paylodModel: [String: Any] = ["cfg_power": newVal ? "on" : "off"]
+                        postDehumidifierSetting(mode: paylodModel)
+                    }
                 if isPowerOn {
                     /// 設定
                     VStack(alignment: .leading, spacing: 9) {
@@ -112,6 +125,11 @@ struct Dehumidifier: View {
                                     }
                                     .tint(Color.g_blue) // 🔴 修改點擊時的選單顏色
                                     .pickerStyle(MenuPickerStyle()) // 下拉選單
+                                    .onChange(of: selectedHumidity) { oldVal, newVal in // 🔥 監聽 isPowerOn 的變化
+                                        print("selectedHumidity: \(newVal)")
+                                        let paylodModel: [String: Any] = ["cfg_humidity": String(newVal)]
+                                        postDehumidifierSetting(mode: paylodModel)
+                                    }
                                     .onChange(of: selectedHumidity) { // ✅ iOS 17 兼容
                                         
                                     }
@@ -134,6 +152,11 @@ struct Dehumidifier: View {
                                     }
                                     .tint(Color.g_blue) // 🔴 修改點擊時的選單顏色
                                     .pickerStyle(MenuPickerStyle()) // 下拉選單
+                                    .onChange(of: selectedTimer) { oldVal, newVal in  // 🔥 監聽 isPowerOn 的變化
+                                        print("selectedTimer: \(newVal)")
+                                        let paylodModel: [String: Any] = ["cfg_timer": String(newVal)]
+                                        postDehumidifierSetting(mode: paylodModel)
+                                    }
                                 }
                                 .frame(maxWidth: .infinity, minHeight: 60.0)
                                 .background(Color.light_gray)
@@ -176,6 +199,11 @@ struct Dehumidifier: View {
                                 }
                                 .tint(Color.g_blue) // 🔴 修改點擊時的選單顏色
                                 .pickerStyle(MenuPickerStyle()) // 下拉選單
+                                .onChange(of: selectedMode) { oldVal, newVal in  // 🔥 監聽 isPowerOn 的變化
+                                    print("selectedMode: \(newVal)")
+                                    let paylodModel: [String: Any] = ["cfg_mode": newVal]
+                                    postDehumidifierSetting(mode: paylodModel)
+                                }
                             }
                             .frame(maxWidth: .infinity, minHeight: 60.0)
                             .background(Color.light_gray)
@@ -211,8 +239,13 @@ struct Dehumidifier: View {
                                 .frame(width: titleWidth, height: titleHeight) // 控制長方形的高度，寬度根據內容自動調整
                             Text("風速")
                         }
-                        //                        FanSpeedSlider(fanSpeed: $fanSpeed) /// 風速控制
+                        //  FanSpeedSlider(fanSpeed: $fanSpeed) // 風速控制
                         WindSpeedView(selectedSpeed: $fanSpeed) // 風速控制
+                            .onChange(of: fanSpeed) { oldVal, newVal in  // 🔥 監聽 isPowerOn 的變化
+                                print("fanSpeed: \(newVal)")
+                                let paylodModel: [String: Any] = ["cfg_fan_level": newVal]
+                                postDehumidifierSetting(mode: paylodModel)
+                            }
                     }
                 } else {
                     /// 請開始電源
@@ -244,9 +277,6 @@ struct Dehumidifier: View {
             .onAppear {
                 updateDehumidifierData() // 畫面載入時初始化數據
             }
-//            .onChange(of: mqttManager.appliances["dehumidifier"]?.id) { _ in
-//                updateDehumidifierData()
-//            }
             .onChange(of: mqttManager.appliances["dehumidifier"]) { _, _ in
                 updateDehumidifierData()
             }

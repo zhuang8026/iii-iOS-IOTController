@@ -11,12 +11,13 @@ struct RemoteHeader: View {
     @Binding var hasControl: Bool // 設備藍芽是否已連線
     @Binding var editRemoteName: String // 自定義設備名稱
     @Binding var isRemoteConnected: Bool  // 自定義遙控器是否開始設定
+    @Binding var isPowerOn: Bool  // 自定義遙控器是否開始設定 
     
     var body: some View {
         HStack {
             if (hasControl && !editRemoteName.isEmpty) {
                 Button(action: {
-                    //                    isPowerOn.toggle()
+                    isPowerOn.toggle()
                     triggerHapticFeedback() // 觸發震動
                 }) {
                     Image(systemName: "power")

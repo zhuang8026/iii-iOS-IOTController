@@ -9,25 +9,26 @@ import SwiftUI
 
 struct RemoteControlTag: View {
     @Binding var selectedTab: String // 標題名稱
-    @Binding var isPowerOn: Bool // 開關控制（父控制）
+//    @Binding var isPowerOn: Bool // 開關控制（父控制）
+    
+    @State private var modes = ["cool", "heat", "dry", "fan", "auto"]
+    
+    /// **模式轉換函式**
+    private func verifyMode(_ mode: String) -> String {
+        switch mode {
+        case "cool": return "冷氣"
+        case "heat": return "暖風"
+        case "dry": return "除濕"
+        case "fan": return "送風"
+        case "auto": return "自動"
+        default: return "其他"
+        }
+    }
     
     var body: some View {
         HStack () {
-            //            Button(action: {
-            //                isPowerOn.toggle()
-            //                triggerHapticFeedback() // 觸發震動
-            //            }) {
-            //                Image(systemName: "power")
-            //                    .font(.largeTitle)
-            //                    .foregroundColor(isPowerOn ? Color.white : Color.heavy_gray)
-            //                    .padding()
-            //            }
-            //            .frame(width: 80, height: 80)
-            //            .background(isPowerOn ? Color.g_green : Color.light_gray)
-            //            .cornerRadius(10)
-            
             HStack(spacing: 0) { // 確保選項完全貼合，間距為 0
-                ForEach(["冷氣", "暖氣", "除濕", "送風", "自動"], id: \.self) { tab in
+                ForEach(modes, id: \.self) { tab in
                     VStack {
                         if(tab == selectedTab) {
                             Image(systemName: getTabIcon(for: tab))
@@ -41,7 +42,7 @@ struct RemoteControlTag: View {
                                 .opacity(0.7)
                         }
                         
-                        Text(tab)
+                        Text(verifyMode(tab))
                             .font(.system(size: 14))
                     }
                     .foregroundColor(tab == selectedTab ? .g_blue : Color.gray)
@@ -63,11 +64,11 @@ struct RemoteControlTag: View {
     
     private func getTabIcon(for tab: String) -> String {
         switch tab {
-        case "冷氣": return "snowflake"
-        case "暖氣": return "sun.max"
-        case "除濕": return "drop"
-        case "送風": return "wind"
-        case "自動": return "autostartstop"
+        case "cool": return "snowflake"
+        case "heat": return "sun.max"
+        case "dry": return "drop"
+        case "fan": return "wind"
+        case "auto": return "autostartstop"
         default: return "questionmark"
         }
     }

@@ -21,7 +21,7 @@ struct AirConditioner: View {
     let titleWidth = 8.0;
     let titleHeight = 20.0;
     
-    /// 解析 MQTT 家電數據，更新 UI
+    // MARK: - 解析 MQTT 家電數據，更新 UI
     private func updateAirConditionerData() {
         guard let airConditionerData = mqttManager.appliances["air_conditioner"] else { return }
         
@@ -44,29 +44,29 @@ struct AirConditioner: View {
         if let temp = airConditionerData["cfg_temperature"]?.value, let tempInt = Int(temp) {
             temperature = tempInt
         }
-        
-        
-        
     }
     
-    /// HStack 控制水平排列，VStack 控制垂直排列
+    // MARK: - POST API
+    private func postAirConditionerRemote(mode: [String: Any]) {
+        let paylod: [String: Any] = [
+            "air_conditioner": mode
+        ]
+        mqttManager.publishSetDeviceControl(model: paylod)
+    }
+    
+    //MARK: - HStack 控制水平排列，VStack 控制垂直排列
     var body: some View {
         ZStack {
             VStack(spacing: 20) {
                 PowerToggle(isPowerOn: $isPowerOn)
-                // 🔥 監聽 isPowerOn 的變化
+                    // 🔥 監聽 isPowerOn 的變化
                     .onChange(of: isPowerOn) { oldVal, newVal in
+                        print("isPowerOn: \(newVal)")
                         if newVal {
                             appStore.showPopup = true // 開啟提示窗
                         }
-                        let paylodModel: [String: Any] = [
-                            "air_conditioner": [
-                                "ac_outlet": [
-                                    "cfg_power": newVal
-                                ]
-                            ]
-                        ]
-                        mqttManager.publishSetDeviceControl(model: paylodModel)
+                        let paylodModel: [String: Any] = ["cfg_power": newVal ? "on" : "off"]
+                        postAirConditionerRemote(mode: paylodModel)
                     }
                 
                 if isPowerOn {
@@ -82,6 +82,12 @@ struct AirConditioner: View {
                             Text("模式")
                         }
                         ModeSelector(selectedMode: $selectedMode, modes: $modes)
+                        // 🔥 監聽 selectedTab 的變化
+                            .onChange(of: selectedMode) { oldVal, newVal in
+                                print("ModeSelector: \(newVal)")
+                                let paylodModel: [String: Any] = ["cfg_mode": newVal]
+                                postAirConditionerRemote(mode: paylodModel)
+                            }
                     }
                     
                     /// 風量
@@ -94,6 +100,12 @@ struct AirConditioner: View {
                         }
                         //                        FanSpeedSlider(fanSpeed: $fanSpeed) /// 風量控制
                         WindSpeedView(selectedSpeed: $fanSpeed) // 風速控制
+                            // 🔥 監聽 fanSpeed 的變化
+                            .onChange(of: fanSpeed) { oldVal, newVal in
+                                print("fanSpeed: \(newVal)")
+                                let paylodModel: [String: Any] = ["cfg_fan_level": newVal]
+                                postAirConditionerRemote(mode: paylodModel)
+                            }
                     }
                     
                     /// 溫度
@@ -105,6 +117,12 @@ struct AirConditioner: View {
                             Text("溫度")
                         }
                         GradientProgress(currentTemperature: $temperature) /// 溫度控制視圖
+                            // 🔥 監聽 temperature 的變化
+                            .onChange(of: temperature) { oldVal, newVal in
+                                print("temperature: \(newVal)")
+                                let paylodModel: [String: Any] = ["cfg_temperature": String(newVal)]
+                                postAirConditionerRemote(mode: paylodModel)
+                            }
                     }
                     
                 } else {
