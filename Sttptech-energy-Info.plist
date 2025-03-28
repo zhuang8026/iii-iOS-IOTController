@@ -2,19 +2,26 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <!-- iOS 13+ 需要這個權限，表示應用程式始終需要使用藍牙 -->
-    <key>NSBluetoothAlwaysUsageDescription</key>
-    <string>此應用程式需要使用藍牙來連接和通訊</string>
+	<!-- bluetooth device -->
+	<key>NSBluetoothWhenInUseUsageDescription</key>
+	<string>此應用程式需要藍牙來搜尋和連接設備</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>bluetooth-central</string>
+		<string>bluetooth-peripheral</string>
+	</array>
 
-    <!-- iOS 14+ 可選，表示應用程式在前台時使用藍牙 -->
-    <key>NSBluetoothWhenInUseUsageDescription</key>
-    <string>此應用程式需要藍牙來搜尋和連接設備</string>
+	<!-- WiFi device -->
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>此應用程式需要存取本地網路以連接 Wi-Fi</string>
+	<key>com.apple.developer.networking.HotspotConfiguration</key>
+	<true/>
 
-    <!-- 連接健康設備或 IoT 裝置 -->
-    <key>UIBackgroundModes</key>
-    <array>
-        <string>bluetooth-central</string>
-        <string>bluetooth-peripheral</string>
-    </array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>此應用程式需要存取您的位置以搜尋 Wi-Fi 設備</string>
+
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>此應用程式需要存取您的位置以連接 Wi-Fi</string>
+
 </dict>
 </plist>

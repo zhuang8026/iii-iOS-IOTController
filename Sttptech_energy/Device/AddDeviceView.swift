@@ -53,9 +53,12 @@ struct AddDeviceView: View {
             Spacer()
         }
         .fullScreenCover(isPresented: $isShowingNewDeviceView) {
-            BluetoothView(isPresented: $isShowingNewDeviceView, selectedTab: $selectedTab, isConnected: $isConnected)
+            ConnectToWiFiView(isPresented: $isShowingNewDeviceView)
                 .transition(.move(edge: .trailing))  // 讓畫面從右進來
                 .background(Color.light_green.opacity(1))
+//            BluetoothView(isPresented: $isShowingNewDeviceView, selectedTab: $selectedTab, isConnected: $isConnected)
+//                .transition(.move(edge: .trailing))  // 讓畫面從右進來
+//                .background(Color.light_green.opacity(1))
             
         }
     }

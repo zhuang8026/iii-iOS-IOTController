@@ -9,6 +9,7 @@ import SwiftUI
 
 struct Loading: View {
     var text: String = "加載中..." // 父層管理選中的 SSID
+    var color: Color = Color.g_blue
     @State private var isAnimating = false
 
     
@@ -23,7 +24,7 @@ struct Loading: View {
                 }
             Text("\(text)")
                 .font(.system(size: 14)) // 调整图标大小
-                .foregroundColor(Color.g_blue)
+                .foregroundColor(color)
         }
     }
 }

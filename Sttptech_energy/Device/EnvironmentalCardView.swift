@@ -10,6 +10,29 @@ import SwiftUI
 struct EnvironmentalCardView: View {
     let temperature: String // ✅ 這樣 UI 會隨著數據變化
     let co2: String
+    
+    struct TemperatureInfo {
+        var icon: String
+        var temp: Int
+    }
+    
+    // health: g_green, cold: g_blue, warning: warning
+    func getTemperatureInfo(for temperature: String) -> TemperatureInfo {
+        if let temp = Int(temperature) {
+            let icon: String
+            if temp < 21 {
+                icon = "low"
+            } else if temp > 26 {
+                icon = "high"
+            } else {
+                icon = "normal"
+            }
+            return TemperatureInfo(icon: icon, temp: temp)
+        } else {
+            // 若轉換失敗，使用預設值
+            return TemperatureInfo(icon: "normal", temp: 0)
+        }
+    }
 
     var body: some View {
         HStack(alignment: .center, spacing: 10) {

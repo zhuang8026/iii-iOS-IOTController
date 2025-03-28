@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4F039A694B65FE7D184CE058 /* Pods_Sttptech_energyTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4DDB27DA7DB124D192AF9DE8 /* Pods_Sttptech_energyTests.framework */; };
-		5FB938D840187B65B8FE2A8A /* Pods_Sttptech_energy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D7DCF8E4F596771515D89DC /* Pods_Sttptech_energy.framework */; };
-		947F9CF5561DEF0ED78A5099 /* Pods_Sttptech_energy_Sttptech_energyUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 562CF019CF23DBD501A40197 /* Pods_Sttptech_energy_Sttptech_energyUITests.framework */; };
+		82198817E63344A3D518F61D /* Pods_Sttptech_energy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A16E9249CAB9EA2532E79A72 /* Pods_Sttptech_energy.framework */; };
+		DF8703E1E9190F61D33CC2E0 /* Pods_Sttptech_energyTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 999126F87E1C8B6FF09880B2 /* Pods_Sttptech_energyTests.framework */; };
+		F5B89074A93502EAA1953D90 /* Pods_Sttptech_energy_Sttptech_energyUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A635269E64CF4AB5073D6689 /* Pods_Sttptech_energy_Sttptech_energyUITests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,18 +30,18 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		1D7DCF8E4F596771515D89DC /* Pods_Sttptech_energy.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Sttptech_energy.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		4DDB27DA7DB124D192AF9DE8 /* Pods_Sttptech_energyTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Sttptech_energyTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		5036A277B237BB0AF14F5812 /* Pods-Sttptech_energy.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Sttptech_energy.release.xcconfig"; path = "Target Support Files/Pods-Sttptech_energy/Pods-Sttptech_energy.release.xcconfig"; sourceTree = "<group>"; };
-		562CF019CF23DBD501A40197 /* Pods_Sttptech_energy_Sttptech_energyUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Sttptech_energy_Sttptech_energyUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		6AD4DDADA8B359D64E5BA913 /* Pods-Sttptech_energyTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Sttptech_energyTests.debug.xcconfig"; path = "Target Support Files/Pods-Sttptech_energyTests/Pods-Sttptech_energyTests.debug.xcconfig"; sourceTree = "<group>"; };
-		75985BB1B29265F3D1ED48CF /* Pods-Sttptech_energy.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Sttptech_energy.debug.xcconfig"; path = "Target Support Files/Pods-Sttptech_energy/Pods-Sttptech_energy.debug.xcconfig"; sourceTree = "<group>"; };
-		8D9C0C72F7BD9C45126D4A4A /* Pods-Sttptech_energyTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Sttptech_energyTests.release.xcconfig"; path = "Target Support Files/Pods-Sttptech_energyTests/Pods-Sttptech_energyTests.release.xcconfig"; sourceTree = "<group>"; };
+		615CC581ADFCC3F10CEBAC74 /* Pods-Sttptech_energy.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Sttptech_energy.release.xcconfig"; path = "Target Support Files/Pods-Sttptech_energy/Pods-Sttptech_energy.release.xcconfig"; sourceTree = "<group>"; };
+		81BC52F8AEABE1EE10E0ED6F /* Pods-Sttptech_energy.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Sttptech_energy.debug.xcconfig"; path = "Target Support Files/Pods-Sttptech_energy/Pods-Sttptech_energy.debug.xcconfig"; sourceTree = "<group>"; };
+		8587082825B5D7806506EB17 /* Pods-Sttptech_energy-Sttptech_energyUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Sttptech_energy-Sttptech_energyUITests.debug.xcconfig"; path = "Target Support Files/Pods-Sttptech_energy-Sttptech_energyUITests/Pods-Sttptech_energy-Sttptech_energyUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		999126F87E1C8B6FF09880B2 /* Pods_Sttptech_energyTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Sttptech_energyTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A16E9249CAB9EA2532E79A72 /* Pods_Sttptech_energy.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Sttptech_energy.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A635269E64CF4AB5073D6689 /* Pods_Sttptech_energy_Sttptech_energyUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Sttptech_energy_Sttptech_energyUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB719F292D36636E006DD1C0 /* Sttptech_energy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sttptech_energy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB719F392D366373006DD1C0 /* Sttptech_energyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Sttptech_energyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB719F432D366373006DD1C0 /* Sttptech_energyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Sttptech_energyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		B201A6A2A8E93728D960C17E /* Pods-Sttptech_energy-Sttptech_energyUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Sttptech_energy-Sttptech_energyUITests.debug.xcconfig"; path = "Target Support Files/Pods-Sttptech_energy-Sttptech_energyUITests/Pods-Sttptech_energy-Sttptech_energyUITests.debug.xcconfig"; sourceTree = "<group>"; };
-		E64F13D4F22FB81FB661DB8B /* Pods-Sttptech_energy-Sttptech_energyUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Sttptech_energy-Sttptech_energyUITests.release.xcconfig"; path = "Target Support Files/Pods-Sttptech_energy-Sttptech_energyUITests/Pods-Sttptech_energy-Sttptech_energyUITests.release.xcconfig"; sourceTree = "<group>"; };
+		D79F2254AFA8E37A0A4B9A8D /* Pods-Sttptech_energyTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Sttptech_energyTests.release.xcconfig"; path = "Target Support Files/Pods-Sttptech_energyTests/Pods-Sttptech_energyTests.release.xcconfig"; sourceTree = "<group>"; };
+		D9F4941D2741FA341A8F90A9 /* Pods-Sttptech_energyTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Sttptech_energyTests.debug.xcconfig"; path = "Target Support Files/Pods-Sttptech_energyTests/Pods-Sttptech_energyTests.debug.xcconfig"; sourceTree = "<group>"; };
+		ECE89BE5585E4C53AF985F05 /* Pods-Sttptech_energy-Sttptech_energyUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Sttptech_energy-Sttptech_energyUITests.release.xcconfig"; path = "Target Support Files/Pods-Sttptech_energy-Sttptech_energyUITests/Pods-Sttptech_energy-Sttptech_energyUITests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -67,7 +67,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5FB938D840187B65B8FE2A8A /* Pods_Sttptech_energy.framework in Frameworks */,
+				82198817E63344A3D518F61D /* Pods_Sttptech_energy.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,7 +75,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4F039A694B65FE7D184CE058 /* Pods_Sttptech_energyTests.framework in Frameworks */,
+				DF8703E1E9190F61D33CC2E0 /* Pods_Sttptech_energyTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -83,19 +83,19 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				947F9CF5561DEF0ED78A5099 /* Pods_Sttptech_energy_Sttptech_energyUITests.framework in Frameworks */,
+				F5B89074A93502EAA1953D90 /* Pods_Sttptech_energy_Sttptech_energyUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		11C8425CE7B317A949C412D8 /* Frameworks */ = {
+		981793B9ADAF93A57A6C53BF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				1D7DCF8E4F596771515D89DC /* Pods_Sttptech_energy.framework */,
-				562CF019CF23DBD501A40197 /* Pods_Sttptech_energy_Sttptech_energyUITests.framework */,
-				4DDB27DA7DB124D192AF9DE8 /* Pods_Sttptech_energyTests.framework */,
+				A16E9249CAB9EA2532E79A72 /* Pods_Sttptech_energy.framework */,
+				A635269E64CF4AB5073D6689 /* Pods_Sttptech_energy_Sttptech_energyUITests.framework */,
+				999126F87E1C8B6FF09880B2 /* Pods_Sttptech_energyTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -103,12 +103,12 @@
 		A35ACBF675F122344354474C /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				75985BB1B29265F3D1ED48CF /* Pods-Sttptech_energy.debug.xcconfig */,
-				5036A277B237BB0AF14F5812 /* Pods-Sttptech_energy.release.xcconfig */,
-				B201A6A2A8E93728D960C17E /* Pods-Sttptech_energy-Sttptech_energyUITests.debug.xcconfig */,
-				E64F13D4F22FB81FB661DB8B /* Pods-Sttptech_energy-Sttptech_energyUITests.release.xcconfig */,
-				6AD4DDADA8B359D64E5BA913 /* Pods-Sttptech_energyTests.debug.xcconfig */,
-				8D9C0C72F7BD9C45126D4A4A /* Pods-Sttptech_energyTests.release.xcconfig */,
+				81BC52F8AEABE1EE10E0ED6F /* Pods-Sttptech_energy.debug.xcconfig */,
+				615CC581ADFCC3F10CEBAC74 /* Pods-Sttptech_energy.release.xcconfig */,
+				8587082825B5D7806506EB17 /* Pods-Sttptech_energy-Sttptech_energyUITests.debug.xcconfig */,
+				ECE89BE5585E4C53AF985F05 /* Pods-Sttptech_energy-Sttptech_energyUITests.release.xcconfig */,
+				D9F4941D2741FA341A8F90A9 /* Pods-Sttptech_energyTests.debug.xcconfig */,
+				D79F2254AFA8E37A0A4B9A8D /* Pods-Sttptech_energyTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -121,7 +121,7 @@
 				AB719F462D366373006DD1C0 /* Sttptech_energyUITests */,
 				AB719F2A2D36636E006DD1C0 /* Products */,
 				A35ACBF675F122344354474C /* Pods */,
-				11C8425CE7B317A949C412D8 /* Frameworks */,
+				981793B9ADAF93A57A6C53BF /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -142,7 +142,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = AB719F4D2D366373006DD1C0 /* Build configuration list for PBXNativeTarget "Sttptech_energy" */;
 			buildPhases = (
-				0691BA34BEE3992837020571 /* [CP] Check Pods Manifest.lock */,
+				F96BA8BA960A5908E31117DB /* [CP] Check Pods Manifest.lock */,
 				AB719F252D36636E006DD1C0 /* Sources */,
 				AB719F262D36636E006DD1C0 /* Frameworks */,
 				AB719F272D36636E006DD1C0 /* Resources */,
@@ -163,7 +163,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = AB719F502D366373006DD1C0 /* Build configuration list for PBXNativeTarget "Sttptech_energyTests" */;
 			buildPhases = (
-				F98DEA32DA569C43EE116786 /* [CP] Check Pods Manifest.lock */,
+				841E063BC305B68CCC58AE03 /* [CP] Check Pods Manifest.lock */,
 				AB719F352D366373006DD1C0 /* Sources */,
 				AB719F362D366373006DD1C0 /* Frameworks */,
 				AB719F372D366373006DD1C0 /* Resources */,
@@ -185,7 +185,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = AB719F532D366373006DD1C0 /* Build configuration list for PBXNativeTarget "Sttptech_energyUITests" */;
 			buildPhases = (
-				D7D034EF5E29C47F7E2096FE /* [CP] Check Pods Manifest.lock */,
+				80B3BE82B506EFA1D3DE69B0 /* [CP] Check Pods Manifest.lock */,
 				AB719F3F2D366373006DD1C0 /* Sources */,
 				AB719F402D366373006DD1C0 /* Frameworks */,
 				AB719F412D366373006DD1C0 /* Resources */,
@@ -272,29 +272,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		0691BA34BEE3992837020571 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Sttptech_energy-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		D7D034EF5E29C47F7E2096FE /* [CP] Check Pods Manifest.lock */ = {
+		80B3BE82B506EFA1D3DE69B0 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -316,7 +294,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		F98DEA32DA569C43EE116786 /* [CP] Check Pods Manifest.lock */ = {
+		841E063BC305B68CCC58AE03 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -332,6 +310,28 @@
 			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-Sttptech_energyTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F96BA8BA960A5908E31117DB /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Sttptech_energy-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -499,7 +499,7 @@
 		};
 		AB719F4E2D366373006DD1C0 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 75985BB1B29265F3D1ED48CF /* Pods-Sttptech_energy.debug.xcconfig */;
+			baseConfigurationReference = 81BC52F8AEABE1EE10E0ED6F /* Pods-Sttptech_energy.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -533,7 +533,7 @@
 		};
 		AB719F4F2D366373006DD1C0 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5036A277B237BB0AF14F5812 /* Pods-Sttptech_energy.release.xcconfig */;
+			baseConfigurationReference = 615CC581ADFCC3F10CEBAC74 /* Pods-Sttptech_energy.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -567,7 +567,7 @@
 		};
 		AB719F512D366373006DD1C0 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6AD4DDADA8B359D64E5BA913 /* Pods-Sttptech_energyTests.debug.xcconfig */;
+			baseConfigurationReference = D9F4941D2741FA341A8F90A9 /* Pods-Sttptech_energyTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -587,7 +587,7 @@
 		};
 		AB719F522D366373006DD1C0 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8D9C0C72F7BD9C45126D4A4A /* Pods-Sttptech_energyTests.release.xcconfig */;
+			baseConfigurationReference = D79F2254AFA8E37A0A4B9A8D /* Pods-Sttptech_energyTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
@@ -607,7 +607,7 @@
 		};
 		AB719F542D366373006DD1C0 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B201A6A2A8E93728D960C17E /* Pods-Sttptech_energy-Sttptech_energyUITests.debug.xcconfig */;
+			baseConfigurationReference = 8587082825B5D7806506EB17 /* Pods-Sttptech_energy-Sttptech_energyUITests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -625,7 +625,7 @@
 		};
 		AB719F552D366373006DD1C0 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E64F13D4F22FB81FB661DB8B /* Pods-Sttptech_energy-Sttptech_energyUITests.release.xcconfig */;
+			baseConfigurationReference = ECE89BE5585E4C53AF985F05 /* Pods-Sttptech_energy-Sttptech_energyUITests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;

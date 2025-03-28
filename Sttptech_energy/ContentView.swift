@@ -22,18 +22,18 @@ struct ContentView: View {
     // ✅ 根據 selectedTab 動態決定 `status`
     private func bindingForSelectedTab() -> Binding<Bool> {
         switch selectedTab {
-        case "溫濕度":
-            return $isTempConnected
-        case "空調":
-            return $isACConnected
-        case "除濕機":
-            return $isDFConnected
-        case "遙控器":
-            return $isREMCConnected
-        case "插座":
-            return $isESTConnected
-        default:
-            return .constant(false)
+            case "溫濕度":
+                return $isTempConnected
+            case "空調":
+                return $isACConnected
+            case "除濕機":
+                return $isDFConnected
+            case "遙控器":
+                return $isREMCConnected
+            case "插座":
+                return $isESTConnected
+            default:
+                return .constant(false)
         }
     }
     
