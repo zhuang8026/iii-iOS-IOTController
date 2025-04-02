@@ -50,7 +50,7 @@ struct AddDeviceView: View {
                 .font(.system(size: 14)) // 调整图标大小
                 .foregroundColor(Color.g_blue)
 
-            Spacer()
+            Spacer() 
         }
         .fullScreenCover(isPresented: $isShowingNewDeviceView) {
 //            ConnectToWiFiView(isPresented: $isShowingNewDeviceView)
