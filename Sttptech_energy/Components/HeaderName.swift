@@ -18,7 +18,8 @@ struct HeaderName: View {
     var body: some View {
         HStack {
             if status {
-                Image("arrow-left") // 改成返回按鈕
+                // 改成返回按鈕
+                Image("arrow-left")
                     .font(.system(size: 20))
                 Spacer()
                 
