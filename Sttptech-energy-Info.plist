@@ -23,5 +23,9 @@
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>此應用程式需要存取您的位置以連接 Wi-Fi</string>
 
+	<!-- camera device -->
+	<key>NSCameraUsageDescription</key>
+	<string>我們需要使用您的相機來掃描 Wi-Fi QR Code</string>
+
 </dict>
 </plist>

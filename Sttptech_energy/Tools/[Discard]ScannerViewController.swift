@@ -1,0 +1,58 @@
+
+//
+//  ScannerViewController.swift
+//  Sttptech_energy
+//
+//  Created by 莊杰翰 on 2025/4/8.
+//
+
+import SwiftUI
+import AVFoundation
+
+class Discard_ScannerViewController: UIViewController {
+    var session: AVCaptureSession?
+    var onScan: ((String) -> Void)?
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        view.backgroundColor = .black
+
+        session = AVCaptureSession()
+        guard let videoCaptureDevice = AVCaptureDevice.default(for: .video),
+              let videoInput = try? AVCaptureDeviceInput(device: videoCaptureDevice),
+              session!.canAddInput(videoInput) else {
+            return
+        }
+
+        session!.addInput(videoInput)
+
+        let metadataOutput = AVCaptureMetadataOutput()
+        if session!.canAddOutput(metadataOutput) {
+            session!.addOutput(metadataOutput)
+            metadataOutput.setMetadataObjectsDelegate(self, queue: .main)
+            metadataOutput.metadataObjectTypes = [.qr]
+        }
+
+        let previewLayer = AVCaptureVideoPreviewLayer(session: session!)
+        previewLayer.frame = view.layer.bounds
+        previewLayer.videoGravity = .resizeAspectFill
+        view.layer.addSublayer(previewLayer)
+
+        session!.startRunning()
+    }
+}
+
+extension Discard_ScannerViewController: AVCaptureMetadataOutputObjectsDelegate {
+    func metadataOutput(_ output: AVCaptureMetadataOutput,
+                        didOutput metadataObjects: [AVMetadataObject],
+                        from connection: AVCaptureConnection) {
+        if let metadataObject = metadataObjects.first as? AVMetadataMachineReadableCodeObject,
+           metadataObject.type == .qr,
+           let scannedValue = metadataObject.stringValue {
+            AudioServicesPlaySystemSound(SystemSoundID(kSystemSoundID_Vibrate))
+            session?.stopRunning()
+            onScan?(scannedValue)
+        }
+    }
+}
