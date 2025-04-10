@@ -9,7 +9,7 @@
 import SwiftUI
 import AVFoundation
 
-class Discard_ScannerViewController: UIViewController {
+class Discard_QRCodeScannerView: UIViewController {
     var session: AVCaptureSession?
     var onScan: ((String) -> Void)?
 
@@ -43,7 +43,7 @@ class Discard_ScannerViewController: UIViewController {
     }
 }
 
-extension Discard_ScannerViewController: AVCaptureMetadataOutputObjectsDelegate {
+extension Discard_QRCodeScannerView: AVCaptureMetadataOutputObjectsDelegate {
     func metadataOutput(_ output: AVCaptureMetadataOutput,
                         didOutput metadataObjects: [AVMetadataObject],
                         from connection: AVCaptureConnection) {

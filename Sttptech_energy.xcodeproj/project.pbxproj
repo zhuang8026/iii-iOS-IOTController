@@ -44,9 +44,33 @@
 		ECE89BE5585E4C53AF985F05 /* Pods-Sttptech_energy-Sttptech_energyUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Sttptech_energy-Sttptech_energyUITests.release.xcconfig"; path = "Target Support Files/Pods-Sttptech_energy-Sttptech_energyUITests/Pods-Sttptech_energy-Sttptech_energyUITests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		4E1362702DA7C70200CD275A /* Exceptions for "Sttptech_energy" folder in "Sttptech_energy" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"Device/[Discard]QRCodeScannerView",
+			);
+			target = AB719F282D36636E006DD1C0 /* Sttptech_energy */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		4E1362712DA7C70200CD275A /* Exceptions for "Sttptech_energy" folder in "Compile Sources" phase from "Sttptech_energy" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = AB719F252D36636E006DD1C0 /* Sources */;
+			membershipExceptions = (
+				"Device/[Discard]QRCodeScannerView",
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		AB719F2B2D36636E006DD1C0 /* Sttptech_energy */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				4E1362702DA7C70200CD275A /* Exceptions for "Sttptech_energy" folder in "Sttptech_energy" target */,
+				4E1362712DA7C70200CD275A /* Exceptions for "Sttptech_energy" folder in "Compile Sources" phase from "Sttptech_energy" target */,
+			);
 			path = Sttptech_energy;
 			sourceTree = "<group>";
 		};
@@ -503,6 +527,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Sttptech_energy/Sttptech_energy.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Sttptech_energy/Preview Content\"";
@@ -513,6 +538,10 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "";
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "此應用程式需要使用藍牙來連接和通訊";
+				INFOPLIST_KEY_NSCameraUsageDescription = "我們需要使用您的相機來掃描 Wi-Fi QR Code";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "此應用程式需要存取本地網路以連接 Wi-Fi";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "此應用程式需要存取您的位置以連接 Wi-Fi";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "此應用程式需要存取您的位置以搜尋 Wi-Fi 設備";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -537,6 +566,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Sttptech_energy/Sttptech_energy.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Sttptech_energy/Preview Content\"";
@@ -547,6 +577,10 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "";
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "此應用程式需要使用藍牙來連接和通訊";
+				INFOPLIST_KEY_NSCameraUsageDescription = "我們需要使用您的相機來掃描 Wi-Fi QR Code";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "此應用程式需要存取本地網路以連接 Wi-Fi";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "此應用程式需要存取您的位置以連接 Wi-Fi";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "此應用程式需要存取您的位置以搜尋 Wi-Fi 設備";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

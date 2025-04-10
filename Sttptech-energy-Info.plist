@@ -2,30 +2,15 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<!-- bluetooth device -->
 	<key>NSBluetoothWhenInUseUsageDescription</key>
 	<string>此應用程式需要藍牙來搜尋和連接設備</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>bluetooth-central</string>
 		<string>bluetooth-peripheral</string>
+		<string>remote-notification</string>
 	</array>
-
-	<!-- WiFi device -->
-	<key>NSLocalNetworkUsageDescription</key>
-	<string>此應用程式需要存取本地網路以連接 Wi-Fi</string>
 	<key>com.apple.developer.networking.HotspotConfiguration</key>
 	<true/>
-
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>此應用程式需要存取您的位置以搜尋 Wi-Fi 設備</string>
-
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>此應用程式需要存取您的位置以連接 Wi-Fi</string>
-
-	<!-- camera device -->
-	<key>NSCameraUsageDescription</key>
-	<string>我們需要使用您的相機來掃描 Wi-Fi QR Code</string>
-
 </dict>
 </plist>

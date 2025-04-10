@@ -10,6 +10,7 @@ import SwiftUI
 /// 溫度控制視圖
 struct GradientProgress: View {
     @Binding var currentTemperature: Int // 初始溫度
+    @State private var temperature: Int = 16 // UI元件初始溫度
     
     private let minTemperature: Int = 16 // 最小溫度 default:16
     private let maxTemperature: Int = 30 // 最大溫度 default:30
@@ -34,27 +35,30 @@ struct GradientProgress: View {
                 UnevenRoundedRectangle(cornerRadii: .init(
                     topLeading: 10,
                     bottomLeading: 10,
-                    bottomTrailing: cornerRadius(for: currentTemperature, corner: .topRight),
-                    topTrailing: cornerRadius(for: currentTemperature, corner: .bottomRight)
+                    bottomTrailing: cornerRadius(for: temperature, corner: .topRight),
+                    topTrailing: cornerRadius(for: temperature, corner: .bottomRight)
                 ), style: .continuous)
                 .fill(
                     LinearGradient(
-                        gradient: Gradient(colors: gradientColors(for: currentTemperature)),
+                        gradient: Gradient(colors: gradientColors(for: temperature)),
                         startPoint: .leading,
                         endPoint: .trailing
                     )
                 )
                 .frame(width: progressWidth(for: barWidth, totalSegments: totalSegments), height: 100)
-                //                    .animation(.easeInOut(duration: 0.2), value: currentTemperature) // 添加動畫
+                //                    .animation(.easeInOut(duration: 0.2), value: temperature) // 添加動畫
                 
                 // 溫度文字
-                Text("\(currentTemperature)°")
+                Text("\(temperature)°")
                     .font(.system(size: 50, weight: .bold))
                     .foregroundColor(.white)
                     .padding(20)
                     .frame(width: barWidth, height: 100, alignment: .leading)
             }
             .shadow(radius: 5)
+            .onAppear {
+                temperature = currentTemperature // 初始化時與 Binding 值同步
+            }
             .gesture(
                 DragGesture()
                     .onChanged { value in
@@ -64,18 +68,20 @@ struct GradientProgress: View {
                         let newTemperature = Int(clampedX / segmentWidth) + minTemperature
                         
                         // 只在溫度值實際改變時觸發震動
-                        if currentTemperature != newTemperature {
+                        if temperature != newTemperature {
                             let now = Date()
                             if now.timeIntervalSince(lastHapticTime) > 0.1 { // 至少間隔 100 毫秒
                                 triggerHapticFeedback() // 觸發震動
                                 lastHapticTime = now
                             }
                             
-                            currentTemperature = min(maxTemperature, max(minTemperature, newTemperature))
+                            temperature = min(maxTemperature, max(minTemperature, newTemperature))
                         }
                     }
                     .onEnded { _ in
                         // ✅ 只有在用戶停止拖動後才觸發 API 呼叫
+                        currentTemperature = temperature // ✅ 結束時再更新
+                        print("溫度數據送出：\(currentTemperature)")
                     }
             )
         }
@@ -102,7 +108,7 @@ struct GradientProgress: View {
     // 計算進度條的寬度
     private func progressWidth(for barWidth: CGFloat, totalSegments: Int) -> CGFloat {
         let adjustedSegments = totalSegments // 確保分為 15 段
-        let progress = CGFloat(currentTemperature - minTemperature + 1) / CGFloat(adjustedSegments)
+        let progress = CGFloat(temperature - minTemperature + 1) / CGFloat(adjustedSegments)
         print("溫度:", progress)
         return progress * barWidth
     }

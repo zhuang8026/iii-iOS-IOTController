@@ -126,7 +126,7 @@ struct AirConditioner: View {
                             GradientProgress(currentTemperature: $temperature) /// 溫度控制視圖
                             // 🔥 監聽 temperature 的變化
                                 .onChange(of: temperature) { oldVal, newVal in
-                                    print("temperature: \(newVal)")
+                                    // print("temperature: \(newVal)")
                                     let paylodModel: [String: Any] = ["cfg_temperature": String(newVal)]
                                     postAirConditionerRemote(mode: paylodModel)
                                 }

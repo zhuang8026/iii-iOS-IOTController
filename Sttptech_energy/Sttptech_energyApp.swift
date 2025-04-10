@@ -10,8 +10,10 @@ import SwiftUI
 @main
 struct Sttptech_energyApp: App {
     @StateObject private var appStore = AppStore()  // 全域狀態管理
-    @StateObject private var mqttManager = MQTTManager.shared
-
+    @StateObject private var mqttManager = MQTTManager.shared // MQTT
+    
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate // Apple推播功能（需要訂閱開發者模式）
+    
 
     var body: some Scene {
         WindowGroup {

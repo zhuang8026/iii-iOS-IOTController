@@ -20,8 +20,13 @@ struct CustomPopupView: View {
         withAnimation {
             isPresented = false
         }
+        
+        // AI決策推播測試
+        if isCheck {
+            sendLocalNotification(title: appStore.title, body: appStore.notificationsResult)
+        }
     }
-    
+
     var body: some View {
         ZStack {
             // 半透明黑色背景，擋住點擊事件
