@@ -41,7 +41,7 @@ class MQTTManager: NSObject, ObservableObject {
         print("🔴 MQTT 已斷線")
     }
     
-    // MARK: - 登入
+    // MARK: - 登入 - Energy app 不適用
     // 訂閱「登入」訂閱結果的 topic
     func subscribeToAuthentication() {
         mqtt?.subscribe("to/app/\(AppID)/authentication", qos: .qos1) // API
@@ -72,6 +72,37 @@ class MQTTManager: NSObject, ObservableObject {
         }
     }
     
+    
+    // MARK: - 檢查 智慧環控 連線狀態 - 20250411 未上線
+    // 訂閱「智慧環控連接」訂閱結果的 topic
+    func subscribeToSmart() {
+        let UserToken = "還未上線API，次功能無法使用"
+        mqtt?.subscribe("to/app/\(UserToken)/appliance/bind", qos: .qos1) // API
+        print("📡 開始訂閱「智慧環控連接」頻道：to/app/\(UserToken)authentication")
+        print("📡 訂閱登入頻道: 成功")
+    }
+    
+    // 發布「智慧環控連接」發送指令
+    func publishApplianceSmart(deviceMac: String) {
+        guard isConnected else {
+            print("❌ MQTT 未連線，無法發送 智慧環控連接 指令")
+            return
+        }
+        let UserToken = "還未上線API，次功能無法使用"
+        
+        let payload: [String: String] = [
+            "device": deviceMac,
+        ]
+        
+        if let jsonData = try? JSONSerialization.data(withJSONObject: payload, options: []),
+           let jsonString = String(data: jsonData, encoding: .utf8) {
+            mqtt?.publish("from/app/\(UserToken)/appliance/bind", withString: jsonString, qos: .qos1, retained: false)
+            print("📤 發送登入指令至 from/app/\(UserToken)/appliance/bind")
+        } else {
+            print("❌ JSON 轉換失敗")
+        }
+    }
+
     // MARK: - 溫濕度API
     // 訂閱家電資訊
     func subscribeToApplianceTelemetry() {
