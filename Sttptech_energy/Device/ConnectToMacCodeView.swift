@@ -1,30 +1,32 @@
 
 //
-//  ConnectToWiFiView.swift
+//  ConnectToMacCodeView.swift
 //  Sttptech_energy
 //
-//  Created by 莊杰翰 on 2025/2/8.
+//  Created by 莊杰翰 on 2025/4/11.
 //
 import SwiftUI
 
 struct MacCodeInfo: Codable {
-    let ssid: String
+    let deviceMac: String
     let pwd: String
 }
 
 struct ConnectToMacCodeView: View {
+    @EnvironmentObject var mqttManager: MQTTManager // 從環境取得 MQTTManager
+
     @Binding var isPresented: Bool  // 綁定來控制顯示/隱藏
     @Binding var isConnected: Bool // 設備藍芽是否已連線
     
-    @State private var wifiLoading: Bool = false
-    @State private var ssid: String = ""
+    @State private var macLoading: Bool = false
+    @State private var deviceMac: String = ""
     @State private var connectionMessage: String = ""
     @State private var showScanner: Bool = false // 開啟掃描模式
-    @FocusState private var isFieldFocused: Bool  // 用來偵測鍵盤焦點
+//    @FocusState private var isFieldFocused: Bool  // 用來偵測鍵盤焦點
     
     
     var isFormValid: Bool {
-        !ssid.isEmpty
+        !deviceMac.isEmpty
     }
     
     var body: some View {
@@ -60,7 +62,7 @@ struct ConnectToMacCodeView: View {
                             //                                }
                         }
                         ZStack(alignment: .trailing) {
-                            TextField("輸入Mac代碼", text: $ssid)
+                            TextField("輸入Mac代碼", text: $deviceMac)
                                 .submitLabel(.next)  // ✅ 提示 SwiftUI 這是「下一個輸入框」
                             Image(systemName: "qrcode")
                                 .foregroundColor(.g_blue)
@@ -73,14 +75,14 @@ struct ConnectToMacCodeView: View {
                         .background(RoundedRectangle(cornerRadius: 10).strokeBorder(Color.light_gray2))
                         .textInputAutocapitalization(.never) // ✅ 禁止自動大寫
                         .disableAutocorrection(true) // ✅ 禁止自動修正
-                        .focused($isFieldFocused) // 設定焦點
+//                        .focused($isFieldFocused) // 設定焦點
                         
                         
                     }
                     .padding(.horizontal)
                     
                     // 送出按鈕
-                    Button(action: connectToWiFi) {
+                    Button(action: connectToMac) {
                         Text("開始連接")
                             .padding()
                             .frame(maxWidth: .infinity)
@@ -88,7 +90,7 @@ struct ConnectToMacCodeView: View {
                             .foregroundColor(.white)
                             .cornerRadius(8)
                     }
-                    .disabled(!isFormValid) // 當 ssid 為空時，按鈕無法點擊
+                    .disabled(!isFormValid) // 當 deviceMac 為空時，按鈕無法點擊
                     .padding()
                 }
                 
@@ -97,7 +99,7 @@ struct ConnectToMacCodeView: View {
             .padding()
             
             // 加載畫面（放在最上層）
-            if wifiLoading {
+            if macLoading {
                 ZStack {
                     Color.black.opacity(0.8) // 透明磨砂黑背景
                         .edgesIgnoringSafeArea(.all) // 覆蓋整個畫面
@@ -110,15 +112,15 @@ struct ConnectToMacCodeView: View {
             }
         }
         .onTapGesture {
-            isFieldFocused = false  // 點擊畫面時取消鍵盤焦點
+//            isFieldFocused = false  // 點擊畫面時取消鍵盤焦點
         }
         .fullScreenCover(isPresented: $showScanner) {
             QRCodeScannerView(
                 onScan: { scanned in
                     print(scanned)
                     if let data = scanned.data(using: .utf8),
-                       let wifi = try? JSONDecoder().decode(MacCodeInfo.self, from: data) {
-                        self.ssid = wifi.ssid
+                       let macInfo = try? JSONDecoder().decode(MacCodeInfo.self, from: data) {
+                        self.deviceMac = macInfo.deviceMac
                     } else {
                         print("❌ 無法解析掃描內容")
                     }
@@ -131,17 +133,17 @@ struct ConnectToMacCodeView: View {
         }
     }
     
-    // 連接 Wi-Fi 的方法
-    func connectToWiFi() {
-        isFieldFocused = false  // 點擊畫面時取消鍵盤焦點
-        wifiLoading = true
-        connectionMessage = "嘗試連接 \(ssid)..."
-
+    // 連接 智能環控 的方法
+    func connectToMac() {
+//        isFieldFocused = false  // 點擊畫面時取消鍵盤焦點
+        macLoading = true
+        connectionMessage = "嘗試連接 \(deviceMac)..."
+        mqttManager.publishApplianceSmart(deviceMac: deviceMac) // 發布「智慧環控連接」發送指令
         // 3秒後關閉 loading
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
             // 測試 - 非正常連接
             isConnected = true // ✅ 更新連線狀態
-            wifiLoading = false
+            macLoading = false
         }
         
     }

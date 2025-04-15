@@ -1,5 +1,5 @@
 //
-//  WiFiListView.swift
+//  BluetoothWiFiList.swift
 //  Sttptech_energy
 //
 //  Created by 莊杰翰 on 2025/2/18.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct WiFiListView: View {
+struct BluetoothWiFiList: View {
     @ObservedObject var bluetoothManager: BluetoothManager // 父層傳入
     @Binding var selectedSSID: String // 父層管理選中的 SSID
     @Binding var password: String // 父層管理選中的 Wi-Fi 密碼

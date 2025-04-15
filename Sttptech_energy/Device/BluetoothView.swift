@@ -104,7 +104,9 @@ struct BluetoothView: View {
                 }
             } else {
                 ScrollView {
+                    // MARK: - [YES] 用戶是否已選定了 藍牙
                     if let selectedDevice = selectedDevice {
+                        // MARK: - [YES] 用戶已選定了 藍牙
                         // 已選擇單一藍芽裝置
                         VStack(alignment: .leading, spacing: 10) {
                             // 顯示選擇的設備
@@ -122,8 +124,8 @@ struct BluetoothView: View {
                                 }
                                 .padding()
                                 .frame(maxWidth: .infinity)
-                                //                                .background(Color.light_gray) // 按鈕背景顏色
-                                //                                .cornerRadius(5) // 圓角
+//                                .background(Color.light_gray) // 按鈕背景顏色
+//                                .cornerRadius(5) // 圓角
                             }
                             
                             // 🔹 分割線（新增）
@@ -164,10 +166,11 @@ struct BluetoothView: View {
                                 }
                             } else {
                                 // Wi-Fi列表
-                                WiFiListView(bluetoothManager: bluetoothManager, selectedSSID: $selectedSSID, password: $wifiPassword, isConnected: $isConnected)
+                                BluetoothWiFiList(bluetoothManager: bluetoothManager, selectedSSID: $selectedSSID, password: $wifiPassword, isConnected: $isConnected)
                             }
                         }
                     } else {
+                        // MARK: - [NO] 用戶剛進入畫面，未選定 藍牙
                         // 藍芽裝置列表
                         LazyVStack(spacing: 10) { // `LazyVStack` 會延遲載入，提高效能
                             ForEach(bluetoothManager.discoveredPeripherals, id: \.id) { discovered in

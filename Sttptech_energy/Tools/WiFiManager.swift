@@ -1,9 +1,10 @@
 //
-//  BluetoothController.swift
+//  WiFiManager.swift
 //  Sttptech_energy
 //
 //  Created by 莊杰翰 on 2025/2/7.
 //
+
 import NetworkExtension
 
 class WiFiManager: NSObject {
@@ -19,8 +20,9 @@ class WiFiManager: NSObject {
             NEHotspotConfigurationManager.shared.apply(configuration) { error in
                 DispatchQueue.main.async {
                     if let error = error {
-                        completion(false, "Wi-Fi 連接失敗: \(error.localizedDescription)")
-                        print("Wi-Fi 連接失敗: \(error.localizedDescription)")
+                        let nsError = error as NSError
+                        completion(false, "Wi-Fi 連接失敗: \(nsError.localizedDescription) (Code: \(nsError.code))")
+                        print("Wi-Fi 連接失敗: \(nsError.localizedDescription) (Code: \(nsError.code))")
                     } else {
                         completion(true, "成功連接到 Wi-Fi: \(ssid)")
                         print("成功連接到 Wi-Fi: \(ssid)")

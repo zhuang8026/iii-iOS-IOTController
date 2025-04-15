@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var mqttManager: MQTTManager // 從環境取得 MQTTManager
-    
+
     @State private var selectedTab = "" // 選擇設備控制
     @State private var status = false // 控制顯示標題名稱（內含 返回 icon）
     @State private var isSmartControlShowing = false // 是否要開始 智慧環控連線 頁面，默認：關閉
@@ -72,13 +72,13 @@ struct ContentView: View {
                         .environmentObject(mqttManager) // 確保能讀取 availables
                 }
             } else {
-                /// ✅ 設備已斷線
+                /// ✅ 智能環控 連結
                 AddSmartControlView(
                     isShowingSmartControl: $isSmartControlShowing,  // 是否要開始 智慧環控連線 頁面，默認：關閉
                     isConnected: $isSmartControlConnected // 連線狀態
                 )
             }
-
+            
             
         }
         .padding()

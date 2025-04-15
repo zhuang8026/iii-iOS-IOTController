@@ -53,9 +53,12 @@ struct AddDeviceView: View {
             Spacer() 
         }
         .fullScreenCover(isPresented: $isShowingNewDeviceView) {
-            ConnectToWiFiView(isPresented: $isShowingNewDeviceView, isConnected: $isConnected)
+            // MARK: - 設備Wi-Fi配對
+            ConnectToWiFiView(isPresented: $isShowingNewDeviceView, selectedTab: $selectedTab, isConnected: $isConnected)
                 .transition(.move(edge: .trailing))  // 讓畫面從右進來
                 .background(Color.light_green.opacity(1))
+            
+            // MARK: - 藍牙配對
 //            BluetoothView(isPresented: $isShowingNewDeviceView, selectedTab: $selectedTab, isConnected: $isConnected)
 //                .transition(.move(edge: .trailing))  // 讓畫面從右進來
 //                .background(Color.light_green.opacity(1))
