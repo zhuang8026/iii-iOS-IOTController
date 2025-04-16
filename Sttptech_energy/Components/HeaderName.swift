@@ -15,6 +15,10 @@ struct HeaderName: View {
     @Binding var status: Bool // 是否要顯示返回（false -> back, true -> show title）
     @State private var isAnimating = false // 動畫
     
+    @State private var showPopup = true //
+    @State private var title = "設備已離線" //
+    @State private var message = "請重新綁定設備" //
+    
     var body: some View {
         HStack {
             if status {
@@ -81,6 +85,10 @@ struct HeaderName: View {
                 
                 Spacer() // 推動其他內容到右側
             }
+            // 按下刪除鍵出現此功能
+            CustomPopupView(isPresented: $showPopup, title: $title, message: $message)
+                .transition(.opacity) // 淡入淡出效果
+                .zIndex(1) // 確保彈窗在最上層
         }
         .frame(height: 30.0)
         

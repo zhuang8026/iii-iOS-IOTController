@@ -15,11 +15,16 @@ struct ContentView: View {
     @State private var isSmartControlShowing = false // 是否要開始 智慧環控連線 頁面，默認：關閉
     @State private var isSmartControlConnected = false // 連線狀態，默認：API GET 告知
     
-    @AppStorage("isTempConnected") private var isTempConnected = true  // ✅ 溫濕度 記住連線狀態
-    @AppStorage("isACConnected") private var isACConnected = true      // ✅ 冷氣 記住連線狀態
-    @AppStorage("isDFConnected") private var isDFConnected = true      // ✅ 除濕機 記住連線狀態
-    @AppStorage("isREMCConnected") private var isREMCConnected = true  // ✅ 遙控器 記住連線狀態
-    @AppStorage("isESTConnected") private var isESTConnected = true    // ✅ 插座 記住連線狀態
+//    @AppStorage("isTempConnected")
+    @State private var isTempConnected = true  // ✅ 溫濕度 記住連線狀態
+//    @AppStorage("isACConnected")
+    @State private var isACConnected = true      // ✅ 冷氣 記住連線狀態
+//    @AppStorage("isDFConnected")
+    @State private var isDFConnected = true      // ✅ 除濕機 記住連線狀態
+//    @AppStorage("isREMCConnected")
+    @State private var isREMCConnected = true  // ✅ 遙控器 記住連線狀態
+//    @AppStorage("isESTConnected")
+    @State private var isESTConnected = true    // ✅ 插座 記住連線狀態
     
     // ✅ 根據 selectedTab 動態決定 `status`
     private func bindingForSelectedTab() -> Binding<Bool> {
@@ -50,19 +55,19 @@ struct ContentView: View {
                 VStack() {
                     // 根據 selectedTab 顯示對應元件
                     switch self.selectedTab {
-                    case "溫濕度":
-                        Temperature(isConnected: $isTempConnected)
-                    case "空調":
-                        AirConditioner(isConnected: $isACConnected)
-                    case "除濕機":
-                        Dehumidifier(isConnected: $isDFConnected)
-                    case "遙控器":
-                        RemoteControl(isConnected: $isREMCConnected)
-                    case "插座":
-                        ElectricSocket()
-                    default:
-                        Spacer()
-                        Loading(text: "Loading..")
+                        case "溫濕度":
+                            Temperature(isConnected: $isTempConnected)
+                        case "空調":
+                            AirConditioner(isConnected: $isACConnected)
+                        case "除濕機":
+                            Dehumidifier(isConnected: $isDFConnected)
+                        case "遙控器":
+                            RemoteControl(isConnected: $isREMCConnected)
+                        case "插座":
+                            ElectricSocket()
+                        default:
+                            Spacer()
+                            Loading(text: "Loading..")
                     }
                     
                     Spacer()
@@ -92,7 +97,7 @@ struct ContentView: View {
         .onChange(of: mqttManager.isConnected) { oldConnect, newConnect in
             // 連線MQTT
             if newConnect {
-                mqttManager.publishApplianceUserLogin(username: "user", password: "user+user")
+//                mqttManager.publishApplianceUserLogin(username: "app", password: "app:ppa")
                 mqttManager.publishApplianceTelemetryCommand(subscribe: true)
             }
         }

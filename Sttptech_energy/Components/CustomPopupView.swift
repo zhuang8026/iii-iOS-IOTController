@@ -21,7 +21,7 @@ struct CustomPopupView: View {
             isPresented = false
         }
         
-        // AI決策推播測試
+        // AI決策推播測試 -> 未來需刪除 不能放在元件中
         if isCheck {
             sendLocalNotification(title: appStore.title, body: appStore.notificationsResult)
         }
