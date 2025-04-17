@@ -86,9 +86,9 @@ struct HeaderName: View {
                 Spacer() // 推動其他內容到右側
             }
             // 按下刪除鍵出現此功能
-            CustomPopupView(isPresented: $showPopup, title: $title, message: $message)
-                .transition(.opacity) // 淡入淡出效果
-                .zIndex(1) // 確保彈窗在最上層
+//            CustomPopupView(isPresented: $showPopup, title: $title, message: $message)
+//                .transition(.opacity) // 淡入淡出效果
+//                .zIndex(1) // 確保彈窗在最上層
         }
         .frame(height: 30.0)
         

@@ -138,7 +138,7 @@ struct ConnectToMacCodeView: View {
 //        isFieldFocused = false  // 點擊畫面時取消鍵盤焦點
         macLoading = true
         connectionMessage = "嘗試連接 \(deviceMac)..."
-        mqttManager.publishBindApplianceSmart(deviceMac: deviceMac) // 發布「智慧環控連接」發送指令
+        mqttManager.publishBindSmart(deviceMac: deviceMac) // 發布「智慧環控連接」發送指令
         // 3秒後關閉 loading
         DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
             // 測試 - 非正常連接

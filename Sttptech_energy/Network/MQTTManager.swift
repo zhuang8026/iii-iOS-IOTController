@@ -23,7 +23,7 @@ class MQTTManager: NSObject, ObservableObject {
     @Published var appliances: [String: [String: ApplianceData]] = [:] // 安裝的家電參數狀態
     
     let AppID = "1d51e92d-e623-41dd-b367-d955a0d44d66" // 測試使用
-    var userToken:String = "bhWHWKziOCW5r1NqAcBpTTyqEIxng1AMvw0MtYrfDTpW94ikFy6o3Yl9hGWuzNhqAe3gQaSBrRYiml1SqeNv62DiDgf1wRXTeqAsSIRxzfz9OzxF8OYLMWnFtxHH2fYY5Ye4yCxZ3KigSNpeolWYyDvuys9p2S32an941qp1twFDVaDCMJFvPooBpyVJxyIWOgKyXPhkiWbVLq5umMHKPrLiPXbI0mvFZ7y3mHPVKzf2BM6EZYfF7wtigchSgZtQBXYSBfm9M6Xk1P4xvJ3LgvH0KLAwm84KLTyaVJJnkZgKsXDtKfOyeiWpVp0ncGvTsQT91rqm9bkUg9aHWagMcBLJOZTa9E2X3F4C7w7v1m3kY4RQxTgyaXagtRz1WOWWvHEjgiTMuLecX6ZmjNgb9pj1nPA" // 測試 Token
+    var userToken:String = "44Qugdb7a1ltitbARqxS0yEgaZ8OXRJLI8YuD4f6zc704ntfN6zrwXcfIYsTdtP9mnLj1Za1VfZiA6LOTwDZQZavLIuLAsIyeTYIv0DvKDJYEjGQHjYyvUB9RstbPb0G84qu1YzxlVHWXeIi56YBr8dHqI8V9E5D5IiYrm5B1UiZ14VQBlanuJJr0hbhKwdZjt97aVnI1wvVAmT0xZHe1wGeW3Mgakc248I5pKUnHV8rdJVWvZkKoS4MtWIV8oM1oeBBJVN94QW3DdqrvOqg9B1v1U59Muzw2aRmuFRjHuKQ3MvrdouwhVkBCEgGrLcNFw0C0MVvjhGuE3OZc2HmFDcBsss19YtIHlKsKgINMeKa7kSX0G5BkUCWXXLDBSLUQaxBwQCN4RP76x9oyAdbPlr8O7Y" // 測試 Token
     
     var mqtt: CocoaMQTT?
     
@@ -97,7 +97,7 @@ class MQTTManager: NSObject, ObservableObject {
     }
     
     // 發布 - 綁定「智慧環控連接」發送指令
-    func publishBindApplianceSmart(deviceMac: String) {
+    func publishBindSmart(deviceMac: String) {
         guard isConnected else {
             print("❌ MQTT 未連線，無法發送 智慧環控連接 指令")
             return
@@ -121,7 +121,7 @@ class MQTTManager: NSObject, ObservableObject {
     }
     
     // 發布 - 解除綁定「智慧環控連接」發送指令
-    func publishUnBindApplianceSmart(deviceMac: String) {
+    func publishUnBindSmart(deviceMac: String) {
         guard isConnected else {
             print("❌ MQTT 未連線，無法發送 智慧環控連接 指令")
             return
@@ -147,14 +147,14 @@ class MQTTManager: NSObject, ObservableObject {
     
     // MARK: - 有所設備資料
     // 訂閱家電資訊
-    func subscribeToApplianceTelemetry() {
+    func subscribeToTelemetry() {
         let topic = "to/app/\(userToken)/appliances/telemetry" // API
         mqtt?.subscribe(topic)
         print("📡 訂閱家電資訊: \(topic)")
     }
     
     //  發布 開始 or 停止 接收家電資訊指令
-    func publishApplianceTelemetryCommand(subscribe: Bool) {
+    func publishTelemetryCommand(subscribe: Bool) {
         let topic = "from/app/\(userToken)/appliances/telemetry" // API
         
         //        loadStoredUserToken() // 讀取 UserDefaults 中的 Token
@@ -225,7 +225,7 @@ extension MQTTManager: CocoaMQTTDelegate {
             }
             //            subscribeToAuthentication()     //「登入」連線後自動訂閱 - energy v2 暫時關閉
             subscribeToSmart()              //「環控主機」連線後自動訂閱
-            subscribeToApplianceTelemetry() //「溫濕度」連線後自動訂閱
+            subscribeToTelemetry()          //「溫濕度」連線後自動訂閱
             subscribeToSetDeviceControl()   //「設定裝置」連線後自動訂閱
         } else {
             print("❌ MQTT 連線失敗: \(ack)")

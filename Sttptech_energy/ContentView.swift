@@ -98,7 +98,7 @@ struct ContentView: View {
             // 連線MQTT
             if newConnect {
 //                mqttManager.publishApplianceUserLogin(username: "app", password: "app:ppa")
-                mqttManager.publishApplianceTelemetryCommand(subscribe: true)
+                mqttManager.publishTelemetryCommand(subscribe: true)
             }
         }
     }
