@@ -19,12 +19,18 @@ struct HeaderName: View {
     @State private var title = "設備已離線" //
     @State private var message = "請重新綁定設備" //
     
+    // 判斷是否為"空調", "除濕機" -> true
+    private func showDeleteIconSetting(tab: String) -> Bool {
+        return ["空調", "除濕機"].contains(tab)
+    }
+    
     var body: some View {
         HStack {
             if status {
                 // 改成返回按鈕
                 Image("arrow-left")
                     .font(.system(size: 20))
+
                 Spacer()
                 
                 // [顯示] 是否啟動AI決策
@@ -70,12 +76,21 @@ struct HeaderName: View {
                 }
                 
                 Spacer()
-                Image(systemName: "trash") // 垃圾桶
-                    .foregroundColor(Color.g_blue) // 確保顏色存在
-                    .font(.system(size: 20)) // 調整圖示大小
-                    .onTapGesture {
-                        status = false // ✅ 點擊後切換 status
-                    }
+                
+                // 右側垃圾桶或透明佔位符
+                if (showDeleteIconSetting(tab: selectedTab)) {
+                    Image(systemName: "trash") // 垃圾桶
+                        .foregroundColor(Color.g_blue) // 確保顏色存在
+                        .font(.system(size: 20)) // 調整圖示大小
+                        .onTapGesture {
+                            status = false // ✅ 點擊後切換 status
+                        }
+                } else {
+                    // 👇透明佔位符佔住空間，保持中心對齊
+                    Image(systemName: "trash")
+                        .opacity(0) // 完全透明
+                        .font(.system(size: 20)) // 調整圖示大小
+                }
             } else {
                 Image("arrow-left") // 改成返回按鈕
                     .font(.system(size: 20))

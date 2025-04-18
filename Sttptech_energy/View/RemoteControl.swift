@@ -11,10 +11,15 @@ struct RemoteControl: View {
     @Binding var isConnected: Bool  // [父層控制] 設備藍芽是否已連線
     @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
     
-    @AppStorage("editRemoteName") private var editRemoteName: String = ""   // ✅ 自定義設備名稱 記住連線狀態
-    @AppStorage("hasControl") private var hasControl: Bool  = false         // ✅ 自定義遙控器開關 記住連線狀態
-    //    @AppStorage("isPowerOn")  private var isPowerOn: Bool = true            // ✅ 設備控制， 默認：關閉
+    // MARK: - 自定義遙控器名稱功能 暫時 默認：完成，用久不關閉
+//    @AppStorage("editRemoteName") private var editRemoteName: String = ""   // ✅ 自定義設備名稱 記住連線狀態
+//    @AppStorage("hasControl") private var hasControl: Bool  = true         // ✅ 自定義遙控器開關 記住連線狀態
+//    @AppStorage("isPowerOn")  private var isPowerOn: Bool = true            // ✅ 設備控制， 默認：關閉
 
+    @State var editRemoteName: String = "遙控器電源" // 自定義設備名稱
+    @State var hasControl: Bool = true  // 自定義遙控器是否開始設定
+
+    // MARK: - 以下正常使用
     @State private var isPowerOn: Bool = false               // 設備控制， 默認：關閉
     @State private var isRemoteType = ""                     // 設備名稱， 默認：空
     @State private var isRemoteConnected: Bool = false       // 自定義遙控器 是否開始設定
@@ -22,8 +27,7 @@ struct RemoteControl: View {
     @State private var selectedTab: String = "cool"          // 設備控制選項，默認冷氣
     @State private var fanSpeed: String = "low"
     @State private var temperature: Int = 24
-    
-    
+
     // 控制提示
     @EnvironmentObject var appStore: AppStore  // 使用全域狀態
     

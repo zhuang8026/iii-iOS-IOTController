@@ -20,21 +20,19 @@ struct Temperature: View {
         if (isConnected) {
             /// ✅ 設備已連線
             VStack(spacing: 9) {
-                Spacer()
                 // 取得 sensor 數據
                 let sensorData = mqttManager.appliances["sensor"]
-                
-                // 取得 op_humidity, op_temperature, op_co2，並轉換 op_humidity 為百分比
                 let humidity = (sensorData?["op_humidity"]?.value).flatMap { Double($0) } ?? 0.0
                 let progress = humidity / 100.0 // ✅ 轉換成 0 ~ 1 之間的數值
                 
                 // 轉換 temperature 和 co2，並四捨五入為整數
                 let temperature = (sensorData?["op_temperature"]?.value).flatMap { Double($0) }
                     .map { String(Int($0.rounded())) } ?? "--"
-
+                
                 let co2 = (sensorData?["op_co2"]?.value).flatMap { Double($0) }
                     .map { String(Int($0.rounded())) } ?? "--"
-    
+                
+                Spacer()
                 // ✅ 顯示濕度進度條
                 CircularProgressBar(progress: progress)
                 Spacer()

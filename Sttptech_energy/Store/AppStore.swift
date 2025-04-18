@@ -12,7 +12,7 @@ class AppStore: ObservableObject {
     @Published var showPopup: Bool = false // 提示窗顯示 開關
     @Published var isAIControl: Bool = false // AI決策顯示 開關
     @Published var title: String = "執行AI決策"
-    @Published var message: String  = "你確定要執行此操作嗎？"
+    @Published var message: String  = "冷氣: 27度 \n 除濕機: 開啟55%濕度 \n 電風扇: 開啟"
     @Published var notificationsResult: String  = "AI決策正在執行中"
 //    
 //    @Published var loginResponse: String?

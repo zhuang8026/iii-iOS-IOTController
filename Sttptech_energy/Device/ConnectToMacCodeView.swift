@@ -16,7 +16,7 @@ struct ConnectToMacCodeView: View {
     @EnvironmentObject var mqttManager: MQTTManager // 從環境取得 MQTTManager
 
     @Binding var isPresented: Bool  // 綁定來控制顯示/隱藏
-    @Binding var isConnected: Bool // 設備藍芽是否已連線
+    @Binding var isConnected: Bool // MQTT是否已連線
     
     @State private var macLoading: Bool = false
     @State private var deviceMac: String = "DE:AD:BE:EF:00:01"
@@ -139,12 +139,16 @@ struct ConnectToMacCodeView: View {
         macLoading = true
         connectionMessage = "嘗試連接 \(deviceMac)..."
         mqttManager.publishBindSmart(deviceMac: deviceMac) // 發布「智慧環控連接」發送指令
-        // 3秒後關閉 loading
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-            // 測試 - 非正常連接
-            isConnected = true // ✅ 更新連線狀態
+        if (mqttManager.isSmartBind) {
+            print("環控狀態：\(mqttManager.isSmartBind)，前往溫濕度view")
             macLoading = false
+            isConnected = true // ✅ 更新連線狀態
+           
+        } else {
+            // 3秒後關閉 loading
+            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                macLoading = false
+            }
         }
-        
     }
 }

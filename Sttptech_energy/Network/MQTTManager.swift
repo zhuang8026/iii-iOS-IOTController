@@ -15,7 +15,9 @@ class MQTTManager: NSObject, ObservableObject {
     @EnvironmentObject var appStore: AppStore  // 使用全域狀態
     
     // MARK: - MQTT連線狀態
-    @Published var isConnected = false
+    @Published var isConnected: Bool  = false
+    // MARK: - Smart Control 連線狀態
+    @Published var isSmartBind: Bool  = false
     // MARK: - 登入狀態
     @Published var loginResponse: String? // 儲存「登入」結果
     // MARK: - 家電總資料
@@ -89,8 +91,6 @@ class MQTTManager: NSObject, ObservableObject {
     // MARK: - 檢查 智慧環控 連線狀態 - 20250411 未上線
     // 訂閱「智慧環控連接」訂閱結果的 topic
     func subscribeToSmart() {
-        //        loadStoredUserToken() // 讀取 UserDefaults 中的 Token
-        
         mqtt?.subscribe("to/app/\(userToken)/appliance/edge", qos: .qos1) // API
         print("📡 開始訂閱「智慧環控連接」頻道：to/app/\(userToken)/appliance/edge")
         print("📡 訂閱登入頻道: 成功")
@@ -102,9 +102,7 @@ class MQTTManager: NSObject, ObservableObject {
             print("❌ MQTT 未連線，無法發送 智慧環控連接 指令")
             return
         }
-        
-        //        loadStoredUserToken() // 讀取 UserDefaults 中的 Token
-        
+
         let payload: [String: String] = [
             "bind": deviceMac, // 綁定指令
         ]
@@ -126,9 +124,7 @@ class MQTTManager: NSObject, ObservableObject {
             print("❌ MQTT 未連線，無法發送 智慧環控連接 指令")
             return
         }
-        
-        //        loadStoredUserToken() // 讀取 UserDefaults 中的 Token
-        
+
         let payload: [String: String] = [
             "unbind": deviceMac, // 解除綁定指令
         ]
@@ -156,9 +152,7 @@ class MQTTManager: NSObject, ObservableObject {
     //  發布 開始 or 停止 接收家電資訊指令
     func publishTelemetryCommand(subscribe: Bool) {
         let topic = "from/app/\(userToken)/appliances/telemetry" // API
-        
-        //        loadStoredUserToken() // 讀取 UserDefaults 中的 Token
-        
+
         // 確保 payload 在 userToken 更新後才建立
         let payload: [String: Any] = ["token": userToken, "subscribe": subscribe]
         
@@ -184,9 +178,7 @@ class MQTTManager: NSObject, ObservableObject {
             print("❌ MQTT 未連線，無法發送登入指令")
             return
         }
-        
-        //        loadStoredUserToken() // 讀取 UserDefaults 中的 Token
-        
+
         // 確保 payload 在 userToken 更新後才建立
         let payload: [String: Any] = [
             "token": userToken,
@@ -250,7 +242,7 @@ extension MQTTManager: CocoaMQTTDelegate {
         //        print("MQTT 成功發送訊息:  \(message.string ?? "") 到 \(message.topic)")
         print("MQTT 成功發送訊息到 -> \(message.topic)")
         
-        // [token] 確保是訂閱的 topic - energy v2 暫時關閉
+        // [用戶Token] 確保是訂閱的 topic - energy v2 暫時關閉
         if message.topic == "to/app/\(AppID)/authentication", let payload = message.string {
             DispatchQueue.main.async {
                 // 解析 JSON 取得 Token
@@ -304,9 +296,15 @@ extension MQTTManager: CocoaMQTTDelegate {
                     // 解析 availables
                     if let availableDevices = json["availables"] as? [String] {
                         self.availables = availableDevices
-                        // print("✅ 可用家電: \(availableDevices)")
+                         print("✅ 可用家電: \(availableDevices)")
                     }
                     
+                    // MARK: - MenuBAR
+                    // 解析 availables
+                    if let edgeBind = json["edge_bind"] as? Bool {
+                        self.isSmartBind = edgeBind
+                         print("✅ 智能環控綁定狀態: 現在\(edgeBind), 原始\(self.isSmartBind)")
+                    }
                     // MARK: - 所有電器資料
                     /// 解析 appliances
                     if let appliancesData = json["appliances"] as? [String: [String: [String: String]]] {
@@ -325,13 +323,13 @@ extension MQTTManager: CocoaMQTTDelegate {
                         self.appliances = parsedAppliances
                         print("✅ 總家電參數更新: \(parsedAppliances)")
                         
-                        if let mqtt_data = parsedAppliances["air_conditioner"] {
+                        // if let mqtt_data = parsedAppliances["air_conditioner"] {
                             // print("✅ 「sensor」溫濕度數據: \(mqtt_data)")
-                            print("✅ 「air_conditioner」冷氣數據: \(mqtt_data)")
+                            // print("✅ 「air_conditioner」冷氣數據: \(mqtt_data)")
                             // print("✅ 「dehumidifier」除濕機數據: \(mqtt_data)")
                             // print("✅ 「remote」遙控器數據: \(mqtt_data)")
 
-                        }
+                        // }
                     }
                 }
             }

@@ -11,7 +11,7 @@ struct AddSmartControlView: View {
     @Binding var isShowingSmartControl: Bool  // 是否要開始 智慧環控連線 頁面，默認：關閉
 //    @Binding var selectedTab:String // 設備名稱
     @Binding var isConnected: Bool // 智慧環控是否已連線
-    
+
     var body: some View {
         VStack(spacing: 9) {
             Spacer()

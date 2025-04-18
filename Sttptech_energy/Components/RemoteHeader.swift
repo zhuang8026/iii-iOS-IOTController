@@ -35,19 +35,22 @@ struct RemoteHeader: View {
                     Text("\(editRemoteName)")
                         .lineLimit(1) // 限制成一行
                         .truncationMode(.tail) // 省略號出現在尾部
+                        .frame(maxHeight: 29)
                     Spacer()
-                    Button(action: {
-                        hasControl = false
-                        isRemoteConnected = false
-                        triggerHapticFeedback(model: .heavy) // 觸發震動
-                    }) {
-                        Image(systemName: "trash") // 垃圾桶
-                            .foregroundColor(Color.g_blue) // 確保顏色存在
-                            .frame(width: 30, height: 30) // 設定按鈕大小
-                            .background(Color.white) // 白色背景
-                            .clipShape(Circle()) // 設定為圓形
-                            .shadow(color: .gray.opacity(0.4), radius: 4, x: 0, y: 2)// 添加陰影
-                    }
+                    
+                    // enery v1.0 & v2.0 - 關閉此功能
+//                    Button(action: {
+//                        hasControl = false
+//                        isRemoteConnected = false
+//                        triggerHapticFeedback(model: .heavy) // 觸發震動
+//                    }) {
+//                        Image(systemName: "trash") // 垃圾桶
+//                            .foregroundColor(Color.g_blue) // 確保顏色存在
+//                            .frame(width: 30, height: 30) // 設定按鈕大小
+//                            .background(Color.white) // 白色背景
+//                            .clipShape(Circle()) // 設定為圓形
+//                            .shadow(color: .gray.opacity(0.4), radius: 4, x: 0, y: 2)// 添加陰影
+//                    }
                 } else {
                     HStack {
                         // tag
