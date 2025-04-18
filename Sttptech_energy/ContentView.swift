@@ -107,7 +107,7 @@ struct ContentView: View {
         VStack(spacing: 20) {
             // ✅ 傳遞 selectedTab 和 status
             HeaderName(selectedTab: $selectedTab, status: bindingForSelectedTab())
-            
+
             // 測試使用，可去除
             // Text(mqttManager.loginResponse ?? "等待登入回應...")
             if(isSmartControlConnected) {
@@ -132,7 +132,7 @@ struct ContentView: View {
                                     Loading(text: "Loading..")
                                     Spacer()
                             }
-                            
+
                         }
                         // ❌ 無資料 → 顯示 Loading 畫面
                         if isMQTTManagerLoading(tab: selectedTab) {
@@ -141,12 +141,9 @@ struct ContentView: View {
                             Loading(text: "載入\(selectedTab)資料中...",color: Color.g_blue)
                         }
                     }
-                    
-                    
 
-    
                     Spacer()
-                    
+
                     // 底部導航欄
                     NavigationBar(selectedTab: $selectedTab)
                         .environmentObject(mqttManager) // 確保能讀取 availables
