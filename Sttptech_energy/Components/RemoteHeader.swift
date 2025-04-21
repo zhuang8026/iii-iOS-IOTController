@@ -26,7 +26,7 @@ struct RemoteHeader: View {
                         .foregroundColor(Color.white)
                 }
                 .frame(maxWidth: 60, maxHeight: 60)
-                .background(Color.light_gray2)
+                .background(isPowerOn ? Color.g_green : Color.light_gray2)
                 .cornerRadius(10)
                 .shadow(color: .gray.opacity(0.2), radius: 4, x: 0, y: 2)
             }

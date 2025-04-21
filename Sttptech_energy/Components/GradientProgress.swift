@@ -10,12 +10,12 @@ import SwiftUI
 /// 溫度控制視圖
 struct GradientProgress: View {
     @Binding var currentTemperature: Int // 初始溫度
-    @State private var temperature: Int = 16 // UI元件初始溫度（動畫使用）
-    
-    private let minTemperature: Int = 16 // 最小溫度 default:16
-    private let maxTemperature: Int = 30 // 最大溫度 default:30
+    @Binding var minTemperature: Int  // 最小溫度
+    @Binding var maxTemperature: Int  // 最大溫度 
+
+    @State private var temperature: Int = 0 // UI元件初始溫度（動畫使用）
     @State private var lastHapticTime = Date() // 上次震動的時間
-    
+
     var body: some View {
         GeometryReader { geometry in
             let barWidth = geometry.size.width * 1.0 // 畫面寬度的 90%
@@ -57,13 +57,12 @@ struct GradientProgress: View {
             }
             .shadow(radius: 5)
             .onAppear {
-                if(currentTemperature > 30) {
-                    currentTemperature = 30
-                } else if(currentTemperature < 16) {
-                    currentTemperature = 16
-                }
-                temperature = currentTemperature // 初始化時與 Binding 值同步
+                currentTemperature = min(max(currentTemperature, minTemperature), maxTemperature)
+                temperature = currentTemperature
             }
+            .onChange(of: currentTemperature, { oldValue, newValue in
+                temperature = currentTemperature // 初始化時與 Binding 值同步
+            })
             .gesture(
                 DragGesture()
                     .onChanged { value in

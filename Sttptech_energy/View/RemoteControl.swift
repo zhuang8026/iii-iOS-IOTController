@@ -12,27 +12,56 @@ struct RemoteControl: View {
     @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
     
     // MARK: - 自定義遙控器名稱功能 暫時 默認：完成，用久不關閉
-//    @AppStorage("editRemoteName") private var editRemoteName: String = ""   // ✅ 自定義設備名稱 記住連線狀態
-//    @AppStorage("hasControl") private var hasControl: Bool  = true         // ✅ 自定義遙控器開關 記住連線狀態
-//    @AppStorage("isPowerOn")  private var isPowerOn: Bool = true            // ✅ 設備控制， 默認：關閉
-
+    //    @AppStorage("editRemoteName") private var editRemoteName: String = ""   // ✅ 自定義設備名稱 記住連線狀態
+    //    @AppStorage("hasControl") private var hasControl: Bool  = true         // ✅ 自定義遙控器開關 記住連線狀態
+    //    @AppStorage("isPowerOn")  private var isPowerOn: Bool = true            // ✅ 設備控制， 默認：關閉
+    
     @State var editRemoteName: String = "遙控器電源" // 自定義設備名稱
     @State var hasControl: Bool = true  // 自定義遙控器是否開始設定
-
+    
     // MARK: - 以下正常使用
     @State private var isPowerOn: Bool = false               // 設備控制， 默認：關閉
     @State private var isRemoteType = ""                     // 設備名稱， 默認：空
     @State private var isRemoteConnected: Bool = false       // 自定義遙控器 是否開始設定
     @State private var isShowingNewDeviceView: Bool = false  // 是否要開始藍芽配對介面，默認：關閉
     @State private var selectedTab: String = "cool"          // 設備控制選項，默認冷氣
-    @State private var fanSpeed: String = "low"
-    @State private var temperature: Int = 24
-
+    @State private var fanSpeed: String = "auto"
+    @State private var temperature: Int = 0
+    @State private var minTemp: Int = 16
+    @State private var maxTemp: Int = 30
+    
     // 控制提示
     @EnvironmentObject var appStore: AppStore  // 使用全域狀態
     
     let titleWidth = 8.0;
     let titleHeight = 20.0;
+    
+    /// 解析 MQTT 家電數據，更新 UI
+    private func updateRemoteControlData() {
+        guard let remoteData = mqttManager.appliances["remote"] else { return }
+        
+        // 解析 `cfg_power` -> String (開 / 關)
+        if let power = remoteData["cfg_power"]?.value {
+            isPowerOn = power == "on" ? true : false
+        }
+        
+        // 解析 `cfg_mode` -> String
+        // ("auto" -> 自動, "cool" -> 冷氣, "heat" -> 暖風, "dry" -> 除濕, "fan"-> 送風)
+        if let mode = remoteData["cfg_mode"]?.value {
+            selectedTab = mode
+        }
+        
+        // 解析 `cfg_humidity` -> Int
+        if let tempString = remoteData["cfg_temperature"]?.value, let tempInt = Int(tempString) {
+            print("tempInt: \(tempInt)")
+            temperature = tempInt
+        }
+        
+        // 解析 `op_water_full_alarm` -> String ("0" -> "正常", "1" -> "滿水")
+        if let fanLevel = remoteData["cfg_fan_level"]?.value {
+            fanSpeed = fanLevel
+        }
+    }
     
     // MARK: - POST API
     private func postSettingRemoteControl(mode: [String: Any]) {
@@ -55,18 +84,18 @@ struct RemoteControl: View {
                             isRemoteConnected: $isRemoteConnected,
                             isPowerOn: $isPowerOn // 開關
                         )
-                            // 🔥 監聽 isPowerOn 的變化
-                            .onChange(of: isPowerOn) { oldVal, newVal in
-                                print("isPowerOn: \(newVal)")
-                                if newVal {
-                                    appStore.showPopup = true // 開啟提示窗
-                                }
-                                let paylodModel: [String: Any] = ["cfg_power": newVal ? "on" : "off"]
-                                postSettingRemoteControl(mode: paylodModel)
+                        // 🔥 監聽 isPowerOn 的變化
+                        .onChange(of: isPowerOn) { oldVal, newVal in
+                            print("isPowerOn: \(newVal)")
+                            if newVal {
+                                appStore.showPopup = true // 開啟提示窗
                             }
+                            let paylodModel: [String: Any] = ["cfg_power": newVal ? "on" : "off"]
+                            postSettingRemoteControl(mode: paylodModel)
+                        }
                         // ✅ 設備已連線
                         if (hasControl) {
-                            // 控制
+                            // 模式
                             VStack(alignment: .leading, spacing: 9) {
                                 HStack {
                                     // tag
@@ -111,13 +140,17 @@ struct RemoteControl: View {
                                             .frame(width: titleWidth, height: titleHeight) // 控制長方形的高度，寬度根據內容自動調整
                                         Text("溫度")
                                     }
-                                    GradientProgress(currentTemperature: $temperature) /// 溫度控制視圖
+                                    GradientProgress(
+                                        currentTemperature: $temperature, // now temp
+                                        minTemperature: $minTemp, // min temp
+                                        maxTemperature: $maxTemp  // max temp
+                                    ) // 溫度控制視圖
                                     //🔥 監聽 temperature 的變化
-                                        .onChange(of: temperature) { oldVal, newVal in
-                                            print("temperature: \(newVal)")
-                                            let paylodModel: [String: Any] = ["cfg_temperature": String(newVal)]
-                                            postSettingRemoteControl(mode: paylodModel)
-                                        }
+                                    .onChange(of: temperature) { oldVal, newVal in
+                                        print("API setting temperature: \(newVal)")
+                                        let paylodModel: [String: Any] = ["cfg_temperature": String(newVal)]
+                                        postSettingRemoteControl(mode: paylodModel)
+                                    }
                                 }
                             } else {
                                 /// 請開始電源（電源未開啟）
@@ -170,13 +203,19 @@ struct RemoteControl: View {
             }
         }
         .animation(.easeInOut, value: appStore.showPopup)
+        .onAppear {
+            updateRemoteControlData() // 畫面載入時初始化數據
+        }
+        .onChange(of: mqttManager.appliances["remote"]) { _, _ in
+            updateRemoteControlData()
+        }
         // 🔥 監聽 isPowerOn 的變化
-//        .onChange(of: isPowerOn) { oldVal, newVal in
-//            print("isPowerOn -> \(newVal)")
-//            if newVal {
-//                appStore.showPopup = true // 開啟提示窗
-//            }
-//        }
+        //        .onChange(of: isPowerOn) { oldVal, newVal in
+        //            print("isPowerOn -> \(newVal)")
+        //            if newVal {
+        //                appStore.showPopup = true // 開啟提示窗
+        //            }
+        //        }
     }
 }
 

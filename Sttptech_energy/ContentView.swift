@@ -49,18 +49,18 @@ struct ContentView: View {
     // 2. sensor = nil -> true
     private func isMQTTManagerLoading(tab: String) -> Bool {
         switch tab {
-            case "溫濕度":
-                return mqttManager.appliances["sensor"] == nil
-            case "空調":
-                return mqttManager.appliances["air_conditioner"] == nil
-            case "除濕機":
-                return mqttManager.appliances["dehumidifier"] == nil
-            case "遙控器":
-                return false
-            case "插座":
-                return false
-            default:
-                return false
+        case "溫濕度":
+            return mqttManager.appliances["sensor"] == nil
+        case "空調":
+            return mqttManager.appliances["air_conditioner"] == nil
+        case "除濕機":
+            return mqttManager.appliances["dehumidifier"] == nil
+        case "遙控器":
+            return mqttManager.appliances["remote"] == nil
+        case "插座":
+            return false
+        default:
+            return false
         }
     }
     
@@ -76,7 +76,7 @@ struct ContentView: View {
             "除濕機": "dehumidifier",
             "遙控器": "remote"
         ]
-
+        
         // 取得對應 MQTT 裝置資料（deviceData 為 [String: ApplianceData]）
         guard let deviceKey = tabToDeviceKey[tab],
               let deviceData = mqttManager.appliances[deviceKey],
@@ -84,16 +84,16 @@ struct ContentView: View {
             // 若找不到 key 或資料，視為離線
             return false
         }
-
+        
         // 建立 ISO8601 格式的解析器（支援毫秒）
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-
+        
         // 將 updated 字串轉為 Date 物件（若格式錯誤則離線）
         guard let updatedDate = formatter.date(from: updatedTime.updated) else {
             return false
         }
-
+        
         // 取得目前時間與更新時間的差距（秒）
         let now = Date()
         let timeInterval = now.timeIntervalSince(updatedDate)
@@ -101,13 +101,13 @@ struct ContentView: View {
         // 若差距在 30 分鐘內，代表在線，否則離線
         return timeInterval <= 1800 // 30分鐘 = 1800秒
     }
-
+    
     
     var body: some View {
         VStack(spacing: 20) {
             // ✅ 傳遞 selectedTab 和 status
             HeaderName(selectedTab: $selectedTab, status: bindingForSelectedTab())
-
+            
             // 測試使用，可去除
             // Text(mqttManager.loginResponse ?? "等待登入回應...")
             if(isSmartControlConnected) {
@@ -117,22 +117,22 @@ struct ContentView: View {
                         VStack() {
                             // 根據 selectedTab 顯示對應元件
                             switch self.selectedTab {
-                                case "溫濕度":
-                                    Temperature(isConnected: $isTempConnected)
-                                case "空調":
-                                    AirConditioner(isConnected: $isACConnected)
-                                case "除濕機":
-                                    Dehumidifier(isConnected: $isDFConnected)
-                                case "遙控器":
-                                    RemoteControl(isConnected: $isREMCConnected)
-                                case "插座":
-                                    ElectricSocket()
-                                default:
-                                    Spacer()
-                                    Loading(text: "Loading..")
-                                    Spacer()
+                            case "溫濕度":
+                                Temperature(isConnected: $isTempConnected)
+                            case "空調":
+                                AirConditioner(isConnected: $isACConnected)
+                            case "除濕機":
+                                Dehumidifier(isConnected: $isDFConnected)
+                            case "遙控器":
+                                RemoteControl(isConnected: $isREMCConnected)
+                            case "插座":
+                                ElectricSocket()
+                            default:
+                                Spacer()
+                                Loading(text: "Loading..")
+                                Spacer()
                             }
-
+                            
                         }
                         // ❌ 無資料 → 顯示 Loading 畫面
                         if isMQTTManagerLoading(tab: selectedTab) {
@@ -141,9 +141,9 @@ struct ContentView: View {
                             Loading(text: "載入\(selectedTab)資料中...",color: Color.g_blue)
                         }
                     }
-
+                    
                     Spacer()
-
+                    
                     // 底部導航欄
                     NavigationBar(selectedTab: $selectedTab)
                         .environmentObject(mqttManager) // 確保能讀取 availables
@@ -169,12 +169,13 @@ struct ContentView: View {
         .onChange(of: mqttManager.isConnected) { oldConnect, newConnect in
             // 連線MQTT
             if newConnect {
-                //                mqttManager.publishApplianceUserLogin(username: "app", password: "app:ppa")
-                mqttManager.publishTelemetryCommand(subscribe: true)
+                //  mqttManager.publishApplianceUserLogin(username: "app", password: "app:ppa")
+                mqttManager.publishTelemetryCommand(subscribe: true) // 接收家電資訊指令
+                mqttManager.publishCapabilities() // 查詢 家電參數讀寫能力 指令
             }
         }
         .onReceive(mqttManager.$isSmartBind) { newValue in
-//            isSmartControlConnected = newValue
+            // isSmartControlConnected = newValue
         }
     }
 }

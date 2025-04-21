@@ -18,6 +18,8 @@ struct AirConditioner: View {
     @State private var selectedMode = "cool"
     @State private var fanSpeed: String = "auto"
     @State private var temperature: Int = 24
+    @State private var minTemp: Int = 16
+    @State private var maxTemp: Int = 30
     @State private var modes = ["cool", "heat", "dry", "fan", "auto"]
     
     // 藍芽連線顯示
@@ -27,6 +29,42 @@ struct AirConditioner: View {
     let titleWidth = 8.0;
     let titleHeight = 20.0;
     
+    // MARK: - 取得 MQTT 設備讀取能力，更新 UI
+    private func checkAirConditionerCapabilities() {
+        guard let AC_Capabilities = mqttManager.deviceCapabilities["air_conditioner"] else { return }
+        
+//        // 解析 `cfg_fan_level` -> Bool (開 / 關)
+        if let fanLevels = AC_Capabilities["cfg_mode"] {
+            let filteredFanLevels = fanLevels.filter { $0 != "read" }  // ❌ 排除 "read"
+            self.modes = filteredFanLevels
+        }
+        
+        if let tempStrings = AC_Capabilities["cfg_temperature"] {
+            let tempValues = tempStrings
+                .filter { $0 != "read" }               // ❌ 排除 "read"
+                .compactMap { Int($0) }                // ✅ 字串轉 Int
+                .filter { $0 >= 0 && $0 <= 100 }       // ✅ 避免不合理值（保險）
+
+            self.minTemp = tempValues.min() ?? 16
+            self.maxTemp = tempValues.max() ?? 30
+        }
+        
+//        // 解析 `cfg_mode` -> String ("cool", "dry", "fan", "auto", "heat")
+//        if let mode = airConditionerData["cfg_mode"]?.value {
+//            selectedMode = mode
+//        }
+//        
+//        // 解析 `cfg_fan_level` -> String ("auto", "low", "medium", "high", "strong", "max")
+//        if let fanLevel = airConditionerData["cfg_fan_level"]?.value {
+//            fanSpeed = fanLevel
+//        }
+//        
+//        // 解析 `cfg_temperature` -> Int
+//        if let temp = airConditionerData["cfg_temperature"]?.value, let tempInt = Int(temp) {
+//            temperature = tempInt
+//        }
+    }
+
     // MARK: - 解析 MQTT 家電數據，更新 UI
     private func updateAirConditionerData() {
         guard let airConditionerData = mqttManager.appliances["air_conditioner"] else { return }
@@ -123,7 +161,11 @@ struct AirConditioner: View {
                                     .frame(width: titleWidth, height: titleHeight) // 控制長方形的高度，寬度根據內容自動調整
                                 Text("溫度")
                             }
-                            GradientProgress(currentTemperature: $temperature) /// 溫度控制視圖
+                            GradientProgress(
+                                currentTemperature: $temperature, // now temp
+                                minTemperature: $minTemp, // min temp
+                                maxTemperature: $maxTemp  // max temp
+                            ) /// 溫度控制視圖
                             // 🔥 監聽 temperature 的變化
                                 .onChange(of: temperature) { oldVal, newVal in
                                     // print("temperature: \(newVal)")
@@ -153,7 +195,8 @@ struct AirConditioner: View {
                 }
                 .animation(.easeInOut, value: appStore.showPopup)
                 .onAppear {
-                    updateAirConditionerData() // 畫面載入時初始化數據
+                    checkAirConditionerCapabilities() // 檢查設備可讀取資料
+                    updateAirConditionerData()        // 畫面載入時初始化數據
                 }
                 //            .onChange(of: mqttManager.appliances["dehumidifier"]?.id) { _ in
                 //                updateDehumidifierData()
