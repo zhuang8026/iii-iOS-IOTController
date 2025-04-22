@@ -196,26 +196,13 @@ struct RemoteControl: View {
             //                CustomPopupView(isPresented: $showPopup)
             //            }
             // 👉 這裡放自訂彈窗，只在 showPopup == true 時顯示
-            if appStore.showPopup {
-                CustomPopupView(isPresented: $appStore.showPopup, title: $appStore.title, message: $appStore.message)
-                    .transition(.opacity) // 淡入淡出效果
-                    .zIndex(1) // 確保彈窗在最上層
-            }
         }
-        .animation(.easeInOut, value: appStore.showPopup)
         .onAppear {
             updateRemoteControlData() // 畫面載入時初始化數據
         }
         .onChange(of: mqttManager.appliances["remote"]) { _, _ in
             updateRemoteControlData()
         }
-        // 🔥 監聽 isPowerOn 的變化
-        //        .onChange(of: isPowerOn) { oldVal, newVal in
-        //            print("isPowerOn -> \(newVal)")
-        //            if newVal {
-        //                appStore.showPopup = true // 開啟提示窗
-        //            }
-        //        }
     }
 }
 

@@ -186,14 +186,7 @@ struct AirConditioner: View {
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
-                    
-                    if appStore.showPopup {
-                        CustomPopupView(isPresented: $appStore.showPopup, title: $appStore.title, message: $appStore.message)
-                            .transition(.opacity) // 淡入淡出效果
-                            .zIndex(1) // 確保彈窗在最上層
-                    }
                 }
-                .animation(.easeInOut, value: appStore.showPopup)
                 .onAppear {
                     checkAirConditionerCapabilities() // 檢查設備可讀取資料
                     updateAirConditionerData()        // 畫面載入時初始化數據

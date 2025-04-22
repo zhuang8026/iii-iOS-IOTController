@@ -9,36 +9,48 @@ import Foundation
 
 
 extension APIService {
-    // MARK: - 取得設備全部資料
-    func apiGetAIControllerInfo() async throws -> RoomData {
-        let endpoint = "/extractor/processing-values/room/\(roomID)/"
+    // MARK: - GET
+    func apiGetWiFiScanApInfo(useMock: Bool = false) async throws -> ApData {
+        //MARK: - MOCK API
+        if useMock {
+            print("🚧 使用 Mock Data 中...")
+            
+            // 從專案中讀取 getwifiscanAp.json 檔案
+            guard let url = Bundle.main.url(forResource: "getwifiscanAp", withExtension: "json"),
+                  let data = try? Data(contentsOf: url) else {
+                throw NSError(domain: "APIServiceError", code: -2, userInfo: [NSLocalizedDescriptionKey: "載入 Mock 資料失敗"])
+            }
+            
+            let decoder = JSONDecoder()
+            do {
+                let mockResponse = try decoder.decode(ScanApList.self, from: data)
+                return mockResponse.data
+            } catch {
+                throw NSError(domain: "APIServiceError", code: -3, userInfo: [NSLocalizedDescriptionKey: "Mock 資料解析失敗：\(error.localizedDescription)"])
+            }
+        }
         
-        guard let response: RoomData = try await sendRequest(endpoint: endpoint, method: .GET, decodingType: RoomData.self) else {
+        //MARK: - Prod API
+        let endpoint = "api/config/wifi/scanAp"
+        guard let response: ScanApList = try await sendRequest(endpoint: endpoint, method: .GET, decodingType: ScanApList.self) else {
             throw NSError(domain: "APIServiceError", code: -1, userInfo: [NSLocalizedDescriptionKey: "無法獲取設備資料"])
         }
         
-        print("apiGet AIControllerInfo -> \(response)")
-        
-        return RoomData(
-            roomid: response.roomid,
-            sensor: response.sensor,
-            ac: response.ac,
-            dehumidifier: response.dehumidifier
-//            socket: response.socket
-        ) // ✅ 傳出AI決策需要的資料
+        print("📡 API WiFiScanApInfo -> \(response)")
+        return response.data
     }
-
-    // MARK: - 送出全部資料（啟動AI決策）
-    func apiPostSettingAIController(payload: RoomData) async throws -> ApiResponse? {
-        guard let payloadDict = payload.toDictionary() else {
-            throw NSError(domain: "EncodingError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to encode payload"])
-        }
-        
-        print("apiPost Setting AIController -> \(payloadDict)")
-        
-        let endpoint = "/loader/rooms/\(roomID)/script"
-        return try await sendRequest(endpoint: endpoint, method: .POST, payload: payloadDict, decodingType: ApiResponse.self)
-    }
+    
+    // MARK: - POST
+    //    func apiPostSettingAIController(payload: RoomData) async throws -> ApiResponse? {
+    //        guard let payloadDict = payload.toDictionary() else {
+    //            throw NSError(domain: "EncodingError", code: -1, userInfo: [NSLocalizedDescriptionKey: "Failed to encode payload"])
+    //        }
+    //
+    //        print("apiPost Setting AIController -> \(payloadDict)")
+    //
+    //        let endpoint = "/loader/rooms/\(roomID)/script"
+    //        return try await sendRequest(endpoint: endpoint, method: .POST, payload: payloadDict, decodingType: ApiResponse.self)
+    //    }
 }
 
 

@@ -11,7 +11,7 @@ struct Dehumidifier: View {
     @Binding var isConnected: Bool // 設備藍芽是否已連線
     
     // 控制提示
-    @EnvironmentObject var appStore: AppStore  // 使用全域狀態
+//    @EnvironmentObject var appStore: AppStore  // 使用全域狀態
     @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
     
     // 選項列表
@@ -266,21 +266,7 @@ struct Dehumidifier: View {
                         }
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
-                    
-                    if appStore.showPopup {
-                        CustomPopupView(isPresented: $appStore.showPopup, title: $appStore.title, message: $appStore.message)
-                            .transition(.opacity) // 淡入淡出效果
-                            .zIndex(1) // 確保彈窗在最上層
-                    }
                 }
-                .animation(.easeInOut, value: appStore.showPopup)
-                // 🔥 監聽 isPowerOn 的變化
-                //            .onChange(of: isPowerOn) { oldVal, newVal in
-                //                print(oldVal, newVal)
-                //                if newVal {
-                //                    appStore.showPopup = true // 開啟提示窗
-                //                }
-                //            }
                 .onAppear {
                     updateDehumidifierData() // 畫面載入時初始化數據
                 }

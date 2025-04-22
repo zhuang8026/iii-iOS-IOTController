@@ -7,10 +7,12 @@
 
 import Foundation
 
-// MARK: - HTTP 方法 Enum
+// MARK: - HTTP Method Enum
 enum HTTPMethod: String {
     case GET
     case POST
+    case PUT
+    case DELETE
 }
 
 // MARK: -API 回應模型
@@ -34,50 +36,22 @@ struct OriginalData: Codable {
     let success: Bool
 }
 
-// MARK: -API 送出模型
-struct TemperatureData: Codable {
-    let temperature_r: String
-    let humidity_r: String
-    let update_time: String
+// MARK: - Wi-Fi 資料結構
+struct ScanApList: Codable {
+    let status: String
+    let data: ApData
 }
 
-struct ACData: Codable {
-    var power_rw: String
-    let op_mode_rw: String
-    var temperature_cfg_rw: String
-    let fan_level_rw: String
-    let outdoor_unit_power_watt_r: String?
-    let comfortable_rw: String?
-    let update_time: String
+struct ApData: Codable {
+    let count: Int
+    let ap_list: [ApInfo]
 }
 
-struct DehumidifierData: Codable {
-    var power_rw: String
-    let op_mode_rw: String
-    var humidity_cfg_rw: String
-    let fan_level_rw: String?
-    let op_power_watt_r: String?
-    let dehumidifier_level_rw: String
-    let update_time: String
+struct ApInfo: Codable {
+    let channel: String
+    let ssid: String
+    let bssid: String
+    let security: String
+    let signal: String
+    let mode: String
 }
-
-struct SocketData: Codable {
-    let power_w: String
-}
-
-struct RoomData: Codable {
-    let roomid: String
-    let sensor: TemperatureData
-    var ac: ACData
-    var dehumidifier: DehumidifierData
-    var socket: [String: String]? // ✅ 新增 socket 欄位
-}
-
-// MARK: - 擴展 Encodable 轉換為 Dictionary
-extension Encodable {
-    func toDictionary() -> [String: Any]? {
-        guard let data = try? JSONEncoder().encode(self) else { return nil }
-        return try? JSONSerialization.jsonObject(with: data, options: .fragmentsAllowed) as? [String: Any]
-    }
-}
-

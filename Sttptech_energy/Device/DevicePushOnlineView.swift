@@ -13,6 +13,10 @@ let wifiList = ["HH42CV_19D7", "HomeWiFi", "Cafe_123"]
 struct DevicePushOnlineView: View {
     @Binding var selectedTab: String // 標題名稱
     @Binding var isConnected: Bool // 設備藍芽是否已連線
+    
+    @StateObject private var apiService = APIService() // ✅ 讓 SwiftUI 監聽 API 回應
+    @State private  var wifiList: [String] = []
+
     //    @State private var isRotating = false // loading 旋轉動畫控制
     @State private var showPasswordSheet: Bool = false // 彈窗開關
     
@@ -22,6 +26,22 @@ struct DevicePushOnlineView: View {
     
     var onCancel: () -> Void  // 用來關閉畫面的 callback
     
+    func fetchWiFiList() {
+        Task {
+            do {
+                let data = try await apiService.apiGetWiFiScanApInfo(useMock: true)
+                print("fetchWiFiList: \(data)")
+//                await MainActor.run {
+//                    self.wifiList = data.apList.map { $0.ssid }
+//                }
+            } catch {
+//                await MainActor.run {
+//                    self.errorMessage = error.localizedDescription
+//                }
+            }
+        }
+    }
+
     var body: some View {
         VStack(spacing: 20) {
             HStack {
@@ -94,12 +114,12 @@ struct DevicePushOnlineView: View {
                             LazyVStack(spacing: 10) {
                                 ForEach(wifiList, id: \.self) { wifi in
                                     Button(action: {
-                                        //                                        password = "" // 清空密碼
+                                        // password = "" // 清空密碼
                                         showPasswordSheet = true // 彈出輸入框
                                     }) {
                                         HStack {
                                             VStack(alignment: .leading) {
-                                                Text("HH42CV_19D7")
+                                                Text(wifi)
                                                     .font(.body)
                                                     .foregroundColor(Color.g_blue)
                                             }
@@ -147,6 +167,7 @@ struct DevicePushOnlineView: View {
             Button(action: {
                 // 1. 重置藍牙與 Wi-Fi 資料
                 self.isEmpty = false             // 隱藏「無資料」訊息
+                fetchWiFiList()
                 triggerHapticFeedback(model: .heavy) // 觸發震動
                 
             }) {

@@ -14,6 +14,7 @@ struct MacCodeInfo: Codable {
 
 struct ConnectToMacCodeView: View {
     @EnvironmentObject var mqttManager: MQTTManager // 從環境取得 MQTTManager
+    @EnvironmentObject var appStore: AppStore  // 使用全域狀態
 
     @Binding var isPresented: Bool  // 綁定來控制顯示/隱藏
     @Binding var isConnected: Bool // MQTT是否已連線
@@ -141,14 +142,14 @@ struct ConnectToMacCodeView: View {
         mqttManager.publishBindSmart(deviceMac: deviceMac) // 發布「智慧環控連接」發送指令
         if (mqttManager.isSmartBind) {
             print("環控狀態：\(mqttManager.isSmartBind)，前往溫濕度view")
-            macLoading = false
-            isConnected = true // ✅ 更新連線狀態
-           
+            macLoading = false // ✅ 綁定成功, 關閉加在動畫
+            isConnected = true // ✅ 更新連線狀態,前往溫濕度
         } else {
+            print("智慧環控綁定失敗")
             // 3秒後關閉 loading
-            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                macLoading = false
-            }
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+//                macLoading = false
+//            }
         }
     }
 }

@@ -51,7 +51,8 @@ struct NavigationBar: View {
     
     /// 取得可用的標籤名稱（從 MQTTManager 解析）
     private func getAvailableTabs() -> [String] {
-        mqttManager.availables.compactMap { deviceMapping[$0] }
+//        mqttManager.availables.compactMap { deviceMapping[$0] }
+        return ["溫濕度", "空調", "除濕機", "遙控器", "插座"]
     }
     /// 當 availables 更新時，確保 selectedTab 有正確的值
     private func updateSelectedTab() {

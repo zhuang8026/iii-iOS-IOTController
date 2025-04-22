@@ -11,19 +11,19 @@ import CocoaMQTT
 // MARK: - [對外] 核心功能
 class MQTTManager: NSObject, ObservableObject {
     static let shared = MQTTManager()
-    
-    @EnvironmentObject var appStore: AppStore  // 使用全域狀態
-    
+
     // MARK: - MQTT連線狀態
-    @Published var isConnected: Bool  = false
+    @Published var isConnected: Bool = false
     // MARK: - Smart Control 連線狀態
-    @Published var isSmartBind: Bool  = false
+    @Published var isSmartBind: Bool = false
     // MARK: - 登入狀態
     @Published var loginResponse: String? // 儲存「登入」結果
     // MARK: - 導航欄資料
     @Published var availables: [String] = [] // MenuBar顯示家電控制 項目
     // MARK: - 欄位讀寫能力
     @Published var deviceCapabilities: [String: [String: [String]]] = [:]
+    // MARK: - MQTT 是否已取得資料（loading畫面）
+    @Published var serverLoading: Bool = true
     // MARK: - 家電總資料
     @Published var appliances: [String: [String: ApplianceData]] = [:] // 安裝的家電參數狀態
     
@@ -296,7 +296,6 @@ extension MQTTManager: CocoaMQTTDelegate {
             // print("✅ 登入回應: \(payload)")
         }
         
-        
         // [智慧環控] 確保是訂閱的 綁定智慧環控 - v1 || v2
         if message.topic == "to/app/\(userToken)/appliance/edge", let payload = message.string {
             DispatchQueue.main.async {
@@ -306,9 +305,8 @@ extension MQTTManager: CocoaMQTTDelegate {
                     print("智慧環控回報：\(json)")
                     // 取得 `success` 欄位的值
                     //                    if let success = json["success"] as? Bool {
-                    //                        self.loginResponse =  String(success)
+                    //                        self.serverLoading = success
                     //                    }
-                    //
                     //                    // 取得 `application_access_token` 並存入 UserDefaults
                     //                    if let token = json["application_access_token"] as? String {
                     //                        UserDefaults.standard.set(token, forKey: "MQTTAccessToken")
@@ -347,12 +345,12 @@ extension MQTTManager: CocoaMQTTDelegate {
                     
                     // 你可以在這裡將資料存入 ViewModel 或狀態管理
                     self.deviceCapabilities = response.capabilities
-//                    print("✅ 裝置設定能力參數: \(self.deviceCapabilities)")
-                    if let mqtt_data = self.deviceCapabilities["air_conditioner"] {
-//                        print("✅ 「sensor」溫濕度讀取能力: \(mqtt_data)")
-                        print("✅ 「air_conditioner」冷氣讀取能力: \(mqtt_data)")
-//                        print("✅ 「dehumidifier」除濕機讀取能力: \(mqtt_data)")
-//                        print("✅ 「remote」遙控器讀取能力: \(mqtt_data)")
+                    //                    print("✅ 裝置設定能力參數: \(self.deviceCapabilities)")
+                    if let mqtt_data = self.deviceCapabilities["dehumidifier"] {
+                        //                        print("✅ 「sensor」溫濕度讀取能力: \(mqtt_data)")
+                        //                        print("✅ 「air_conditioner」冷氣讀取能力: \(mqtt_data)")
+                        print("✅ 「dehumidifier」除濕機讀取能力: \(mqtt_data)")
+                        //                        print("✅ 「remote」遙控器讀取能力: \(mqtt_data)")
                         
                     }
                 } catch {
@@ -362,12 +360,20 @@ extension MQTTManager: CocoaMQTTDelegate {
             // print("✅ 登入回應: \(payload)")
         }
         
-        
-        // [接收家電資訊指令] 確保是訂閱的取得家電所有資料 - v1 || v2
+        // [接收家電資訊指令] 確保是訂閱 取得家電所有資料 - v1 || v2
         if message.topic == "to/app/\(userToken)/appliances/telemetry", let payload = message.string {
             DispatchQueue.main.async {
                 if let data = payload.data(using: .utf8),
                    let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                    
+                    print("✅ 總家電參數更新: \(json)")
+                    if json.isEmpty {
+                        self.serverLoading = true
+                        print("⚠️ to/app/userToken/appliances/telemetry API 無資料")
+                    } else {
+                        self.serverLoading = false
+                        print("✅ 家電資料收集中")
+                    }
                     
                     // MARK: - MenuBAR
                     // 解析 availables
@@ -380,34 +386,37 @@ extension MQTTManager: CocoaMQTTDelegate {
                     // 解析 edge_bind
                     if let edgeBind = json["edge_bind"] as? Bool {
                         self.isSmartBind = edgeBind
-                        print("✅ 智能環控綁定狀態: now status\(edgeBind), before status:\(self.isSmartBind)")
+                        print("✅ 智能環控綁定狀態: current status:\(edgeBind), before status:\(self.isSmartBind)")
                     }
                     
                     // MARK: - 所有電器資料
                     // 解析 appliances
-                    if let appliancesData = json["appliances"] as? [String: [String: [String: String]]] {
+                    if let appliancesData = json["appliances"] as? [String: [String: Any]] {
                         var parsedAppliances: [String: [String: ApplianceData]] = [:]
                         
                         for (device, parameters) in appliancesData {
                             var deviceData: [String: ApplianceData] = [:]
-                            for (param, values) in parameters {
-                                if let value = values["value"], let updated = values["updated"] {
-                                    deviceData[param] = ApplianceData(value: value, updated: updated)
-                                }
+                            for (param, value) in parameters {
+                                //                                if param == "updated" {
+                                //                                    continue // Skip the general updated field
+                                //                                }
+                                let valueStr = String(describing: value)
+                                let updated = parameters["updated"].flatMap { String(describing: $0) } ?? ""
+                                deviceData[param] = ApplianceData(value: valueStr, updated: updated)
                             }
                             parsedAppliances[device] = deviceData
                         }
                         
                         self.appliances = parsedAppliances
-                        print("✅ 總家電參數更新: \(parsedAppliances)")
+                        //                        print("✅ 總家電參數更新: \(parsedAppliances)")
                         
-                        //                         if let mqtt_data = parsedAppliances["remote"] {
-                        //                             print("✅ 「sensor」溫濕度數據: \(mqtt_data)")
-                        //                             print("✅ 「air_conditioner」冷氣數據: \(mqtt_data)")
-                        //                             print("✅ 「dehumidifier」除濕機數據: \(mqtt_data)")
-                        //                             print("✅ 「remote」遙控器數據: \(mqtt_data)")
-                        
-                        //                         }
+                        if let mqtt_data = parsedAppliances["sensor"] {
+                            //                            print("✅ 「sensor」溫濕度數據: \(mqtt_data)")
+                            //                            print("✅ 「air_conditioner」冷氣數據: \(mqtt_data)")
+                            //                            print("✅ 「dehumidifier」除濕機數據: \(mqtt_data)")
+                            print("✅ 「sensor」遙控器數據: \(mqtt_data)")
+                            
+                        }
                     }
                 }
             }
