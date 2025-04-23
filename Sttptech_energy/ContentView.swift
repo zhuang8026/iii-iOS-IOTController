@@ -26,7 +26,7 @@ struct ContentView: View {
     @State private var isREMCConnected = false   // ✅ 遙控器 記住連線狀態
     //    @AppStorage("isESTConnected")
     @State private var isESTConnected = true    // ✅ 插座 記住連線狀態
-
+    
     // 根據 selectedTab 動態決定 `status`
     private func bindingForSelectedTab() -> Binding<Bool> {
         switch selectedTab {
@@ -45,24 +45,23 @@ struct ContentView: View {
         }
     }
     
-    // 判斷MQTT是否有資料
-    // 1. update = nil -> true
-    // 2. sensor = nil -> true
-    private func isMQTTManagerLoading(tab: String) -> Bool {
-        switch tab {
-            case "溫濕度":
-                return mqttManager.appliances["sensor"]?["updated"]?.value == nil
-            case "空調":
-                return mqttManager.appliances["air_conditioner"]?["updated"]?.value == nil
-            case "除濕機":
-                return mqttManager.appliances["dehumidifier"]?["updated"]?.value == nil
-            case "遙控器":
-                return mqttManager.appliances["remote"]?["updated"]?.value == nil
-            case "插座":
-                return false
-            default:
-                return false
+    // 判斷設備是否已被綁定
+    private func deviceBindingForTab(tab: String) -> Bool {
+        // 將 tab 名稱對應到實際裝置的 MQTT key
+        let tabToDeviceKey: [String: String] = [
+            "溫濕度": "sensor",
+            "空調": "air_conditioner",
+            "除濕機": "dehumidifier",
+            "遙控器": "remote"
+        ]
+        
+        // 取得對應 MQTT 裝置資料（deviceData 為 [String: ApplianceData]）
+        guard let deviceKey = tabToDeviceKey[tab]
+        else {
+            // 若找不到 key 或資料，視為離線
+            return false
         }
+        return mqttManager.availables.contains(deviceKey)
     }
     
     /// 根據 tab 判斷對應裝置是否在 30 分鐘內有更新（即是否在線）
@@ -101,10 +100,38 @@ struct ContentView: View {
         let timeInterval = now.timeIntervalSince(updatedDate)
         
         // 若差距在 300 分鐘內，代表在線，否則離線
-        print("\(tab) -> \(timeInterval <= 18000 ? "資料已更新":"資料未更新")")
-        return timeInterval <= 18000 // 300分鐘 = 1800秒
+        print("\(tab) -> \(timeInterval <= 1800 ? "資料已更新":"資料未更新")")
+        return timeInterval <= 1800 // 300分鐘 = 1800秒
     }
     
+    // 判斷設備是否 綁定 或 設備上線
+    private func isBindingOrOUpdated(tab: String) -> Bool {
+        let isBinding: Bool = deviceBindingForTab(tab: tab) // 綁定
+        let isUpdated: Bool = isDeviceUpdatedOnline(tab: tab) // 資料更新
+        
+        print("isBindingOrOUpdated -> \(isBinding), \(isUpdated)")
+        return isBinding ? isUpdated : true // 有綁定 -> 檢查資料， 無綁定 -> 去畫面綁定
+    }
+    
+    // 判斷MQTT設備是否有回傳資料
+    // 1. update = nil -> true -> loading
+    // 2. sensor = nil -> true -> loading
+    private func isMQTTManagerLoading(tab: String) -> Bool {
+        switch tab {
+        case "溫濕度":
+            return mqttManager.appliances["sensor"]?["updated"]?.value == nil
+        case "空調":
+            return mqttManager.appliances["air_conditioner"]?["updated"]?.value == nil
+        case "除濕機":
+            return mqttManager.appliances["dehumidifier"]?["updated"]?.value == nil
+        case "遙控器":
+            return mqttManager.appliances["remote"]?["updated"]?.value == nil
+        case "插座":
+            return false
+        default:
+            return false
+        }
+    }
     
     var body: some View {
         ZStack() {
@@ -118,7 +145,7 @@ struct ContentView: View {
                 
                 if(isSmartControlConnected) {
                     VStack() {
-                        if(selectedTab == "插座" || isDeviceUpdatedOnline(tab: selectedTab)) {
+                        if(selectedTab == "插座" || isBindingOrOUpdated(tab: selectedTab)) {
                             ZStack() {
                                 /// ✅ 設備已連線
                                 VStack() {
@@ -154,7 +181,7 @@ struct ContentView: View {
                                 Spacer()
                                 Image("unconnect")
                                 Text("設備未連線")
-                                    .font(.body)
+                                    .font(.system(size: 14)) // 调整图标大小
                                     .multilineTextAlignment(.center)
                                 Spacer()
                             }
@@ -211,7 +238,7 @@ struct ContentView: View {
                 isDFConnected = availables.contains("dehumidifier")
                 isREMCConnected = availables.contains("remote")
             }
-
+            
             // 👉 這裡放自訂彈窗，只在 showPopup == true 時顯示
             if appStore.showPopup {
                 CustomPopupView(isPresented: $appStore.showPopup, title: $appStore.title, message: $appStore.message)
