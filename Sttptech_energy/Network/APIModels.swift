@@ -19,7 +19,7 @@ enum HTTPMethod: String {
 struct ApiResponse: Codable {
     let success: Bool
     let originalData: OriginalData
-
+    
     enum CodingKeys: String, CodingKey {
         case success
         case originalData = "original_data"
@@ -36,8 +36,8 @@ struct OriginalData: Codable {
     let success: Bool
 }
 
-// MARK: - Wi-Fi 資料結構
-struct ScanApList: Codable {
+// MARK: - Step1 -  請求 Dongle 掃描並取得 WiFi 列表
+struct ScanApListResponse: Codable {
     let status: String
     let data: ApData
 }
@@ -48,10 +48,30 @@ struct ApData: Codable {
 }
 
 struct ApInfo: Codable {
-    let channel: String
-    let ssid: String
-    let bssid: String
-    let security: String
-    let signal: String
-    let mode: String
+    let channel, ssid, bssid, security, signal, mode: String
+
+    var id: String { bssid } // ✅ 讓 BSSID 當作唯一識別
+}
+
+// MARK: - Step2 - 請求 Dongle 寫入、儲存 WiFi 連線設定
+struct WiFiConfigResponse: Codable {
+    let status: String
+    let err: APIError?
+
+      struct APIError: Codable {
+          let code: String
+          let msg: String
+      }
+}
+
+
+// MARK: - Step3 - 請求 Dongle 開始連線到家用 WiFi
+struct WiFiConnectResponse: Codable {
+    let status: String
+    let err: APIError?
+
+      struct APIError: Codable {
+          let code: String
+          let msg: String
+      }
 }

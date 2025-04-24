@@ -1,0 +1,6 @@
+{
+  "status": "fail",
+  "err": {
+   "code": "801",
+   "msg": "API Not Supported"
+  }

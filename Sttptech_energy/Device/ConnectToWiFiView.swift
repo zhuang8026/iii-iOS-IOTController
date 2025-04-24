@@ -19,8 +19,8 @@ struct ConnectToWiFiView: View {
     
     @State private var wifiLoading: Bool = false // 連結Wi-Fi狀態
     @State private var startConnectDevice: Bool = false // 是否開始連結設備
-    @State private var ssid: String = ""
-    @State private var password: String = ""
+    @State private var ssid: String = "HH42CV_19D7"
+    @State private var password: String = "10009447"
     @State private var connectionMessage: String = ""
     @State private var showScanner: Bool = false // 開啟掃描模式
     

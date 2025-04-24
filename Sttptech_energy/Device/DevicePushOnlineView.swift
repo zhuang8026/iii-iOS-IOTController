@@ -11,37 +11,50 @@ import CoreBluetooth
 let wifiList = ["HH42CV_19D7", "HomeWiFi", "Cafe_123"]
 
 struct DevicePushOnlineView: View {
+    @StateObject private var apiService = APIService() // ✅ 讓 SwiftUI 監聽 API 回應
+
     @Binding var selectedTab: String // 標題名稱
     @Binding var isConnected: Bool // 設備藍芽是否已連線
-    
-    @StateObject private var apiService = APIService() // ✅ 讓 SwiftUI 監聽 API 回應
-    @State private  var wifiList: [String] = []
 
+    @State private var wifiList: [ApInfo] = []
+    
     //    @State private var isRotating = false // loading 旋轉動畫控制
     @State private var showPasswordSheet: Bool = false // 彈窗開關
     
-    @State private var selectedSSID: String = "HH42CV_19D7"
+    @State private var wifiSSID: String = ""
     @State private var wifiPassword: String = ""
-    @State private var isEmpty: Bool = false
+    @State private var wifiSecurity: String = ""
+    @State private var isLoading: Bool = false // api 加載
+    @State private var isEmpty: Bool = true // Wi-Fi資料默認為空
     
     var onCancel: () -> Void  // 用來關閉畫面的 callback
     
-    func fetchWiFiList() {
+    func fetchWiFiListAPI() {
+        self.isLoading = true
         Task {
             do {
                 let data = try await apiService.apiGetWiFiScanApInfo(useMock: true)
-                print("fetchWiFiList: \(data)")
-//                await MainActor.run {
-//                    self.wifiList = data.apList.map { $0.ssid }
-//                }
+//                print("fetchWiFiList: \(data.ap_list), isEmpty: \(data.ap_list.isEmpty)")
+
+                // 確保 UI 更新在主執行緒
+                await MainActor.run {
+                    self.wifiList = data.ap_list // ✅ 整個 ap_list 賦值給 wifiList
+                    self.isEmpty = data.ap_list.isEmpty
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                        self.isLoading = false
+                    }
+                }
             } catch {
-//                await MainActor.run {
-//                    self.errorMessage = error.localizedDescription
-//                }
+                await MainActor.run {
+                    self.wifiList = []
+                    self.isEmpty = true
+                    self.isLoading = false
+                }
+                print("❌ Error fetching WiFi list: \(error.localizedDescription)")
             }
         }
     }
-
+    
     var body: some View {
         VStack(spacing: 20) {
             HStack {
@@ -57,19 +70,6 @@ struct DevicePushOnlineView: View {
                 }
             }
             
-            //            if (bluetoothManager.discoveredPeripherals.isEmpty) { // 空藍芽資料
-            //                VStack {
-            //                    Spacer()
-            //                    EmptyData()
-            //                    Spacer()
-            //                }
-            //            } else if (bluetoothManager.isScanning) { // 掃描藍芽中
-            //                VStack {
-            //                    Spacer()
-            //                    Loading()
-            //                    Spacer()
-            //                }
-            //            } else {
             ScrollView {
                 VStack(alignment: .leading, spacing: 10) {
                     // 顯示選擇的設備
@@ -102,7 +102,13 @@ struct DevicePushOnlineView: View {
                     }
                     
                     // ✅ Wi-Fi 掃描結果 (允許選擇)
-                    if isEmpty {
+                    if (isLoading) { // API加載默認為 false
+                        HStack {
+                            Spacer()
+                            Loading()
+                            Spacer()
+                        }
+                    } else if (isEmpty) { // 資料默認為 true
                         HStack {
                             Spacer()
                             EmptyData(text: "暫無可用 Wi-Fi")
@@ -112,14 +118,16 @@ struct DevicePushOnlineView: View {
                         // Wi-Fi列表
                         VStack(alignment: .leading) {
                             LazyVStack(spacing: 10) {
-                                ForEach(wifiList, id: \.self) { wifi in
+                                ForEach(self.wifiList, id: \.bssid) { wifi in
                                     Button(action: {
+                                        wifiSSID = wifi.ssid
+                                        wifiSecurity = wifi.security
                                         // password = "" // 清空密碼
                                         showPasswordSheet = true // 彈出輸入框
                                     }) {
                                         HStack {
                                             VStack(alignment: .leading) {
-                                                Text(wifi)
+                                                Text(wifi.ssid)
                                                     .font(.body)
                                                     .foregroundColor(Color.g_blue)
                                             }
@@ -138,36 +146,37 @@ struct DevicePushOnlineView: View {
                             wifiPassword = "" // ✅ 關閉彈窗並清空密碼
                         }) {
                             WiFiPasswordInputDialog(
-                                selectedSSID: $selectedSSID,
+                                selectedSSID: $wifiSSID,
                                 password: $wifiPassword,
+                                security: $wifiSecurity,
                                 isConnected: $isConnected
                             ) {
                                 showPasswordSheet = false // 點擊送出後關閉
                             }
                         }
                         
-                        //                            HStack {
-                        //                                Spacer()
-                        //                                Loading(text: "尋找 Wi-Fi 中")
-                        //                                Spacer()
-                        //                            }
-                        //                            .onAppear {
-                        //                                // 10秒後檢查 Wi-Fi 列表是否還是空的
-                        //                                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                        //                                    isEmpty = true
-                        //                                }
-                        //                            }
+//                            HStack {
+//                                Spacer()
+//                                Loading(text: "尋找 Wi-Fi 中")
+//                                Spacer()
+//                            }
+//                            .onAppear {
+//                                // 10秒後檢查 Wi-Fi 列表是否還是空的
+//                                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+//                                    isEmpty = true
+//                                }
+//                            }
                     }
                 }
+                .padding(.bottom, 60) // 留出按鈕空間，避免 ScrollView 被按鈕擋住
             }
             .background(Color.clear) // 設定整個 `ScrollView` 背景
-            //            }
             
             // 「開始搜索」按鈕
             Button(action: {
-                // 1. 重置藍牙與 Wi-Fi 資料
-                self.isEmpty = false             // 隱藏「無資料」訊息
-                fetchWiFiList()
+                // 重置Wi-Fi 資料
+                self.isEmpty = false // 隱藏「無資料」訊息
+                fetchWiFiListAPI()   // Get API
                 triggerHapticFeedback(model: .heavy) // 觸發震動
                 
             }) {

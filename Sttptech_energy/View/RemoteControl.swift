@@ -87,9 +87,9 @@ struct RemoteControl: View {
                         // 🔥 監聽 isPowerOn 的變化
                         .onChange(of: isPowerOn) { oldVal, newVal in
                             print("isPowerOn: \(newVal)")
-                            if newVal {
-                                appStore.showPopup = true // 開啟提示窗
-                            }
+//                            if newVal {
+//                                appStore.showPopup = true // 開啟提示窗
+//                            }
                             let paylodModel: [String: Any] = ["cfg_power": newVal ? "on" : "off"]
                             postSettingRemoteControl(mode: paylodModel)
                         }
