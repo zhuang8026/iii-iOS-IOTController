@@ -114,15 +114,25 @@ struct GradientProgress: View {
     
     // 計算進度條的寬度
     private func progressWidth(for barWidth: CGFloat, totalSegments: Int) -> CGFloat {
+        guard totalSegments > 0 else { return 0 }
+        let rawProgress = CGFloat(temperature - minTemperature + 1)
+
         let adjustedSegments = totalSegments // 確保分為 15 段
-        let progress = CGFloat(temperature - minTemperature + 1) / CGFloat(adjustedSegments)
+        let progress = rawProgress / CGFloat(adjustedSegments)
         print("溫度:", progress)
-        return progress * barWidth
+        
+        if !progress.isFinite || progress < 0 {
+            return 0
+        }
+
+//        return progress * barWidth
+        return max(0, min(progress * barWidth, barWidth))
     }
     
     /// 設置不同角的圓角半徑
     private func cornerRadius(for temperature: Int, corner: CornerType) -> CGFloat {
-        if temperature == 30 {
+        // 當"溫度 = 最大溫度"時，右上和右下就變成圓角
+        if temperature == self.maxTemperature {
             return 10 // 四個角都是20
         } else {
             switch corner {

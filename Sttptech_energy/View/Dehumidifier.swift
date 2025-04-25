@@ -15,22 +15,21 @@ struct Dehumidifier: View {
     @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
     
     // 選項列表
-    let humidityOptions = Array(stride(from: 1, through: 100, by: 1)) // 設定：40% - 80%
-    let timerOptions = Array(1...100) // 設定：1 - 12 小時
-    let waterLevelOptions = ["正常", "滿水"]
-    let modeOptions = [
-        "auto", "manual", "continuous", "clothes_drying",
-        "purification", "sanitize", "fan", "comfort", "low_drying"
-    ]
+    @State private var humidityOptions:[Int] = [] // 設定：40% - 80% (ex: Array(stride(from: 1, through: 100, by: 1)))
+    @State private var timerOptions:[Int] = [] // 設定：1 - 12 小時 (ex: Array(1...100))
+    @State private var modeOptions:[String] = [] // 除濕類型(ex: "auto", "manual", "continuous", "clothes_drying","purification", "sanitize", "fan", "comfort", "low_drying")
+    @State private var waterLevelOptions = ["normal", "alarm"] // ["正常", "滿水"] (注意：畫面上用不到此參數)
+    @State private var fanModeOptions:[String] = [] // ["auto", "low", "medium", "high", "strong", "max"]
     
     // 選項結果
     @State private var isPowerOn = true
     @State private var selectedMode: String = "auto"  // ["自動除濕", "連續除濕"]
     @State private var selectedHumidity: Int = 50
     @State private var selectedTimer: Int = 2
-    @State private var checkWaterFullAlarm: String = "正常" // ["正常", "滿水"]
+    @State private var checkWaterFullAlarm: String = "alarm" // ["正常", "滿水"]
     @State private var fanSpeed: String = "auto" // 風速設定變數-> API cfg_fan_level
-    
+
+
     // 藍芽連線顯示
     @State private var isShowingNewDeviceView = false // 是否要開始藍芽配對介面，默認：關閉
     @State private var selectedTab = "除濕機"
@@ -38,7 +37,52 @@ struct Dehumidifier: View {
     let titleWidth = 8.0;
     let titleHeight = 20.0;
     
-    /// 解析 MQTT 家電數據，更新 UI
+    // MARK: - 取得 MQTT 設備讀取能力，更新 UI
+    private func checkDehumidifierCapabilities() {
+        guard let DF_Capabilities = mqttManager.deviceCapabilities["dehumidifier"] else {
+            return
+        }
+        
+        // 解析 `cfg_humidity` -> Array ("read", "50", "55", "60", "65", "70", "75")
+        if let humidityString = DF_Capabilities["cfg_humidity"] {
+            let humidityValue = humidityString
+                .filter {  $0 != "read" }  // ❌ 排除 "read"
+                .compactMap { Int($0) }    // ✅ 字串轉 Int
+            self.humidityOptions = humidityValue
+        }
+        
+        // 解析 `cfg_timer` -> Array ("read", "off", "1", "2", "3", "4"....)
+        if let timerString = DF_Capabilities["cfg_timer"] {
+            let timerValue = timerString
+                .filter { $0 != "read" && $0 != "off" }  // ❌ 排除 "read", "off"
+                .compactMap { Int($0) }    // ✅ 字串轉 Int
+            self.timerOptions = timerValue
+        }
+
+        // 解析 `op_water_full_alarm` -> Array ("read", "normal", "alarm")
+        if let waterFullString = DF_Capabilities["op_water_full_alarm"] {
+            let waterFullValue = waterFullString
+                .filter { $0 != "read"}  // ❌ 排除 "read", "off"
+            self.waterLevelOptions = waterFullValue
+        }
+
+        // 解析 `modeOptions` -> Array ("read", "auto", "manual", "continuous", "clothes_drying", "purification", "sanitize", "fan", "comfort", "low_drying")
+        if let modeStrings = DF_Capabilities["cfg_mode"] {
+            let modeValues = modeStrings
+                .filter { $0 != "read" }               // ❌ 排除 "read"
+            self.modeOptions = modeValues
+        }
+        
+        // 解析 `modeOptions` -> Array ("read", "auto", "low", "medium", "high", "strong", "max")
+        if let fanLevelStrings = DF_Capabilities["cfg_fan_level"] {
+            let fanLevelValues = fanLevelStrings
+                .filter { $0 != "read" }               // ❌ 排除 "read"
+            self.fanModeOptions = fanLevelValues
+        }
+        
+    }
+
+    // MARK: - 解析 MQTT 家電數據，更新 UI
     private func updateDehumidifierData() {
         guard let dehumidifierData = mqttManager.appliances["dehumidifier"] else { return }
         
@@ -57,14 +101,18 @@ struct Dehumidifier: View {
             selectedHumidity = humidityInt
         }
         
-        // 解析 `cfg_humidity` -> Int
+        // 解析 `cfg_timer` -> Int
         if let timer = dehumidifierData["cfg_timer"]?.value, let timerInt = Int(timer) {
             selectedTimer = timerInt
         }
-        
-        // 解析 `op_water_full_alarm` -> String ("0" -> "正常", "1" -> "滿水")
+
+        // 解析 `op_water_full_alarm` -> String ("normal":"正常", "alarm":"滿水")
+        let waterAlarmMap: [String: String] = [
+            "normal": "正常",
+            "alarm": "滿水"
+        ]
         if let waterAlarm = dehumidifierData["op_water_full_alarm"]?.value {
-            checkWaterFullAlarm = (waterAlarm == "1") ? "滿水" : "正常"
+            checkWaterFullAlarm = waterAlarmMap[waterAlarm] ?? "未知"
         }
         
         // 解析 `op_water_full_alarm` -> String ("0" -> "正常", "1" -> "滿水")
@@ -73,7 +121,7 @@ struct Dehumidifier: View {
         }
     }
     
-    /// **模式轉換函式**
+    // MARK: - 除濕機 模式轉換函式(EN -> TW)
     private func verifyMode(_ mode: String) -> String {
         switch mode {
         case "auto": return "自動除濕"
@@ -89,6 +137,7 @@ struct Dehumidifier: View {
         }
     }
     
+    // MARK: - 送出用戶控制參數
     private func postDehumidifierSetting(mode: [String: Any]) {
         let paylod: [String: Any] = [
             "dehumidifier": mode
@@ -99,10 +148,9 @@ struct Dehumidifier: View {
     var body: some View {
         if (isConnected) {
             ZStack {
-                // 取得 dehumidifier 數據
-                // let DHFRData = mqttManager.appliances["dehumidifier"]
-                
-                VStack(spacing: 20) {
+                VStack(alignment: .leading, spacing: 20) {
+                    
+                    // 電源開關
                     PowerToggle(isPowerOn: $isPowerOn)
                     // 🔥 監聽 isPowerOn 的變化
                         .onChange(of: isPowerOn) { oldVal, newVal in
@@ -247,7 +295,7 @@ struct Dehumidifier: View {
                                 Text("風速")
                             }
                             //  FanSpeedSlider(fanSpeed: $fanSpeed) // 風速控制
-                            WindSpeedView(selectedSpeed: $fanSpeed) // 風速控制
+                            WindSpeedView(selectedSpeed: $fanSpeed, fanMode: $fanModeOptions) // 風速控制
                                 .onChange(of: fanSpeed) { oldVal, newVal in  // 🔥 監聽 isPowerOn 的變化
                                     print("fanSpeed: \(newVal)")
                                     let paylodModel: [String: Any] = ["cfg_fan_level": newVal]
@@ -268,6 +316,7 @@ struct Dehumidifier: View {
                     }
                 }
                 .onAppear {
+                    checkDehumidifierCapabilities() // 檢查設備可讀取資料
                     updateDehumidifierData() // 畫面載入時初始化數據
                 }
                 .onChange(of: mqttManager.appliances["dehumidifier"]) { _, _ in

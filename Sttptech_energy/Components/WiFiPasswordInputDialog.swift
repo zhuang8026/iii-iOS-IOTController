@@ -31,10 +31,27 @@ struct WiFiPasswordInputDialog: View {
     
     @FocusState private var isTextFieldFocused: Bool  // 追蹤輸入框焦點
     
+    // MARK: - Alert 更新封裝
+    @MainActor
+    private func updateAlert(status: Bool, title: String, content: String, button: String) async {
+        alertInfo = AlertInfo(
+            status: status,
+            title: title,
+            content: content,
+            btn: button
+        )
+        showAlert = true
+    }
     
-    func sendWiFiConfig() async {
+    // MARK: - Step2 - 請求 Dongle 寫入、儲存 WiFi 連線設定
+    func sendApiGetWiFiSetting() async {
         guard !selectedSSID.isEmpty, !password.isEmpty, !security.isEmpty else {
-            print("❌ 請填寫完整資訊")
+            await updateAlert(
+                status: false,
+                title: "欄位缺漏",
+                content: "請填寫完整資訊再試一次。",
+                button: "確定"
+            )
             isWiFiLoading = false
             return
         }
@@ -48,30 +65,50 @@ struct WiFiPasswordInputDialog: View {
                 security: security,
                 useMock: true
             )
-            print("✅ 寫入成功，回傳：\(response)")
+            print("✅ Step2 API 回傳：\(response)")
             
             if response.status.lowercased() == "ok" {
                 print("✅ Wi-Fi 設定成功")
-                await MainActor.run {
-                    alertInfo = AlertInfo(
-                        status: true,
-                        title: "Wi-Fi 設定完成",
-                        content: "請點選確認進入主畫面。",
-                        btn: "確認"
-                    )
-                    showAlert = true // 👉 彈出 alert
-                }
+                await sendApiGetWiFiConnect() // step3 - 喚醒 dongle
             } else {
                 print("❌ Wi-Fi 設定失敗")
-                await MainActor.run {
-                    alertInfo = AlertInfo(
-                        status: false, // 連結失敗
-                        title: "Wi-Fi 設定失敗",
-                        content: "請確認密碼與 Wi-Fi 設定後重新送出。",
-                        btn: "重新嘗試"
-                    )
-                    showAlert = true // 👉 彈出 alert
-                }
+                await updateAlert(
+                    status: false,
+                    title: "Wi-Fi 設定失敗",
+                    content: "請確認密碼與 Wi-Fi 設定後重新送出。",
+                    button: "重新嘗試"
+                )
+            }
+        } catch {
+            await MainActor.run {
+                isWiFiLoading = false
+            }
+            print("❌ 寫入失敗：\(error.localizedDescription)")
+        }
+    }
+    
+    // MARK: - Step3 - 請求 Dongle 開始連線到家用 WiFi
+    func sendApiGetWiFiConnect() async {
+        do {
+            let response = try await apiService.apiGetWiFiConnect(useMock: true)
+            print("✅ Step3 API 回傳：\(response)")
+            
+            if response.status.lowercased() == "ok" {
+                print("✅ 設備 設定成功")
+                await updateAlert(
+                    status: true,
+                    title: "設備設定完成",
+                    content: "請點選確認進入主畫面。",
+                    button: "確認"
+                )
+            } else {
+                print("❌ Wi-Fi 設定失敗")
+                await updateAlert(
+                    status: false,
+                    title: "設備設定失敗",
+                    content: "請確認設備是否正常。",
+                    button: "重新嘗試"
+                )
             }
             
             
@@ -110,7 +147,7 @@ struct WiFiPasswordInputDialog: View {
                     Button(action: {
                         isWiFiLoading = true // 開始送出Wi-Fi密碼
                         Task {
-                            await sendWiFiConfig()
+                            await sendApiGetWiFiSetting()
                         }
                     }) {
                         Image(systemName: "paperplane.fill")

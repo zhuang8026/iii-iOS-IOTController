@@ -17,10 +17,11 @@ struct AirConditioner: View {
     @State private var isPowerOn = true
     @State private var selectedMode = "cool"
     @State private var fanSpeed: String = "auto"
+    @State private var fanMode: [String] = [] // ["auto", "low", "medium", "high", "strong", "max"]
     @State private var temperature: Int = 24
     @State private var minTemp: Int = 16
     @State private var maxTemp: Int = 30
-    @State private var modes = ["cool", "heat", "dry", "fan", "auto"]
+    @State private var modes:[String] = [] // 【"cool", "heat", "dry", "fan", "auto"】
     
     // 藍芽連線顯示
     @State private var isShowingNewDeviceView = false // 是否要開始藍芽配對介面，默認：關閉
@@ -31,43 +32,43 @@ struct AirConditioner: View {
     
     // MARK: - 取得 MQTT 設備讀取能力，更新 UI
     private func checkAirConditionerCapabilities() {
-        guard let AC_Capabilities = mqttManager.deviceCapabilities["air_conditioner"] else { return }
-        
-//        // 解析 `cfg_fan_level` -> Bool (開 / 關)
-        if let fanLevels = AC_Capabilities["cfg_mode"] {
-            let filteredFanLevels = fanLevels.filter { $0 != "read" }  // ❌ 排除 "read"
-            self.modes = filteredFanLevels
+        guard let AC_Capabilities = mqttManager.deviceCapabilities["air_conditioner"] else {
+            return
         }
         
+        // 解析 `cfg_mode` -> String ("cool", "dry", "fan", "auto", "heat")
+        if let modeString = AC_Capabilities["cfg_mode"] {
+            let modevalue = modeString.filter {
+                $0 != "read"
+            }  // ❌ 排除 "read"
+            self.modes = modevalue
+        }
+        
+        // 解析 `cfg_fan_level` -> String ("auto", "low", "medium", "high", "strong", "max")
+        if let fanLevel = AC_Capabilities["cfg_fan_level"] {
+            let filteredFanLevels = fanLevel.filter {
+                $0 != "read"
+            }  // ❌ 排除 "read"
+            fanMode = filteredFanLevels
+        }
+
+        // 解析 `cfg_temperature` -> Int
         if let tempStrings = AC_Capabilities["cfg_temperature"] {
             let tempValues = tempStrings
                 .filter { $0 != "read" }               // ❌ 排除 "read"
                 .compactMap { Int($0) }                // ✅ 字串轉 Int
                 .filter { $0 >= 0 && $0 <= 100 }       // ✅ 避免不合理值（保險）
-
+            
             self.minTemp = tempValues.min() ?? 16
             self.maxTemp = tempValues.max() ?? 30
         }
-        
-//        // 解析 `cfg_mode` -> String ("cool", "dry", "fan", "auto", "heat")
-//        if let mode = airConditionerData["cfg_mode"]?.value {
-//            selectedMode = mode
-//        }
-//        
-//        // 解析 `cfg_fan_level` -> String ("auto", "low", "medium", "high", "strong", "max")
-//        if let fanLevel = airConditionerData["cfg_fan_level"]?.value {
-//            fanSpeed = fanLevel
-//        }
-//        
-//        // 解析 `cfg_temperature` -> Int
-//        if let temp = airConditionerData["cfg_temperature"]?.value, let tempInt = Int(temp) {
-//            temperature = tempInt
-//        }
     }
-
+    
     // MARK: - 解析 MQTT 家電數據，更新 UI
     private func updateAirConditionerData() {
-        guard let airConditionerData = mqttManager.appliances["air_conditioner"] else { return }
+        guard let airConditionerData = mqttManager.appliances["air_conditioner"] else {
+            return
+        }
         
         // 解析 `cfg_power` -> Bool (開 / 關)
         if let power = airConditionerData["cfg_power"]?.value {
@@ -85,7 +86,9 @@ struct AirConditioner: View {
         }
         
         // 解析 `cfg_temperature` -> Int
-        if let temp = airConditionerData["cfg_temperature"]?.value, let tempInt = Int(temp) {
+        if let temp = airConditionerData["cfg_temperature"]?.value, let tempInt = Int(
+            temp
+        ) {
             temperature = tempInt
         }
     }
@@ -102,7 +105,7 @@ struct AirConditioner: View {
     var body: some View {
         if (isConnected) {
             ZStack {
-                VStack(spacing: 20) {
+                VStack(alignment: .leading, spacing: 20) {
                     PowerToggle(isPowerOn: $isPowerOn)
                     // 🔥 監聽 isPowerOn 的變化
                         .onChange(of: isPowerOn) { oldVal, newVal in
@@ -123,28 +126,37 @@ struct AirConditioner: View {
                             HStack {
                                 // tag
                                 RoundedRectangle(cornerRadius: 4)
-                                    .frame(width: titleWidth, height: titleHeight) // 控制長方形的高度，寬度根據內容自動調整
+                                    .frame(
+                                        width: titleWidth,
+                                        height: titleHeight
+                                    ) // 控制長方形的高度，寬度根據內容自動調整
                                 Text("模式")
                             }
-                            ModeSelector(selectedMode: $selectedMode, modes: $modes)
+                            ModeSelector(
+                                selectedMode: $selectedMode,
+                                modes: $modes
+                            )
                             // 🔥 監聽 selectedTab 的變化
-                                .onChange(of: selectedMode) { oldVal, newVal in
-                                    print("ModeSelector: \(newVal)")
-                                    let paylodModel: [String: Any] = ["cfg_mode": newVal]
-                                    postAirConditionerRemote(mode: paylodModel)
-                                }
+                            .onChange(of: selectedMode) {oldVal, newVal in
+                                print("ModeSelector: \(newVal)")
+                                let paylodModel: [String: Any] = ["cfg_mode": newVal]
+                                postAirConditionerRemote(mode: paylodModel)
+                            }
                         }
                         
-                        /// 風量
+                        /// 風速
                         VStack(alignment: .leading, spacing: 9) {
                             HStack {
                                 // tag
                                 RoundedRectangle(cornerRadius: 4)
-                                    .frame(width: titleWidth, height: titleHeight) // 控制長方形的高度，寬度根據內容自動調整
+                                    .frame(
+                                        width: titleWidth,
+                                        height: titleHeight
+                                    ) // 控制長方形的高度，寬度根據內容自動調整
                                 Text("風速")
                             }
                             //                        FanSpeedSlider(fanSpeed: $fanSpeed) /// 風量控制
-                            WindSpeedView(selectedSpeed: $fanSpeed) // 風速控制
+                            WindSpeedView(selectedSpeed: $fanSpeed, fanMode: $fanMode) // 風速控制
                             // 🔥 監聽 fanSpeed 的變化
                                 .onChange(of: fanSpeed) { oldVal, newVal in
                                     print("fanSpeed: \(newVal)")
@@ -158,7 +170,10 @@ struct AirConditioner: View {
                             HStack {
                                 // tag
                                 RoundedRectangle(cornerRadius: 4)
-                                    .frame(width: titleWidth, height: titleHeight) // 控制長方形的高度，寬度根據內容自動調整
+                                    .frame(
+                                        width: titleWidth,
+                                        height: titleHeight
+                                    ) // 控制長方形的高度，寬度根據內容自動調整
                                 Text("溫度")
                             }
                             GradientProgress(
@@ -167,11 +182,15 @@ struct AirConditioner: View {
                                 maxTemperature: $maxTemp  // max temp
                             ) /// 溫度控制視圖
                             // 🔥 監聽 temperature 的變化
-                                .onChange(of: temperature) { oldVal, newVal in
-                                    // print("temperature: \(newVal)")
-                                    let paylodModel: [String: Any] = ["cfg_temperature": String(newVal)]
-                                    postAirConditionerRemote(mode: paylodModel)
-                                }
+                            .onChange(of: temperature) {
+                                oldVal,
+                                newVal in
+                                // print("temperature: \(newVal)")
+                                let paylodModel: [String: Any] = ["cfg_temperature": String(
+                                    newVal
+                                )]
+                                postAirConditionerRemote(mode: paylodModel)
+                            }
                         }
                         
                     } else {
@@ -194,7 +213,9 @@ struct AirConditioner: View {
                 //            .onChange(of: mqttManager.appliances["dehumidifier"]?.id) { _ in
                 //                updateDehumidifierData()
                 //            }
-                .onChange(of: mqttManager.appliances["air_conditioner"]) { _, _ in
+                .onChange(
+                    of: mqttManager.appliances["air_conditioner"]
+                ) { _, _ in
                     updateAirConditionerData()
                 }
             }

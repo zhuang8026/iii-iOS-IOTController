@@ -1,48 +1,48 @@
 {
-  "status": "ok",
-  "data": {
-    "count": 5,
-    "ap_list": [
-      {
-        "channel": "4",
-        "ssid": "dlink",
-        "bssid": "78:54:2e:a5:2f:0c",
-        "security": "WPA1PSKWPA2PSK/TKIPAES",
-        "signal": "57",
-        "mode": "11b/g/n"
-      },
-      {
-        "channel": "5",
-        "ssid": "UPORT",
-        "bssid": "9e:4d:ea:04:ed:f6",
-        "security": "WEP",
-        "signal": "37",
-        "mode": "11b/g"
-      },
-      {
-        "channel": "6",
-        "ssid": "arobot",
-        "bssid": "66:91:91:07:ad:e6",
-        "security": "WPA2PSK/AES",
-        "signal": "18",
-        "mode": "11b/g/n"
-      },
-      {
-        "channel": "11",
-        "ssid": "FITi",
-        "bssid": "e4:4e:2d:0e:9a:20",
-        "security": "WPA2PSK/AES",
-        "signal": "13",
-        "mode": "11b/g/n"
-      },
-      {
-        "channel": "11",
-        "ssid": "FITi-Mac",
-        "bssid": "e4:4e:2d:0e:9a:21",
-        "security": "NONE",
-        "signal": "20",
-        "mode": "11b/g/n"
-      }
-    ]
-  }
+    "status": "ok",
+    "data": {
+        "count": 5,
+        "ap_list": [
+            {
+                "channel": "4",
+                "ssid": "dlink",
+                "bssid": "78:54:2e:a5:2f:0c",
+                "security": "WPA1PSKWPA2PSK/TKIPAES",
+                "signal": "57",
+                "mode": "11b/g/n"
+            },
+            {
+                "channel": "5",
+                "ssid": "UPORT",
+                "bssid": "9e:4d:ea:04:ed:f6",
+                "security": "WEP",
+                "signal": "37",
+                "mode": "11b/g"
+            },
+            {
+                "channel": "6",
+                "ssid": "arobot",
+                "bssid": "66:91:91:07:ad:e6",
+                "security": "WPA2PSK/AES",
+                "signal": "18",
+                "mode": "11b/g/n"
+            },
+            {
+                "channel": "11",
+                "ssid": "FITi",
+                "bssid": "e4:4e:2d:0e:9a:20",
+                "security": "WPA2PSK/AES",
+                "signal": "13",
+                "mode": "11b/g/n"
+            },
+            {
+                "channel": "11",
+                "ssid": "FITi-Mac",
+                "bssid": "e4:4e:2d:0e:9a:21",
+                "security": "NONE",
+                "signal": "20",
+                "mode": "11b/g/n"
+            }
+        ]
+    }
 }

@@ -26,6 +26,7 @@ struct RemoteControl: View {
     @State private var isShowingNewDeviceView: Bool = false  // 是否要開始藍芽配對介面，默認：關閉
     @State private var selectedTab: String = "cool"          // 設備控制選項，默認冷氣
     @State private var fanSpeed: String = "auto"
+    @State private var fanMode: [String] =  ["auto", "low", "medium", "high", "strong", "max"] // ["auto", "low", "medium", "high", "strong", "max"]
     @State private var temperature: Int = 0
     @State private var minTemp: Int = 16
     @State private var maxTemp: Int = 30
@@ -87,9 +88,9 @@ struct RemoteControl: View {
                         // 🔥 監聽 isPowerOn 的變化
                         .onChange(of: isPowerOn) { oldVal, newVal in
                             print("isPowerOn: \(newVal)")
-//                            if newVal {
-//                                appStore.showPopup = true // 開啟提示窗
-//                            }
+                            //                            if newVal {
+                            //                                appStore.showPopup = true // 開啟提示窗
+                            //                            }
                             let paylodModel: [String: Any] = ["cfg_power": newVal ? "on" : "off"]
                             postSettingRemoteControl(mode: paylodModel)
                         }
@@ -123,7 +124,7 @@ struct RemoteControl: View {
                                         Text("風速")
                                     }
                                     //                                    FanSpeedSlider(fanSpeed: $fanSpeed) /// 風量控制
-                                    WindSpeedView(selectedSpeed: $fanSpeed) // 風速控制
+                                    WindSpeedView(selectedSpeed: $fanSpeed, fanMode: $fanMode) // 風速控制
                                     // 🔥 監聽 fanSpeed 的變化
                                         .onChange(of: fanSpeed) { oldVal, newVal in
                                             print("fanSpeed: \(newVal)")

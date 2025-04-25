@@ -11,7 +11,7 @@ import CocoaMQTT
 // MARK: - [對外] 核心功能
 class MQTTManager: NSObject, ObservableObject {
     static let shared = MQTTManager()
-
+    
     // MARK: - MQTT連線狀態
     @Published var isConnected: Bool = false
     // MARK: - Smart Control 連線狀態
@@ -408,13 +408,13 @@ extension MQTTManager: CocoaMQTTDelegate {
                         }
                         
                         self.appliances = parsedAppliances
-                        //                        print("✅ 總家電參數更新: \(parsedAppliances)")
+                        print("✅ 總家電參數更新: \(parsedAppliances)")
                         
-                        if let mqtt_data = parsedAppliances["sensor"] {
-                            //                            print("✅ 「sensor」溫濕度數據: \(mqtt_data)")
-                            //                            print("✅ 「air_conditioner」冷氣數據: \(mqtt_data)")
-                            //                            print("✅ 「dehumidifier」除濕機數據: \(mqtt_data)")
-                            print("✅ 「sensor」遙控器數據: \(mqtt_data)")
+                        if let mqtt_data = parsedAppliances["dehumidifier"] {
+//                            print("✅ 「sensor」溫濕度數據: \(mqtt_data)")
+//                            print("✅ 「air_conditioner」冷氣數據: \(mqtt_data)")
+                            print("✅ 「dehumidifier」除濕機數據: \(mqtt_data)")
+//                            print("✅ 「sensor」遙控器數據: \(mqtt_data)")
                             
                         }
                     }
