@@ -9,7 +9,7 @@ import SwiftUI
 
 struct RemoteControl: View {
     @Binding var isConnected: Bool  // [父層控制] 設備藍芽是否已連線
-    @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
+//    @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
     
     // MARK: - 自定義遙控器名稱功能 暫時 默認：完成，用久不關閉
     //    @AppStorage("editRemoteName") private var editRemoteName: String = ""   // ✅ 自定義設備名稱 記住連線狀態
@@ -39,7 +39,7 @@ struct RemoteControl: View {
     
     /// 解析 MQTT 家電數據，更新 UI
     private func updateRemoteControlData() {
-        guard let remoteData = mqttManager.appliances["remote"] else { return }
+        guard let remoteData = MQTTManagerMiddle.shared.appliances["remote"] else { return }
         
         // 解析 `cfg_power` -> String (開 / 關)
         if let power = remoteData["cfg_power"]?.value {
@@ -69,7 +69,8 @@ struct RemoteControl: View {
         let paylod: [String: Any] = [
             "remote": mode
         ]
-        mqttManager.publishSetDeviceControl(model: paylod)
+//        mqttManager.publishSetDeviceControl(model: paylod)
+        MQTTManagerMiddle.shared.setDeviceControl(model: paylod)
     }
     
     var body: some View {
@@ -201,7 +202,7 @@ struct RemoteControl: View {
         .onAppear {
             updateRemoteControlData() // 畫面載入時初始化數據
         }
-        .onChange(of: mqttManager.appliances["remote"]) { _, _ in
+        .onChange(of: MQTTManagerMiddle.shared.appliances["remote"]) { _, _ in
             updateRemoteControlData()
         }
     }

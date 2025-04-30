@@ -12,7 +12,7 @@ struct AirConditioner: View {
     
     // 控制提示
     @EnvironmentObject var appStore: AppStore  // 全局倉庫
-    @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
+//    @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
     
     @State private var isPowerOn = true
     @State private var selectedMode = "cool"
@@ -32,7 +32,7 @@ struct AirConditioner: View {
     
     // MARK: - 取得 MQTT 設備讀取能力，更新 UI
     private func checkAirConditionerCapabilities() {
-        guard let AC_Capabilities = mqttManager.deviceCapabilities["air_conditioner"] else {
+        guard let AC_Capabilities = MQTTManagerMiddle.shared.deviceCapabilities["air_conditioner"] else {
             return
         }
         
@@ -66,7 +66,7 @@ struct AirConditioner: View {
     
     // MARK: - 解析 MQTT 家電數據，更新 UI
     private func updateAirConditionerData() {
-        guard let airConditionerData = mqttManager.appliances["air_conditioner"] else {
+        guard let airConditionerData = MQTTManagerMiddle.shared.appliances["air_conditioner"] else {
             return
         }
         
@@ -98,7 +98,8 @@ struct AirConditioner: View {
         let paylod: [String: Any] = [
             "air_conditioner": mode
         ]
-        mqttManager.publishSetDeviceControl(model: paylod)
+//        mqttManager.publishSetDeviceControl(model: paylod)
+        MQTTManagerMiddle.shared.setDeviceControl(model: paylod)
     }
     
     //MARK: - HStack 控制水平排列，VStack 控制垂直排列
@@ -216,7 +217,7 @@ struct AirConditioner: View {
                 //                updateDehumidifierData()
                 //            }
                 .onChange(
-                    of: mqttManager.appliances["air_conditioner"]
+                    of: MQTTManagerMiddle.shared.appliances["air_conditioner"]
                 ) { _, _ in
                     updateAirConditionerData()
                 }

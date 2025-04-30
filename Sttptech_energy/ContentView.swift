@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var appStore: AppStore  // 使用全域狀態
-    @EnvironmentObject var mqttManager: MQTTManager // 從環境取得 MQTTManager
+//    @EnvironmentObject var mqttManager: MQTTManager // 從環境取得 MQTTManager
     
     @State private var selectedTab = "" // 選擇設備控制
     @State private var status = false // 控制顯示標題名稱（內含 返回 icon）
@@ -61,7 +61,7 @@ struct ContentView: View {
             // 若找不到 key 或資料，視為離線
             return false
         }
-        return mqttManager.availables.contains(deviceKey)
+        return MQTTManagerMiddle.shared.availables.contains(deviceKey)
     }
     
     /// 根據 tab 判斷對應裝置是否在 30 分鐘內有更新（即是否在線）
@@ -79,7 +79,7 @@ struct ContentView: View {
         
         // 取得對應 MQTT 裝置資料（deviceData 為 [String: ApplianceData]）
         guard let deviceKey = tabToDeviceKey[tab],
-              let deviceData = mqttManager.appliances[deviceKey],
+              let deviceData = MQTTManagerMiddle.shared.appliances[deviceKey],
               let updatedTime = deviceData["updated"]
         else {
             // 若找不到 key 或資料，視為離線
@@ -119,13 +119,13 @@ struct ContentView: View {
     private func isMQTTManagerLoading(tab: String) -> Bool {
         switch tab {
         case "溫濕度":
-            return mqttManager.appliances["sensor"]?["updated"]?.value == nil
+            return MQTTManagerMiddle.shared.appliances["sensor"]?["updated"]?.value == nil
         case "空調":
-            return mqttManager.appliances["air_conditioner"]?["updated"]?.value == nil
+            return MQTTManagerMiddle.shared.appliances["air_conditioner"]?["updated"]?.value == nil
         case "除濕機":
-            return mqttManager.appliances["dehumidifier"]?["updated"]?.value == nil
+            return MQTTManagerMiddle.shared.appliances["dehumidifier"]?["updated"]?.value == nil
         case "遙控器":
-            return mqttManager.appliances["remote"]?["updated"]?.value == nil
+            return MQTTManagerMiddle.shared.appliances["remote"]?["updated"]?.value == nil
         case "插座":
             return false
         default:
@@ -192,7 +192,7 @@ struct ContentView: View {
                         
                         // 底部導航欄
                         NavigationBar(selectedTab: $selectedTab)
-                            .environmentObject(mqttManager) // 確保能讀取 availables
+                            .environmentObject(MQTTManagerMiddle.shared) // 確保能讀取 availables
                     }
                 } else {
                     ZStack() {
@@ -202,7 +202,7 @@ struct ContentView: View {
                             isConnected: $isSmartControlConnected // 連線狀態
                         )
                         // ❌ 無資料 → 顯示 Loading 畫面
-                        if (mqttManager.serverLoading) {
+                        if (MQTTManagerMiddle.shared.serverLoading) {
                             Color.light_green.opacity(0.85) // 透明磨砂黑背景
                                 .edgesIgnoringSafeArea(.all) // 覆蓋整個畫面
                             Loading(text: "環控確認中...",color: Color.g_blue)
@@ -214,24 +214,29 @@ struct ContentView: View {
             .background(Color.light_green.opacity(1))
             .animation(.easeInOut, value: appStore.showPopup)
             .onAppear {
-                mqttManager.connectMQTT() // 當 isConnected 變為 true，啟動 MQTT
+//                mqttManager.connectMQTT() // 當 isConnected 變為 true，啟動 MQTT
+                MQTTManagerMiddle.shared.connect()// 啟動 MQTT
+                
             }
             .onDisappear {
-                mqttManager.disconnectMQTT() // 離開畫面 斷開 MQTT 連線
+                MQTTManagerMiddle.shared.disconnect() // 離開畫面 斷開 MQTT 連線
             }
-            .onChange(of: mqttManager.isConnected) { oldConnect, newConnect in
+            .onChange(of: MQTTManagerMiddle.shared.isConnected) { oldConnect, newConnect in
                 // 連線MQTT
                 if newConnect {
                     //  mqttManager.publishApplianceUserLogin(username: "app", password: "app:ppa")
-                    mqttManager.publishTelemetryCommand(subscribe: true) // 接收家電資訊指令
-                    mqttManager.publishCapabilities() // 查詢 家電參數讀寫能力 指令
+                    //  MQTTManagerMiddle.shared.login(username: "user", password: "app:ppa")
+//                    mqttManager.publishTelemetryCommand(subscribe: true)
+                    MQTTManagerMiddle.shared.startTelemetry() // 接收家電資訊指令
+//                    mqttManager.publishCapabilities()
+                    MQTTManagerMiddle.shared.requestCapabilities() // 查詢 家電參數讀寫能力 指令
                 }
             }
-            .onReceive(mqttManager.$isSmartBind) { newValue in
+            .onReceive(MQTTManagerMiddle.shared.$isSmartBind) { newValue in
                 print("[入口] 智能環控綁定狀態: \(newValue)")
                 isSmartControlConnected = newValue // 連動 智能環控 綁定
             }
-            .onReceive(mqttManager.$availables) { availables in
+            .onReceive(MQTTManagerMiddle.shared.$availables) { availables in
                 print("上線家電列表:\(availables)")
                 isTempConnected = availables.contains("sensor")
                 isACConnected = availables.contains("air_conditioner")
@@ -246,12 +251,13 @@ struct ContentView: View {
                     title: appStore.title,
                     message: appStore.message,
                     onConfirm: {
-//                        appStore.isAIControl = true
-                        mqttManager.publishSetDecisionConfig(accepted: true) // [MQTT] AI決策
+                        //                        appStore.isAIControl = true
+//                        mqttManager.publishSetDecisionConfig(accepted: true) // [MQTT] AI決策
+                        MQTTManagerMiddle.shared.setDecisionAccepted(accepted: true) // [MQTT] AI決策
                         sendLocalNotification(title: appStore.title, body: appStore.notificationsResult)
                     },
                     onCancel: {
-//                        appStore.isAIControl = false
+                        //                        appStore.isAIControl = false
                     }
                 )
             }

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ElectricSocket: View {
-    @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
+//    @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
     @State private var isPowerOn: Bool = false // 開關控制（父控制）
     
     // MARK: - POST API
@@ -16,10 +16,12 @@ struct ElectricSocket: View {
         let paylod: [String: Any] = [
             "ac_outlet": mode
         ]
-        mqttManager.publishSetDeviceControl(model: paylod)
+//        mqttManager.publishSetDeviceControl(model: paylod)
+        MQTTManagerMiddle.shared.setDeviceControl(model: paylod)
         
         // 測試使用 - 解除綁定
-        mqttManager.publishUnBindSmart(deviceMac: "DE:AD:BE:EF:00:01")
+//        mqttManager.publishUnBindSmart(deviceMac: "DE:AD:BE:EF:00:01")
+        MQTTManagerMiddle.shared.unbindSmartDevice(mac: "DE:AD:BE:EF:00:01")
     }
     
     var body: some View {

@@ -10,7 +10,7 @@ import SwiftUI
 /// 頂部標題視圖
 struct HeaderName: View {
     @EnvironmentObject var appStore: AppStore  // 使用全域狀態
-    @EnvironmentObject var mqttManager: MQTTManager // 從環境取得 MQTTManager
+//    @EnvironmentObject var mqttManager: MQTTManager // 從環境取得 MQTTManager
 
     @Binding var selectedTab: String // 標題名稱
     @Binding var status: Bool // 是否要顯示返回（false -> back, true -> show title）
@@ -32,7 +32,7 @@ struct HeaderName: View {
                 Spacer()
                 
                 // [顯示] 是否啟動AI決策
-                if (mqttManager.decisionEnabled) {
+                if (MQTTManagerMiddle.shared.decisionEnabled) {
                     HStack(alignment: .center, spacing: 10) {
                         Text("AI決策執行中")
                             .font(.system(size: 14))

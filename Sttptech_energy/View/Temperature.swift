@@ -9,7 +9,7 @@ import SwiftUI
 
 struct Temperature: View {
     @Binding var isConnected: Bool // 設備藍芽是否已連線
-    @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
+//    @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
     
     @State private var isShowingNewDeviceView = false // 是否要開始藍芽配對介面，默認：關閉
     @State private var selectedTab = "溫濕度"
@@ -21,7 +21,7 @@ struct Temperature: View {
             /// ✅ 設備已連線
             VStack(spacing: 9) {
                 // 取得 sensor 數據
-                let sensorData = mqttManager.appliances["sensor"]
+                let sensorData = MQTTManagerMiddle.shared.appliances["sensor"]
                 let humidity = (sensorData?["op_humidity"]?.value).flatMap { Double($0) } ?? 0.0
                 let progress = humidity / 100.0 // ✅ 轉換成 0 ~ 1 之間的數值
                 

@@ -12,7 +12,7 @@ struct Dehumidifier: View {
     
     // 控制提示
     //    @EnvironmentObject var appStore: AppStore  // 使用全域狀態
-    @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
+//    @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
     
     // 選項列表
     @State private var humidityOptions:[Int] = [] // 設定：40% - 80% (ex: Array(stride(from: 1, through: 100, by: 1)))
@@ -39,7 +39,7 @@ struct Dehumidifier: View {
     
     // MARK: - 取得 MQTT 設備讀取能力，更新 UI
     private func checkDehumidifierCapabilities() {
-        guard let DF_Capabilities = mqttManager.deviceCapabilities["dehumidifier"] else {
+        guard let DF_Capabilities = MQTTManagerMiddle.shared.deviceCapabilities["dehumidifier"] else {
             return
         }
         
@@ -84,7 +84,7 @@ struct Dehumidifier: View {
     
     // MARK: - 解析 MQTT 家電數據，更新 UI
     private func updateDehumidifierData() {
-        guard let dehumidifierData = mqttManager.appliances["dehumidifier"] else { return }
+        guard let dehumidifierData = MQTTManagerMiddle.shared.appliances["dehumidifier"] else { return }
         
         // 解析 `cfg_power` -> Bool (開 / 關)
         if let power = dehumidifierData["cfg_power"]?.value {
@@ -142,7 +142,8 @@ struct Dehumidifier: View {
         let paylod: [String: Any] = [
             "dehumidifier": mode
         ]
-        mqttManager.publishSetDeviceControl(model: paylod)
+//        mqttManager.publishSetDeviceControl(model: paylod)
+        MQTTManagerMiddle.shared.setDeviceControl(model: paylod)
     }
     
     var body: some View {
@@ -321,7 +322,7 @@ struct Dehumidifier: View {
                     checkDehumidifierCapabilities() // 檢查設備可讀取資料
                     updateDehumidifierData() // 畫面載入時初始化數據
                 }
-                .onChange(of: mqttManager.appliances["dehumidifier"]) { _, _ in
+                .onChange(of: MQTTManagerMiddle.shared.appliances["dehumidifier"]) { _, _ in
                     updateDehumidifierData()
                 }
                 
