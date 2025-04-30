@@ -239,11 +239,21 @@ struct ContentView: View {
                 isREMCConnected = availables.contains("remote")
             }
             
-            // 👉 這裡放自訂彈窗，只在 showPopup == true 時顯示
+            // [全局][自訂彈窗] 提供空調 與 遙控器 頁面使用
             if appStore.showPopup {
-                CustomPopupView(isPresented: $appStore.showPopup, title: $appStore.title, message: $appStore.message)
-                    .transition(.opacity) // 淡入淡出效果
-                    .zIndex(1) // 確保彈窗在最上層
+                CustomPopupView(
+                    isPresented: $appStore.showPopup, // 開關
+                    title: appStore.title,
+                    message: appStore.message,
+                    onConfirm: {
+//                        appStore.isAIControl = true
+                        mqttManager.publishSetDecisionConfig(accepted: true) // [MQTT] AI決策
+                        sendLocalNotification(title: appStore.title, body: appStore.notificationsResult)
+                    },
+                    onCancel: {
+//                        appStore.isAIControl = false
+                    }
+                )
             }
         }
     }

@@ -10,14 +10,12 @@ import SwiftUI
 /// 頂部標題視圖
 struct HeaderName: View {
     @EnvironmentObject var appStore: AppStore  // 使用全域狀態
-    
+    @EnvironmentObject var mqttManager: MQTTManager // 從環境取得 MQTTManager
+
     @Binding var selectedTab: String // 標題名稱
     @Binding var status: Bool // 是否要顯示返回（false -> back, true -> show title）
-    @State private var isAnimating = false // 動畫
-    
-    @State private var showPopup = true //
-    @State private var title = "設備已離線" //
-    @State private var message = "請重新綁定設備" //
+    @State private var isAnimating = false // AI決策動畫
+    @State private var showPopup = false //
     
     // 判斷是否為"空調", "除濕機" -> true
     private func showDeleteIconSetting(tab: String) -> Bool {
@@ -34,7 +32,7 @@ struct HeaderName: View {
                 Spacer()
                 
                 // [顯示] 是否啟動AI決策
-                if (appStore.isAIControl) {
+                if (mqttManager.decisionEnabled) {
                     HStack(alignment: .center, spacing: 10) {
                         Text("AI決策執行中")
                             .font(.system(size: 14))
@@ -62,14 +60,6 @@ struct HeaderName: View {
                             isAnimating.toggle()
                         }
                     }
-                    .onTapGesture {
-                        print("AI決策: \(appStore.showPopup)")
-                        withAnimation {
-                            appStore.showPopup = true // ⚡ 點擊後改變狀態
-                            appStore.title = "中斷AI決策"
-                            appStore.message = "是否中斷AI決策?"
-                        }
-                    }
                 } else {
                     Text("\(selectedTab)設定")
                         .font(.body)
@@ -79,12 +69,35 @@ struct HeaderName: View {
                 
                 // 右側垃圾桶或透明佔位符
                 if (showDeleteIconSetting(tab: selectedTab)) {
-                    Image(systemName: "trash") // 垃圾桶
-                        .foregroundColor(Color.g_blue) // 確保顏色存在
-                        .font(.system(size: 20)) // 調整圖示大小
-                        .onTapGesture {
-                            status = false // ✅ 點擊後切換 status
-                        }
+                    Button(action: {
+                        showPopup = true
+                    }) {
+                        Image(systemName: "trash") // 垃圾桶
+                            .font(.system(size: 20)) // 調整圖示大小
+                            .foregroundColor(Color.g_blue) // 確保顏色存在
+                            .contentShape(Rectangle()) // 🔧 指定觸控區形狀，避免預設 highlight
+                            .background(Color.clear) // 🔧 確保不會有點擊背景效果
+                            .overlay {
+                                // [全局][自訂彈窗] 提供空調 與 遙控器 頁面使用
+                                if showPopup {
+                                    CustomPopupView(
+                                        isPresented: $showPopup, // 開關
+                                        title: "重新連線",
+                                        message:  "是否需重新連線?",
+                                        onConfirm: {
+                                            showPopup = false // 關閉視窗
+                                            status = false // 回到 新增畫面
+                                        },
+                                        onCancel: {
+                                            showPopup = false // 關閉視窗
+                                            status = true // 保持畫面
+                                            
+                                        }
+                                    )
+                                }
+                            }
+                    }
+                    .buttonStyle(PlainButtonStyle())
                 } else {
                     // 👇透明佔位符佔住空間，保持中心對齊
                     Image(systemName: "trash")
@@ -92,6 +105,7 @@ struct HeaderName: View {
                         .font(.system(size: 20)) // 調整圖示大小
                 }
             } else {
+                // 返回上一層
                 Image("arrow-left") // 改成返回按鈕
                     .font(.system(size: 20))
                     .onTapGesture {
@@ -100,10 +114,6 @@ struct HeaderName: View {
                 
                 Spacer() // 推動其他內容到右側
             }
-            // 按下刪除鍵出現此功能
-            //            CustomPopupView(isPresented: $showPopup, title: $title, message: $message)
-            //                .transition(.opacity) // 淡入淡出效果
-            //                .zIndex(1) // 確保彈窗在最上層
         }
         .frame(height: 30.0)
         

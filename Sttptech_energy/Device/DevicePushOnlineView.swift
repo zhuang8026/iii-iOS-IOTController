@@ -8,7 +8,7 @@
 import SwiftUI
 import CoreBluetooth
 
-let wifiList = ["HH42CV_19D7", "HomeWiFi", "Cafe_123"]
+//let wifiList = ["HH42CV_19D7", "HomeWiFi", "Cafe_123"]
 
 struct DevicePushOnlineView: View {
     @StateObject private var apiService = APIService() // ✅ 讓 SwiftUI 監聽 API 回應
@@ -33,7 +33,7 @@ struct DevicePushOnlineView: View {
         self.isLoading = true
         Task {
             do {
-                let data = try await apiService.apiGetWiFiScanApInfo(useMock: true)
+                let data = try await apiService.apiGetWiFiScanApInfo(useMock: apiMock)
 //                print("fetchWiFiList: \(data.ap_list), isEmpty: \(data.ap_list.isEmpty)")
 
                 // 確保 UI 更新在主執行緒

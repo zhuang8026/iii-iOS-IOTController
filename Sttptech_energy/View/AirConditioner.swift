@@ -11,13 +11,13 @@ struct AirConditioner: View {
     @Binding var isConnected: Bool // 設備藍芽是否已連線
     
     // 控制提示
-    @EnvironmentObject var appStore: AppStore  // 使用全域狀態
+    @EnvironmentObject var appStore: AppStore  // 全局倉庫
     @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
     
     @State private var isPowerOn = true
     @State private var selectedMode = "cool"
     @State private var fanSpeed: String = "auto"
-    @State private var fanMode: [String] = [] // ["auto", "low", "medium", "high", "strong", "max"]
+    @State private var fanModeOptions: [String] = [] // ["auto", "low", "medium", "high", "strong", "max"]
     @State private var temperature: Int = 24
     @State private var minTemp: Int = 16
     @State private var maxTemp: Int = 30
@@ -49,9 +49,9 @@ struct AirConditioner: View {
             let filteredFanLevels = fanLevel.filter {
                 $0 != "read"
             }  // ❌ 排除 "read"
-            fanMode = filteredFanLevels
+            fanModeOptions = filteredFanLevels
         }
-
+        
         // 解析 `cfg_temperature` -> Int
         if let tempStrings = AC_Capabilities["cfg_temperature"] {
             let tempValues = tempStrings
@@ -118,10 +118,10 @@ struct AirConditioner: View {
                         }
                     
                     if isPowerOn {
-                        /// 風量和空調溫度顯示
+                        // 風量和空調溫度顯示
                         //                    ACnumber(fanSpeed:$fanSpeed, temperature: $temperature)
                         
-                        /// 模式
+                        // 模式
                         VStack(alignment: .leading, spacing: 9) {
                             HStack {
                                 // tag
@@ -144,28 +144,30 @@ struct AirConditioner: View {
                             }
                         }
                         
-                        /// 風速
-                        VStack(alignment: .leading, spacing: 9) {
-                            HStack {
-                                // tag
-                                RoundedRectangle(cornerRadius: 4)
-                                    .frame(
-                                        width: titleWidth,
-                                        height: titleHeight
-                                    ) // 控制長方形的高度，寬度根據內容自動調整
-                                Text("風速")
-                            }
-                            //                        FanSpeedSlider(fanSpeed: $fanSpeed) /// 風量控制
-                            WindSpeedView(selectedSpeed: $fanSpeed, fanMode: $fanMode) // 風速控制
-                            // 🔥 監聽 fanSpeed 的變化
-                                .onChange(of: fanSpeed) { oldVal, newVal in
-                                    print("fanSpeed: \(newVal)")
-                                    let paylodModel: [String: Any] = ["cfg_fan_level": newVal]
-                                    postAirConditionerRemote(mode: paylodModel)
+                        // 風速
+                        if(!fanModeOptions.isEmpty) {
+                            VStack(alignment: .leading, spacing: 9) {
+                                HStack {
+                                    // tag
+                                    RoundedRectangle(cornerRadius: 4)
+                                        .frame(
+                                            width: titleWidth,
+                                            height: titleHeight
+                                        ) // 控制長方形的高度，寬度根據內容自動調整
+                                    Text("風速")
                                 }
+                                
+                                //                        FanSpeedSlider(fanSpeed: $fanSpeed) /// 風量控制
+                                WindSpeedView(selectedSpeed: $fanSpeed, fanMode: $fanModeOptions) // 風速控制
+                                // 🔥 監聽 fanSpeed 的變化
+                                    .onChange(of: fanSpeed) { oldVal, newVal in
+                                        print("fanSpeed: \(newVal)")
+                                        let paylodModel: [String: Any] = ["cfg_fan_level": newVal]
+                                        postAirConditionerRemote(mode: paylodModel)
+                                    }
+                            }
                         }
-                        
-                        /// 溫度
+                        // 溫度
                         VStack(alignment: .leading, spacing: 12) {
                             HStack {
                                 // tag

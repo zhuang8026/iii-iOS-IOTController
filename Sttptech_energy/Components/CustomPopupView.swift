@@ -10,23 +10,31 @@ import SwiftUI
 struct CustomPopupView: View {
     @EnvironmentObject var appStore: AppStore  // 使用全域狀態
     
-    @Binding var isPresented: Bool  // 控制提示視窗顯示
-    @Binding var title: String // title
-    @Binding var message: String // content
+    // MARK: - 控制提示視窗顯示
+    @Binding var isPresented: Bool
     
-    // 移除黑色透明背景
-    private func removeDimmingView(isCheck: Bool) {
-        appStore.isAIControl = isCheck
-        withAnimation {
-            isPresented = false
-        }
-        
-        // AI決策推播測試 -> 未來需刪除 不能放在元件中
-        if isCheck {
-            sendLocalNotification(title: appStore.title, body: appStore.notificationsResult)
-        }
-    }
-
+    // MARK: - 父層控制
+    var title: String // title
+    var message: String // content
+    
+    // MARK: - 父層使用
+    var onConfirm: () -> Void
+    var onCancel: () -> Void
+    
+    // 提示窗 確認與否
+    //    private func removeDimmingView(isCheck: Bool) {
+    //        // [測試][MQTT] isCheck -> true -> 啟動, isCheck -> false -> 關閉
+    //        appStore.isAIControl = isCheck
+    //
+    //        // [測試][推播] AI決策推播測試 -> 未來需刪除 不能放在元件中
+    //        if isCheck {
+    //            sendLocalNotification(title: title, body: appStore.notificationsResult)
+    //        }
+    //
+    //        // 關閉視窗
+    //        withAnimation { isPresented = false }
+    //    }
+    
     var body: some View {
         ZStack {
             // 半透明黑色背景，擋住點擊事件
@@ -40,17 +48,18 @@ struct CustomPopupView: View {
             // 警告框 (Alert)
                 .alert("\(title)", isPresented: $isPresented) {
                     Button("確認", role: .none) {
-                        removeDimmingView(isCheck: true)
-                        print("用戶按了確認")
+                        onConfirm()
+                        withAnimation { isPresented = false }
                     }
                     Button("取消", role: .cancel) {
-                        removeDimmingView(isCheck: false)
-                        print("用戶按了取消")
+                        onCancel()
+                        withAnimation { isPresented = false }
                     }
                 } message: {
                     Text("\(message)")
                 }
         }
-        
+        .transition(.opacity) // 淡入淡出效果
+        .zIndex(1) // 確保彈窗在最上層
     }
 }

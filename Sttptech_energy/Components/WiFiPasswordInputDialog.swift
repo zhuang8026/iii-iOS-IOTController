@@ -63,7 +63,7 @@ struct WiFiPasswordInputDialog: View {
                 ssid: selectedSSID,
                 password: password,
                 security: security,
-                useMock: true
+                useMock: apiMock
             )
             print("✅ Step2 API 回傳：\(response)")
             
@@ -90,7 +90,7 @@ struct WiFiPasswordInputDialog: View {
     // MARK: - Step3 - 請求 Dongle 開始連線到家用 WiFi
     func sendApiGetWiFiConnect() async {
         do {
-            let response = try await apiService.apiGetWiFiConnect(useMock: true)
+            let response = try await apiService.apiGetWiFiConnect(useMock: apiMock)
             print("✅ Step3 API 回傳：\(response)")
             
             if response.status.lowercased() == "ok" {

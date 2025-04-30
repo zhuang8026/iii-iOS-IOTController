@@ -11,7 +11,7 @@ struct Dehumidifier: View {
     @Binding var isConnected: Bool // 設備藍芽是否已連線
     
     // 控制提示
-//    @EnvironmentObject var appStore: AppStore  // 使用全域狀態
+    //    @EnvironmentObject var appStore: AppStore  // 使用全域狀態
     @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
     
     // 選項列表
@@ -28,8 +28,8 @@ struct Dehumidifier: View {
     @State private var selectedTimer: Int = 2
     @State private var checkWaterFullAlarm: String = "alarm" // ["正常", "滿水"]
     @State private var fanSpeed: String = "auto" // 風速設定變數-> API cfg_fan_level
-
-
+    
+    
     // 藍芽連線顯示
     @State private var isShowingNewDeviceView = false // 是否要開始藍芽配對介面，默認：關閉
     @State private var selectedTab = "除濕機"
@@ -58,14 +58,14 @@ struct Dehumidifier: View {
                 .compactMap { Int($0) }    // ✅ 字串轉 Int
             self.timerOptions = timerValue
         }
-
+        
         // 解析 `op_water_full_alarm` -> Array ("read", "normal", "alarm")
         if let waterFullString = DF_Capabilities["op_water_full_alarm"] {
             let waterFullValue = waterFullString
                 .filter { $0 != "read"}  // ❌ 排除 "read", "off"
             self.waterLevelOptions = waterFullValue
         }
-
+        
         // 解析 `modeOptions` -> Array ("read", "auto", "manual", "continuous", "clothes_drying", "purification", "sanitize", "fan", "comfort", "low_drying")
         if let modeStrings = DF_Capabilities["cfg_mode"] {
             let modeValues = modeStrings
@@ -81,7 +81,7 @@ struct Dehumidifier: View {
         }
         
     }
-
+    
     // MARK: - 解析 MQTT 家電數據，更新 UI
     private func updateDehumidifierData() {
         guard let dehumidifierData = mqttManager.appliances["dehumidifier"] else { return }
@@ -105,7 +105,7 @@ struct Dehumidifier: View {
         if let timer = dehumidifierData["cfg_timer"]?.value, let timerInt = Int(timer) {
             selectedTimer = timerInt
         }
-
+        
         // 解析 `op_water_full_alarm` -> String ("normal":"正常", "alarm":"滿水")
         let waterAlarmMap: [String: String] = [
             "normal": "正常",
@@ -286,21 +286,23 @@ struct Dehumidifier: View {
                             //                .aspectRatio(5, contentMode: .fit) // 根據按鈕數量讓高度自適應寬度
                         }
                         
-                        /// 風速
-                        VStack(alignment: .leading, spacing: 9) {
-                            HStack {
-                                // tag
-                                RoundedRectangle(cornerRadius: 4)
-                                    .frame(width: titleWidth, height: titleHeight) // 控制長方形的高度，寬度根據內容自動調整
-                                Text("風速")
-                            }
-                            //  FanSpeedSlider(fanSpeed: $fanSpeed) // 風速控制
-                            WindSpeedView(selectedSpeed: $fanSpeed, fanMode: $fanModeOptions) // 風速控制
-                                .onChange(of: fanSpeed) { oldVal, newVal in  // 🔥 監聽 isPowerOn 的變化
-                                    print("fanSpeed: \(newVal)")
-                                    let paylodModel: [String: Any] = ["cfg_fan_level": newVal]
-                                    postDehumidifierSetting(mode: paylodModel)
+                        // 風速
+                        if(!fanModeOptions.isEmpty) {
+                            VStack(alignment: .leading, spacing: 9) {
+                                HStack {
+                                    // tag
+                                    RoundedRectangle(cornerRadius: 4)
+                                        .frame(width: titleWidth, height: titleHeight) // 控制長方形的高度，寬度根據內容自動調整
+                                    Text("風速")
                                 }
+                                //  FanSpeedSlider(fanSpeed: $fanSpeed) // 風速控制
+                                WindSpeedView(selectedSpeed: $fanSpeed, fanMode: $fanModeOptions) // 風速控制
+                                    .onChange(of: fanSpeed) { oldVal, newVal in  // 🔥 監聽 isPowerOn 的變化
+                                        print("fanSpeed: \(newVal)")
+                                        let paylodModel: [String: Any] = ["cfg_fan_level": newVal]
+                                        postDehumidifierSetting(mode: paylodModel)
+                                    }
+                            }
                         }
                     } else {
                         /// 請開始電源
