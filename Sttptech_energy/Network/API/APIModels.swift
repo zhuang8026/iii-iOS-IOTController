@@ -37,7 +37,7 @@ struct OriginalData: Codable {
 }
 
 // MARK: - Step1 -  請求 Dongle 掃描並取得 WiFi 列表
-struct ScanApListResponse: Codable {
+struct ScanApListResponse: Decodable {
     let status: String
     let data: ApData
 }
@@ -48,8 +48,13 @@ struct ApData: Codable {
 }
 
 struct ApInfo: Codable {
-    let channel, ssid, bssid, security, signal, mode: String
-
+    let channel: Int
+    let ssid: String
+    let bssid: String
+    let security: String
+    let signal: Int
+    let mode: String
+    
     var id: String { bssid } // ✅ 讓 BSSID 當作唯一識別
 }
 
@@ -57,11 +62,11 @@ struct ApInfo: Codable {
 struct WiFiConfigResponse: Codable {
     let status: String
     let err: APIError?
-
-      struct APIError: Codable {
-          let code: String
-          let msg: String
-      }
+    
+    struct APIError: Codable {
+        let code: String
+        let msg: String
+    }
 }
 
 
@@ -69,9 +74,9 @@ struct WiFiConfigResponse: Codable {
 struct WiFiConnectResponse: Codable {
     let status: String
     let err: APIError?
-
-      struct APIError: Codable {
-          let code: String
-          let msg: String
-      }
+    
+    struct APIError: Codable {
+        let code: String
+        let msg: String
+    }
 }

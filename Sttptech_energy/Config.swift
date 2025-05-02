@@ -17,4 +17,4 @@ import SwiftUI
 //device Token
 var DeviceToken : String = ""
 
-var apiMock: Bool = true // API mock default: 關閉
+var apiMock: Bool = false // API mock default: 關閉

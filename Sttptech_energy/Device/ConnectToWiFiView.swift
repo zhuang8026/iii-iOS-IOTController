@@ -33,7 +33,7 @@ struct ConnectToWiFiView: View {
     
     @State private var wifiLoading: Bool = false // 連結Wi-Fi狀態
     @State private var startConnectDevice: Bool = false // 是否開始連結設備
-    @State private var ssid: String = "001E9407BD55" // ex: 001E9407BD55, HH42CV_19D7
+    @State private var ssid: String = "" // ex: 001E9407BD55, HH42CV_19D7
     @State private var password: String = "insynerger@tw" // ex: insynerger@tw, 10009447
     @State private var connectionMessage: String = ""
     @State private var showScanner: Bool = false // 開啟掃描模式
@@ -127,9 +127,12 @@ struct ConnectToWiFiView: View {
                             .padding()
                             .frame(height: 60)
                             .background(RoundedRectangle(cornerRadius: 10).strokeBorder(Color.light_gray2))
+                            .background(Color.gray.opacity(0.2)) // ⬅️ 灰色透明背景
+                            .cornerRadius(10)
                             .textInputAutocapitalization(.never)
                             .disableAutocorrection(true)
                             .focused($isFieldFocused)
+                            .disabled(true) // 唯讀
                         }
                         .padding(.horizontal)
                         

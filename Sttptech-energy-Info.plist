@@ -2,6 +2,7 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<!-- 藍牙 -->
 	<key>NSBluetoothWhenInUseUsageDescription</key>
 	<string>此應用程式需要藍牙來搜尋和連接設備</string>
 	<key>UIBackgroundModes</key>
@@ -11,10 +12,31 @@
 		<string>remote-notification</string>
 	</array>
 
+	<!-- Wi-Fi 網路 -->
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>我們需要您允許位置權限以搜尋附近的 Wi-Fi 網路</string>
 
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>我們需要您允許位置權限以搜尋附近的 Wi-Fi 網路</string>
+
+	<!-- 允許不安全的 HTTPS -->
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+		<key>NSExceptionDomains</key>
+		<dict>
+			<key>192.168.30.1</key>
+			<dict>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSExceptionRequiresForwardSecrecy</key>
+				<false/>
+			</dict>
+		</dict>
+	</dict>
+
 </dict>
 </plist>
