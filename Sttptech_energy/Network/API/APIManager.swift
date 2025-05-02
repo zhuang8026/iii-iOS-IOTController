@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - basic data
 let website = "https://192.168.30.1/"
-let authToken = "YWRtaW46MTIzNDU2Nw==" // base64("admin:1234567")
+let authToken = "aWlpd2ViYXBpOmlpaUBvcmcudHc=" // base64("iiiwebapi_iii@org.tw")
 
 // MARK: - API Service
 @MainActor

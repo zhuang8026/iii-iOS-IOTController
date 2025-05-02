@@ -195,6 +195,7 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
         if topic == "to/app/\(userToken)/appliances/capabilities" {
             DispatchQueue.main.async {
                 guard let data = payload.data(using: .utf8) else { return }
+
                 do {
                     let decoder = JSONDecoder()
                     let response = try decoder.decode(ApplianceCapabilitiesResponse.self, from: data)
@@ -212,6 +213,7 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
                    let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
                     
                     print("✅ 總家電參數更新: \(json)")
+                    print("✅ 總家電參數為空: \(json.isEmpty)")
                     
                     self.serverLoading = json.isEmpty
                     
@@ -242,7 +244,14 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
                         
                         self.appliances = parsed
                         
-                        print("✅ 成功接收到家電資料: \(self.appliances)")
+//                        print("✅ 成功接收到家電資料: \(self.appliances)")
+                        if let mqtt_data = parsed["dehumidifier"] {
+//                            print("✅ 「sensor」溫濕度數據: \(mqtt_data)")
+//                            print("✅ 「air_conditioner」冷氣數據: \(mqtt_data)")
+                            print("✅ 「dehumidifier」除濕機數據: \(mqtt_data)")
+//                            print("✅ 「sensor」遙控器數據: \(mqtt_data)")
+
+                        }
                     }
                 }
             }
@@ -251,7 +260,7 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
     }
     
     func mqtt(_ mqtt: CocoaMQTT, didStateChangeTo state: CocoaMQTTConnState) {
-        print("⚠️ MQTT 狀態變更: \(state)")
+        print("\(state == .connected ? "✅" : "⚠️") MQTT 狀態變更: \(state)")
     }
     
     func mqtt(_ mqtt: CocoaMQTT, didPublishMessage message: CocoaMQTTMessage, id: UInt16) {

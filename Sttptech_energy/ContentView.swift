@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var appStore: AppStore  // 使用全域狀態
-//    @EnvironmentObject var mqttManager: MQTTManager // 從環境取得 MQTTManager
+    //    @EnvironmentObject var mqttManager: MQTTManager // 從環境取得 MQTTManager
     
     @State private var selectedTab = "" // 選擇設備控制
     @State private var status = false // 控制顯示標題名稱（內含 返回 icon）
@@ -201,6 +201,7 @@ struct ContentView: View {
                             isShowingSmartControl: $isShowingSmartControl,  // 是否要開始 智慧環控連線 頁面，默認：關閉
                             isConnected: $isSmartControlConnected // 連線狀態
                         )
+                        
                         // ❌ 無資料 → 顯示 Loading 畫面
                         if (MQTTManagerMiddle.shared.serverLoading) {
                             Color.light_green.opacity(0.85) // 透明磨砂黑背景
@@ -214,7 +215,7 @@ struct ContentView: View {
             .background(Color.light_green.opacity(1))
             .animation(.easeInOut, value: appStore.showPopup)
             .onAppear {
-//                mqttManager.connectMQTT() // 當 isConnected 變為 true，啟動 MQTT
+                //                mqttManager.connectMQTT() // 當 isConnected 變為 true，啟動 MQTT
                 MQTTManagerMiddle.shared.connect()// 啟動 MQTT
                 
             }
@@ -226,9 +227,9 @@ struct ContentView: View {
                 if newConnect {
                     //  mqttManager.publishApplianceUserLogin(username: "app", password: "app:ppa")
                     //  MQTTManagerMiddle.shared.login(username: "user", password: "app:ppa")
-//                    mqttManager.publishTelemetryCommand(subscribe: true)
+                    //                    mqttManager.publishTelemetryCommand(subscribe: true)
                     MQTTManagerMiddle.shared.startTelemetry() // 接收家電資訊指令
-//                    mqttManager.publishCapabilities()
+                    //                    mqttManager.publishCapabilities()
                     MQTTManagerMiddle.shared.requestCapabilities() // 查詢 家電參數讀寫能力 指令
                 }
             }
@@ -237,7 +238,7 @@ struct ContentView: View {
                 isSmartControlConnected = newValue // 連動 智能環控 綁定
             }
             .onReceive(MQTTManagerMiddle.shared.$availables) { availables in
-                print("上線家電列表:\(availables)")
+                print("已綁定家電列表:\(availables)")
                 isTempConnected = availables.contains("sensor")
                 isACConnected = availables.contains("air_conditioner")
                 isDFConnected = availables.contains("dehumidifier")
@@ -252,7 +253,7 @@ struct ContentView: View {
                     message: appStore.message,
                     onConfirm: {
                         //                        appStore.isAIControl = true
-//                        mqttManager.publishSetDecisionConfig(accepted: true) // [MQTT] AI決策
+                        //                        mqttManager.publishSetDecisionConfig(accepted: true) // [MQTT] AI決策
                         MQTTManagerMiddle.shared.setDecisionAccepted(accepted: true) // [MQTT] AI決策
                         sendLocalNotification(title: appStore.title, body: appStore.notificationsResult)
                     },

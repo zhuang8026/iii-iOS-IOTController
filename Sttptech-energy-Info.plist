@@ -10,7 +10,11 @@
 		<string>bluetooth-peripheral</string>
 		<string>remote-notification</string>
 	</array>
-	<key>com.apple.developer.networking.HotspotConfiguration</key>
-	<true/>
+
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>我們需要您允許位置權限以搜尋附近的 Wi-Fi 網路</string>
+
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>我們需要您允許位置權限以搜尋附近的 Wi-Fi 網路</string>
 </dict>
 </plist>

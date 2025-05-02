@@ -12,11 +12,18 @@ class WiFiManager: NSObject {
     static let shared = WiFiManager() // 單例模式
     
     func connectToWiFi(ssid: String, password: String, isWEP: Bool = false, completion: @escaping (Bool, String) -> Void) {
-        let configuration = NEHotspotConfiguration(ssid: ssid, passphrase: password, isWEP: isWEP)
+        print("connectToWiFi:\(ssid),\(password)")
         
-        configuration.joinOnce = true // 保持連線
+        // Step 1: 先移除舊設定，避免衝突
+        NEHotspotConfigurationManager.shared.removeConfiguration(forSSID: ssid)
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+        // Step 2: 加一點延遲後再建立新連線
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            let configuration = NEHotspotConfiguration(ssid: ssid, passphrase: password, isWEP: isWEP)
+            
+            configuration.joinOnce = true // 保持連線
+            configuration.lifeTimeInDays = 1 // iOS 16+
+    
             NEHotspotConfigurationManager.shared.apply(configuration) { error in
                 DispatchQueue.main.async {
                     if let error = error {
@@ -29,6 +36,15 @@ class WiFiManager: NSObject {
                     }
                 }
             }
+
+//            NEHotspotConfigurationManager.shared.getConfiguredSSIDs() { ssids in
+//                if ssids.contains(ssid) {
+//                    print("配置中已存在 SSID: \(ssid)")
+//                } else {
+//                    print("SSID 尚未配置或配置失敗")
+//                }
+//            }
+
         }
     }
 }

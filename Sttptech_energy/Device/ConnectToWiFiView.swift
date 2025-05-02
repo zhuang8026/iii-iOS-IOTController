@@ -6,21 +6,35 @@
 //  Created by 莊杰翰 on 2025/2/8.
 //
 import SwiftUI
+import CoreLocation
 
 struct WiFiInfo: Codable {
     let ssid: String
     let pwd: String
 }
 
+class LocationPermissionManager: NSObject, ObservableObject, CLLocationManagerDelegate {
+    private var locationManager: CLLocationManager?
+
+    override init() {
+        super.init()
+        self.locationManager = CLLocationManager()
+        self.locationManager?.delegate = self
+        self.locationManager?.requestWhenInUseAuthorization()
+    }
+}
+
 struct ConnectToWiFiView: View {
+    @StateObject private var locationManager = LocationPermissionManager()
+
     @Binding var isPresented: Bool  // 綁定來控制顯示/隱藏
     @Binding var selectedTab: String // 標題名稱
     @Binding var isConnected: Bool // 設備藍芽是否已連線
     
     @State private var wifiLoading: Bool = false // 連結Wi-Fi狀態
     @State private var startConnectDevice: Bool = false // 是否開始連結設備
-    @State private var ssid: String = "HH42CV_19D7"
-    @State private var password: String = "10009447"
+    @State private var ssid: String = "001E9407BD55" // ex: 001E9407BD55, HH42CV_19D7
+    @State private var password: String = "insynerger@tw" // ex: insynerger@tw, 10009447
     @State private var connectionMessage: String = ""
     @State private var showScanner: Bool = false // 開啟掃描模式
     
@@ -155,13 +169,23 @@ struct ConnectToWiFiView: View {
             .fullScreenCover(isPresented: $showScanner) {
                 QRCodeScannerView(
                     onScan: { scanned in
-                        print(scanned)
+                        print("Dongle QRCode: \(scanned)")
                         if let data = scanned.data(using: .utf8),
                            let wifi = try? JSONDecoder().decode(WiFiInfo.self, from: data) {
                             self.ssid = wifi.ssid
                             self.password = wifi.pwd
                         } else {
-                            print("❌ 無法解析掃描內容")
+                            // 假設是純字串格式 MAC，直接處理
+                            let rawMac = scanned.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+                            print("✅ 建立 SSID：\(rawMac)")
+                            if rawMac.count >= 6 {
+                                let suffix = String(rawMac.suffix(6)) // 後六碼
+                                let ssid = "TS_\(suffix)"
+                                print("✅ 建立 SSID：\(ssid)")
+                                self.ssid = (ssid)
+                            } else {
+                                print("❌ 掃描字串長度不足，無法提取後六碼")
+                            }
                         }
                         self.showScanner = false
                     },
@@ -178,19 +202,32 @@ struct ConnectToWiFiView: View {
                         self.startConnectDevice = false
                     }
                 )
-                    .background(Color.light_green.opacity(1))
-                   
+                .background(Color.light_green.opacity(1))
+                
             }
         }
         
     }
-    
+
     // 連接 Wi-Fi 的方法
     func connectToDeviceWiFi() {
         isFieldFocused = false  // 點擊畫面時取消鍵盤焦點
         wifiLoading = true
         connectionMessage = "嘗試連接 \(ssid)..."
-        WiFiManager.shared.connectToWiFi(ssid: ssid, password: password) { success, message in
+        
+        // 假設是純字串格式 MAC，直接處理
+        let rawMac:String = ssid.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        var ts_ssid:String = ""
+        if rawMac.count >= 6 {
+                let suffix = String(rawMac.suffix(6)) // 後六碼
+                ts_ssid = "TS_\(suffix)"
+                print("✅ 建立 SSID：\(ts_ssid)")
+            } else {
+                print("❌ 掃描字串長度不足，無法提取後六碼")
+        }
+        
+        
+        WiFiManager.shared.connectToWiFi(ssid: ts_ssid, password: password) { success, message in
             connectionMessage = message
             
             print("Wi-Fi conncet status: \(success)")
