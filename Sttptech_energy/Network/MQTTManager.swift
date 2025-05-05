@@ -30,7 +30,7 @@ class MQTTManager: NSObject, ObservableObject {
     @Published var appliances: [String: [String: ApplianceData]] = [:] // 安裝的家電參數狀態
     
     let AppID = "1d51e92d-e623-41dd-b367-d955a0d44d66" // 測試使用
-    var userToken:String = "IljLTCU3Ba0kVGqx3ouxrjydiZChGJGCvNvyp2WrzAN4aCz3aROJ9oKVkalMR56Rz6oBTfHHT9nGLTXQwIhw2jl1YIL4Ad4d3oFd9zhGYyMzf3qiQVuNZcnbdytwIAmM6Up881IdNx8GIOxgVISl4ecGzIY71AqnEVuaYgKwrxbECn95KOQIZHiKTWka8Er0jVMhPx32bsjpV5IdUYPNOIygnqcbnXVZbc2LrU7mBUYKgHEWs54NO7GITD0kSCwQjBaMwY6F8jl6QG70xGGtoiBesBbzwybXV0AQtCIKN8l5ki4yg4DyEiaRRifL7AMJ5cDXDzJg0zIItGHGcnUYLSrFyXasIw905igrKKDrBe2B0qUiTCRbifH0JQ5gA9IT8F9ij7GFhl7UHAEtuReTdvfTqzl" // 測試 Token
+    var userToken:String = "7qrVLM21MSv8wJLx2V8ypwvKW70infl5z1hTgG7rUgjdpM5F29Rp1AkxxPImK8BlQFgk04grz21FPaMLlLTOhztEcIP7I62xSXtZs342ZqqOOqQKlB9gDUsAqclymiYVfF8mrVJUkPyFaJwuUlLt10L2G8I0WK6r3BKyXwI4XMxHnNPGWg1LckiLMZH6wpW5mbGk6TdgRcLSJxxK2WUmEUhqP1uU2kA8kUX9IVNlEPCmD5qmFJELPdSodAGMgvJscPeKLiztPGLoZ6UulpPKpGdkozEAV95jEXv9XcWt9W1ADefIU5bXse3D4IYgWXXXIdwzW3PrgGeFE08p5UxlnC2Q9PuCRY9vwJIDQV7ETP7wBk9YTRbdZkQpADtMnFAWx5qFnkP0GYFV43lennI3ExHszDz" // 測試 Token
     
     var mqtt: CocoaMQTT?
     

@@ -44,8 +44,6 @@ final class MQTTManagerMiddle: NSObject, ObservableObject {
     //        UserDefaults.standard.string(forKey: "MQTTAccessToken") ?? ""
     //    }
     
-    var userToken:String = "5ljRSoLABPdSvjShNyOgDbUXUvZBOQHJCYfwlU8jdYBl0EjbPcpnEhBLvP82l8xdwk6v1wPXWEqYfI1ovfMv742bpwJcKfyjrh7y1LTLfq2Bpiz1sikNu8FJuUGZjaMcTFkFGnezVfqUhdYIMWbjzf12ZCUFJ07aoBqI8OhjtWjU379Ftecf3ZI9hK091YARab90Qx2elzIJLpi0z8dCWTjuJOxy3a8vEER8fxyHWPF3gyhrGjUlyJW8FgQpjM53qJaUPmSHGPepSayna6eASkbi48NVmvhx6ZI7UJ5aFm52kQTnK0um1sMQPPWFadAYiCAXrOWZF1IHnnk99nVFsRsmqsrQmkQr5hsM7J5hrJLq4TNfIlGoyozZ5a4JO4P6HduvTj4eGlDZIKay1q4UNLuVKiD" // 測試 Token
-    
     //  MARK: - 加載
     private override init() {
         super.init()
@@ -66,24 +64,24 @@ final class MQTTManagerMiddle: NSObject, ObservableObject {
         // 啟動 智慧環控 服務
         smartService = MQTTSmartControlService(
             mqtt: connectionService.instance,
-            userTokenProvider: { [weak self] in
-                return self?.userToken ?? ""
+            userTokenProvider: {
+                return userToken ?? ""
             }
         )
         
         // 啟動 五大設備 服務
         deviceService = MQTTDeviceService(
             mqtt: connectionService.instance,
-            userTokenProvider: { [weak self] in
-                return self?.userToken ?? ""
+            userTokenProvider: {
+                return userToken ?? ""
             }
         )
         
         // 啟動 確認用戶接受AI服務 服務
         decisionService = MQTTDecisionService(
             mqtt: connectionService.instance,
-            userTokenProvider: { [weak self] in
-                return self?.userToken ?? ""
+            userTokenProvider: { 
+                return userToken ?? ""
             }
         )
         

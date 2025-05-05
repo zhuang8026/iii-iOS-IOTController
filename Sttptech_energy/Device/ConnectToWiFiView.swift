@@ -76,7 +76,7 @@ struct ConnectToWiFiView: View {
                         // Wi-Fi名稱
                         VStack(alignment: .leading, spacing: 9) {
                             HStack {
-                                Text("Wi-Fi名稱")
+                                Text("設備ID(Wi-Fi)")
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                 //                            Spacer()
                                 //                            Image(systemName: "qrcode.viewfinder")
@@ -107,13 +107,13 @@ struct ConnectToWiFiView: View {
                         
                         // Wi-Fi密碼
                         VStack(alignment: .leading, spacing: 9) {
-                            Text("設備Wi-Fi密碼")
+                            Text("設備密碼")
                                 .frame(maxWidth: .infinity, alignment: .leading)
                             ZStack(alignment: .trailing) {
                                 if isPasswordVisible {
-                                    TextField("請輸入Wi-Fi密碼", text: $password)
+                                    TextField("請輸入設備密碼", text: $password)
                                 } else {
-                                    SecureField("請輸入Wi-Fi密碼", text: $password)
+                                    SecureField("請輸入設備密碼", text: $password)
                                 }
                                 
                                 Button(action: {
