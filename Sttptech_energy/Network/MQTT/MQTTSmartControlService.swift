@@ -9,13 +9,15 @@ final class MQTTSmartControlService {
         self.mqtt = mqtt
         self.userToken = userTokenProvider
     }
-
+    
+    // MARK: - step1. 訂閱
     func subscribe() {
         let topic = "to/app/\(userToken())/appliance/edge"
         mqtt.subscribe(topic, qos: .qos1)
         print("📡 訂閱 Smart 控制 topic: \(topic)")
     }
-
+    
+    // MARK: -  step2. 送出
     func publishBind(deviceMac: String) {
         let payload: [String: String] = ["bind": deviceMac]
         publish(payload)

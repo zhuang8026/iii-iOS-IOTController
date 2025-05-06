@@ -309,7 +309,7 @@ struct Dehumidifier: View {
                         /// 請開始電源
                         VStack {
                             Spacer()
-                            Image("open-power-hint")
+                            Image("open-power")
                             Text("請先啟動設備")
                                 .font(.body)
                                 .multilineTextAlignment(.center)

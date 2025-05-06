@@ -12,9 +12,9 @@ final class MQTTDeviceService {
     }
 
     func subscribeAll() {
-        subscribe(to: "to/app/\(userToken())/appliances/telemetry")
-        subscribe(to: "to/app/\(userToken())/appliances/capabilities")
-        subscribe(to: "to/app/\(userToken())/appliances/control")
+        subscribe(to: "to/app/\(userToken())/appliances/telemetry")    // 訂閱: 取得家電所有資料
+        subscribe(to: "to/app/\(userToken())/appliances/capabilities") // 訂閱: 設備參數讀寫能力
+        subscribe(to: "to/app/\(userToken())/appliances/control")      // 訂閱: 發送與設定設備
     }
 
     private func subscribe(to topic: String) {

@@ -15,7 +15,7 @@ struct WiFiInfo: Codable {
 
 class LocationPermissionManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private var locationManager: CLLocationManager?
-
+    
     override init() {
         super.init()
         self.locationManager = CLLocationManager()
@@ -26,7 +26,7 @@ class LocationPermissionManager: NSObject, ObservableObject, CLLocationManagerDe
 
 struct ConnectToWiFiView: View {
     @StateObject private var locationManager = LocationPermissionManager()
-
+    
     @Binding var isPresented: Bool  // 綁定來控制顯示/隱藏
     @Binding var selectedTab: String // 標題名稱
     @Binding var isConnected: Bool // 設備藍芽是否已連線
@@ -89,6 +89,7 @@ struct ConnectToWiFiView: View {
                                 TextField("請輸入Wi-Fi名稱 (SSID)", text: $ssid)
                                     .submitLabel(.next)  // ✅ 提示 SwiftUI 這是「下一個輸入框」
                                 Image(systemName: "qrcode")
+                                    .font(.system(size: 20))
                                     .foregroundColor(.g_blue)
                                     .onTapGesture {
                                         showScanner = true
@@ -180,15 +181,16 @@ struct ConnectToWiFiView: View {
                         } else {
                             // 假設是純字串格式 MAC，直接處理
                             let rawMac = scanned.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
-                            print("✅ 建立 SSID：\(rawMac)")
-                            if rawMac.count >= 6 {
-                                let suffix = String(rawMac.suffix(6)) // 後六碼
-                                let ssid = "TS_\(suffix)"
-                                print("✅ 建立 SSID：\(ssid)")
-                                self.ssid = (ssid)
-                            } else {
-                                print("❌ 掃描字串長度不足，無法提取後六碼")
-                            }
+                            //                            print("✅ 建立 SSID：\(rawMac)")
+                            //                            if rawMac.count >= 6 {
+                            //                                let suffix = String(rawMac.suffix(6)) // 後六碼
+                            //                                let ssid = "TS_\(suffix)"
+                            //                                print("✅ 建立 SSID：\(ssid)")
+                            //                                self.ssid = (ssid)
+                            //                            } else {
+                            //                                print("❌ 掃描字串長度不足，無法提取後六碼")
+                            //                            }
+                            self.ssid = (rawMac)
                         }
                         self.showScanner = false
                     },
@@ -211,7 +213,7 @@ struct ConnectToWiFiView: View {
         }
         
     }
-
+    
     // 連接 Wi-Fi 的方法
     func connectToDeviceWiFi() {
         isFieldFocused = false  // 點擊畫面時取消鍵盤焦點
@@ -222,11 +224,11 @@ struct ConnectToWiFiView: View {
         let rawMac:String = ssid.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
         var ts_ssid:String = ""
         if rawMac.count >= 6 {
-                let suffix = String(rawMac.suffix(6)) // 後六碼
-                ts_ssid = "TS_\(suffix)"
-                print("✅ 建立 SSID：\(ts_ssid)")
-            } else {
-                print("❌ 掃描字串長度不足，無法提取後六碼")
+            let suffix = String(rawMac.suffix(6)) // 後六碼
+            ts_ssid = "TS_\(suffix)"
+            print("✅ 建立 SSID：\(ts_ssid)")
+        } else {
+            print("❌ 掃描字串長度不足，無法提取後六碼")
         }
         
         

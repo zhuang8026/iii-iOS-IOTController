@@ -110,14 +110,17 @@ struct WiFiPasswordInputDialog: View {
                     button: "重新嘗試"
                 )
             }
-            
-            
-            
         } catch {
             await MainActor.run {
                 isWiFiLoading = false
             }
             print("❌ 寫入失敗：\(error.localizedDescription)")
+            await updateAlert(
+                status: false,
+                title: "設備設定失敗",
+                content: "\(error.localizedDescription)",
+                button: "重新嘗試"
+            )
         }
     }
     

@@ -189,9 +189,7 @@ struct AirConditioner: View {
                                 oldVal,
                                 newVal in
                                 // print("temperature: \(newVal)")
-                                let paylodModel: [String: Any] = ["cfg_temperature": String(
-                                    newVal
-                                )]
+                                let paylodModel: [String: Any] = ["cfg_temperature": String(newVal)]
                                 postAirConditionerRemote(mode: paylodModel)
                             }
                         }

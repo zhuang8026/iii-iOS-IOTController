@@ -139,6 +139,8 @@ struct ConnectToMacCodeView: View {
         macLoading = true
         connectionMessage = "嘗試連接 \(deviceMac)..."
         //        mqttManager.publishBindSmart(deviceMac: deviceMac) // 發布「智慧環控連接」發送指令
+        
+        // 「智慧環控連接
         MQTTManagerMiddle.shared.bindSmartDevice(mac: deviceMac)
         
         

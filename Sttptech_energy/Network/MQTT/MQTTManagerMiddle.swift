@@ -155,10 +155,12 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
             DispatchQueue.main.async {
                 self.isConnected = true
             }
-            self.authService.subscribe()
-            self.smartService.subscribe()
-            self.deviceService.subscribeAll()
-            self.decisionService.subscribeAll()
+            self.authService.subscribe()  // 訂閱: 用戶登入
+            self.smartService.subscribe() // 訂閱: 智慧環控
+            self.deviceService.subscribeAll() // 訂閱: 取得家電所有資料
+                                              // 訂閱: 設備參數讀寫能力
+                                              // 訂閱: 發送與設定設備
+            self.decisionService.subscribeAll()  // 訂閱: 用戶是否接受 AI 執行
         }
     }
     
@@ -210,8 +212,8 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
                 if let data = payload.data(using: .utf8),
                    let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
                     
-                    print("✅ 總家電參數更新: \(json)")
-                    print("✅ 總家電參數為空: \(json.isEmpty)")
+//                    print("✅ 總家電參數更新: \(json)")
+                    print("✅ 總家電參數: \(json.isEmpty ? "無資料": "有資料")")
                     
                     self.serverLoading = json.isEmpty
                     
@@ -243,13 +245,13 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
                         self.appliances = parsed
                         
 //                        print("✅ 成功接收到家電資料: \(self.appliances)")
-                        if let mqtt_data = parsed["dehumidifier"] {
+//                        if let mqtt_data = parsed["dehumidifier"] {
 //                            print("✅ 「sensor」溫濕度數據: \(mqtt_data)")
 //                            print("✅ 「air_conditioner」冷氣數據: \(mqtt_data)")
-                            print("✅ 「dehumidifier」除濕機數據: \(mqtt_data)")
+//                            print("✅ 「dehumidifier」除濕機數據: \(mqtt_data)")
 //                            print("✅ 「sensor」遙控器數據: \(mqtt_data)")
 
-                        }
+//                        }
                     }
                 }
             }

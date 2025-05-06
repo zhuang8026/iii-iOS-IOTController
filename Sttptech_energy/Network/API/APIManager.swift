@@ -38,7 +38,6 @@ class InsecureSessionDelegate: NSObject, URLSessionDelegate {
 // MARK: - API Service
 @MainActor
 class APIService: ObservableObject {
-    
     func sendRequest<T: Decodable>(
         endpoint: String,
         method: HTTPMethod,
