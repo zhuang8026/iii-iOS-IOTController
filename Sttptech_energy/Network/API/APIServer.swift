@@ -23,7 +23,7 @@ extension APIService {
         if useMock {
             return try loadJSON(fileName: "getwifiSetting_step2", as: WiFiConfigResponse.self)
         }
-        let response = try await fetchAPI(endpoint: "api/config/wifi/set?param=\(ssid)&attr=\(password)&option=\(security)", decodingType: WiFiConfigResponse.self)
+        let response = try await fetchAPI(endpoint: "api/config/wifi/set?param=\(ssid)&attr=\(password)&option=psk2", decodingType: WiFiConfigResponse.self)
         return response
     }
     

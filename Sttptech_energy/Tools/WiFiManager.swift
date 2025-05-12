@@ -12,8 +12,8 @@ class WiFiManager: NSObject {
     
     static let shared = WiFiManager() // 單例模式
     
-    func connectToWiFi(ssid: String, password: String, isWEP: Bool = false, completion: @escaping (Bool, String) -> Void) {
-        print("connectToWiFi:\(ssid),\(password)")
+    func connectToWiFi(mac:String, ssid: String, password: String, isWEP: Bool = false, completion: @escaping (Bool, String) -> Void) {
+        print("connectToWiFi:\(mac), \(ssid), \(password)")
         
         // Step 1: 先移除舊設定，避免衝突
         NEHotspotConfigurationManager.shared.removeConfiguration(forSSID: ssid)
@@ -22,7 +22,7 @@ class WiFiManager: NSObject {
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             let configuration = NEHotspotConfiguration(ssid: ssid, passphrase: password, isWEP: isWEP)
             
-            configuration.joinOnce = true // 保持連線
+            configuration.joinOnce = false // 保持連線
             configuration.lifeTimeInDays = 1 // iOS 16+
     
             NEHotspotConfigurationManager.shared.apply(configuration) { error in
@@ -40,6 +40,7 @@ class WiFiManager: NSObject {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
                     let currentSSID = self.currentWiFiSSID()
                     if let error = error {
+                        print("Wi-Fi 連接失敗: \(error.localizedDescription), \(currentSSID)")
                         completion(false, "Wi-Fi 連接失敗: \(error.localizedDescription)")
                     } else if currentSSID == ssid {
                         completion(true, "成功連接到 Wi-Fi: \(ssid)")

@@ -80,7 +80,7 @@ final class MQTTManagerMiddle: NSObject, ObservableObject {
         // 啟動 確認用戶接受AI服務 服務
         decisionService = MQTTDecisionService(
             mqtt: connectionService.instance,
-            userTokenProvider: { 
+            userTokenProvider: {
                 return userToken ?? ""
             }
         )
@@ -158,8 +158,8 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
             self.authService.subscribe()  // 訂閱: 用戶登入
             self.smartService.subscribe() // 訂閱: 智慧環控
             self.deviceService.subscribeAll() // 訂閱: 取得家電所有資料
-                                              // 訂閱: 設備參數讀寫能力
-                                              // 訂閱: 發送與設定設備
+            // 訂閱: 設備參數讀寫能力
+            // 訂閱: 發送與設定設備
             self.decisionService.subscribeAll()  // 訂閱: 用戶是否接受 AI 執行
         }
     }
@@ -195,7 +195,7 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
         if topic == "to/app/\(userToken)/appliances/capabilities" {
             DispatchQueue.main.async {
                 guard let data = payload.data(using: .utf8) else { return }
-
+                
                 do {
                     let decoder = JSONDecoder()
                     let response = try decoder.decode(ApplianceCapabilitiesResponse.self, from: data)
@@ -209,50 +209,62 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
         // MARK: - 總設備所有資料 回應
         if topic == "to/app/\(userToken)/appliances/telemetry" {
             DispatchQueue.main.async {
-                if let data = payload.data(using: .utf8),
-                   let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-                    
-//                    print("✅ 總家電參數更新: \(json)")
-                    print("✅ 總家電參數: \(json.isEmpty ? "無資料": "有資料")")
-                    
-                    self.serverLoading = json.isEmpty
-                    
-                    if let availableDevices = json["availables"] as? [String] {
-                        self.availables = availableDevices
-                    }
-                    
-                    if let edgeBind = json["edge_bind"] as? Bool {
-                        self.isSmartBind = edgeBind
-                    }
-                    
-                    if let decisionConfig = json["decision_config"] as? Bool {
-                        self.decisionEnabled = decisionConfig
-                    }
-                    
-                    if let appliancesData = json["appliances"] as? [String: [String: Any]] {
-                        var parsed: [String: [String: ApplianceData]] = [:]
-                        
-                        for (device, parameters) in appliancesData {
-                            var deviceData: [String: ApplianceData] = [:]
-                            for (param, value) in parameters {
-                                let valueStr = String(describing: value)
-                                let updated = parameters["updated"].flatMap { String(describing: $0) } ?? ""
-                                deviceData[param] = ApplianceData(value: valueStr, updated: updated)
+                if let data = payload.data(using: .utf8) {
+                    do {
+                        if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                            
+                            print("✅ 總家電參數更新: \(json)")
+                            print("✅ 總家電參數: \(json.isEmpty ? "無資料": "有資料")")
+                            
+                            self.serverLoading = json.isEmpty
+                            print("✅ 總家電參數: \(self.serverLoading)")
+                            
+                            // 已綁定家電 確認
+                            if let availableDevices = json["availables"] as? [String] {
+                                self.availables = availableDevices
                             }
-                            parsed[device] = deviceData
+                            
+                            // 環控綁定 確認
+                            if let edgeBind = json["edge_bind"] as? Bool {
+                                self.isSmartBind = edgeBind
+                            }
+                            
+                            // AI決策啟動 確認
+                            if let decisionConfig = json["decision_config"] as? Bool {
+                                self.decisionEnabled = decisionConfig
+                            }
+                            
+                            // 所有設備資料 取得
+                            if let appliancesData = json["appliances"] as? [String: [String: Any]] {
+                                var parsed: [String: [String: ApplianceData]] = [:]
+                                
+                                for (device, parameters) in appliancesData {
+                                    var deviceData: [String: ApplianceData] = [:]
+                                    for (param, value) in parameters {
+                                        let valueStr = String(describing: value)
+                                        let updated = parameters["updated"].flatMap { String(describing: $0) } ?? ""
+                                        deviceData[param] = ApplianceData(value: valueStr, updated: updated)
+                                    }
+                                    parsed[device] = deviceData
+                                }
+                                
+                                self.appliances = parsed
+                                
+                                //                        print("✅ 成功接收到家電資料: \(self.appliances)")
+                                //                        if let mqtt_data = parsed["dehumidifier"] {
+                                //                            print("✅ 「sensor」溫濕度數據: \(mqtt_data)")
+                                //                            print("✅ 「air_conditioner」冷氣數據: \(mqtt_data)")
+                                //                            print("✅ 「dehumidifier」除濕機數據: \(mqtt_data)")
+                                //                            print("✅ 「sensor」遙控器數據: \(mqtt_data)")
+                                
+                                //                        }
+                            }
                         }
-                        
-                        self.appliances = parsed
-                        
-//                        print("✅ 成功接收到家電資料: \(self.appliances)")
-//                        if let mqtt_data = parsed["dehumidifier"] {
-//                            print("✅ 「sensor」溫濕度數據: \(mqtt_data)")
-//                            print("✅ 「air_conditioner」冷氣數據: \(mqtt_data)")
-//                            print("✅ 「dehumidifier」除濕機數據: \(mqtt_data)")
-//                            print("✅ 「sensor」遙控器數據: \(mqtt_data)")
-
-//                        }
+                    } catch {
+                        print("❗JSON 解析錯誤: \(error.localizedDescription)")
                     }
+                } else {
+                    print("❗payload 無法轉成 UTF-8 Data: \(payload)")
                 }
             }
         }

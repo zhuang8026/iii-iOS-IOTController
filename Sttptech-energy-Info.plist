@@ -14,10 +14,13 @@
 
 	<!-- Wi-Fi 網路 -->
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>我們需要您允許位置權限以搜尋附近的 Wi-Fi 網路</string>
+	<string>需要 Wi-Fi 權限以連接裝置</string>
 
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>我們需要您允許位置權限以搜尋附近的 Wi-Fi 網路</string>
+
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>此應用程式需要存取本地網路以連接設備</string>
 
 	<!-- 允許不安全的 HTTPS -->
 	<key>NSAppTransportSecurity</key>

@@ -9,7 +9,8 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var appStore: AppStore  // 使用全域狀態
-    //    @EnvironmentObject var mqttManager: MQTTManager // 從環境取得 MQTTManager
+    @EnvironmentObject var mqttManagerMiddle: MQTTManagerMiddle // 從環境取得 MQTTManagerMiddle
+//        @EnvironmentObject var mqttManager: MQTTManager // 從環境取得 MQTTManager
     
     @State private var selectedTab = "" // 選擇設備控制
     @State private var status = false // 控制顯示標題名稱（內含 返回 icon）
@@ -222,7 +223,8 @@ struct ContentView: View {
             .onDisappear {
                 MQTTManagerMiddle.shared.disconnect() // 離開畫面 斷開 MQTT 連線
             }
-            .onChange(of: MQTTManagerMiddle.shared.isConnected) { oldConnect, newConnect in
+            .onChange(of: mqttManagerMiddle.isConnected) { oldConnect, newConnect in
+                print("[入口] isConnected:  \(oldConnect) \(newConnect)")
                 // 連線MQTT
                 if newConnect {
                     //  mqttManager.publishApplianceUserLogin(username: "app", password: "app:ppa")

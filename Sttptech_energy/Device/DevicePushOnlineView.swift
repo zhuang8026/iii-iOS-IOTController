@@ -73,21 +73,21 @@ struct DevicePushOnlineView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 10) {
                     // 顯示選擇的設備
-                    Button(action: {print("顯示選擇的設備")}) {
-                        HStack {
-                            VStack(alignment: .leading) {
-                                Text("設備名稱")
-                                    .font(.headline)
-                                    .foregroundColor(Color.g_blue) // 設備名稱
-                                Spacer()
-                                Text("0987654321-POIUYTREWQ-LKJHGFDSA")
-                                    .font(.subheadline)
-                                    .foregroundColor(Color.heavy_gray) // 設備 UUID
-                            }
-                        }
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                    }
+//                    Button(action: {print("顯示選擇的設備")}) {
+//                        HStack {
+//                            VStack(alignment: .leading) {
+//                                Text("設備名稱")
+//                                    .font(.headline)
+//                                    .foregroundColor(Color.g_blue) // 設備名稱
+//                                Spacer()
+//                                Text("0987654321-POIUYTREWQ-LKJHGFDSA")
+//                                    .font(.subheadline)
+//                                    .foregroundColor(Color.heavy_gray) // 設備 UUID
+//                            }
+//                        }
+//                        .padding()
+//                        .frame(maxWidth: .infinity)
+//                    }
                     
                     // 🔹 分割線（新增）
                     Rectangle()

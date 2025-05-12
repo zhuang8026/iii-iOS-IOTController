@@ -10,7 +10,22 @@ import SwiftUI
 struct ElectricSocket: View {
 //    @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
     @State private var isPowerOn: Bool = false // 開關控制（父控制）
+    @State private var powerWATT: String = "0.0" // 開關控制（父控制）
     
+    // MARK: - GET API
+    // 解析 MQTT 家電數據，更新 UI
+    private func getElectricSocket() {
+        guard let outlet = MQTTManagerMiddle.shared.appliances["ac_outlet"] else { return }
+        
+        if let power = outlet["cfg_power"]?.value {
+            isPowerOn = power == "on" ? true : false
+        }
+        
+        if let power_watt = outlet["op_power_watt"]?.value {
+            powerWATT = power_watt
+        }
+    }
+
     // MARK: - POST API
     private func postElectricSocket(mode: [String: Any]) {
         let paylod: [String: Any] = [
@@ -53,6 +68,12 @@ struct ElectricSocket: View {
             Text("狀態： \(isPowerOn ? "開" : "關")")
                .padding()
             Spacer()
+        }
+        .onAppear {
+            getElectricSocket() // 畫面載入時初始化數據
+        }
+        .onChange(of: MQTTManagerMiddle.shared.appliances["ac_outlet"]) { _, _ in
+            getElectricSocket()
         }
     }
 }

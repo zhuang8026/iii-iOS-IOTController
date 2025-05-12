@@ -232,7 +232,7 @@ struct ConnectToWiFiView: View {
         }
         
         
-        WiFiManager.shared.connectToWiFi(ssid: ts_ssid, password: password) { success, message in
+        WiFiManager.shared.connectToWiFi(mac: ssid, ssid: ts_ssid, password: password) { success, message in
             connectionMessage = message
             
             print("Wi-Fi conncet status: \(success)")

@@ -118,11 +118,12 @@ struct ConnectToMacCodeView: View {
         .fullScreenCover(isPresented: $showScanner) {
             QRCodeScannerView(
                 onScan: { scanned in
+                    print("環控主機：\(scanned)")
                     if let data = scanned.data(using: .utf8),
                        let macInfo = try? JSONDecoder().decode(MacCodeInfo.self, from: data) {
                         self.deviceMac = macInfo.deviceMac
                     } else {
-                        print("❌ 無法解析掃描內容")
+                        self.deviceMac = scanned
                     }
                     self.showScanner = false
                 },
