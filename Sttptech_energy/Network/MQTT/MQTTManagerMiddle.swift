@@ -191,6 +191,13 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
             print("📬 收到智慧環控 edge 回應: \(payload)")
         }
         
+        // MARK: - AI 已執行家電調控 回應
+        if topic == "to/app/\(userToken)/appliances/decision/notify" {
+            // 可加 smart 綁定狀態解析
+            print("📬 AI 已執行家電調控 回應: \(payload)")
+            sendLocalNotification(title: "執行AI決策", body: "冷氣: 27度 \n除濕機: 開啟55%濕度 \n電風扇: 開啟") // [TEST][MQTT] 取得AI決策內容並送到Apple_Server
+        }
+
         // MARK: - 讀寫能力 回應
         if topic == "to/app/\(userToken)/appliances/capabilities" {
             DispatchQueue.main.async {
@@ -200,8 +207,10 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
                     let decoder = JSONDecoder()
                     let response = try decoder.decode(ApplianceCapabilitiesResponse.self, from: data)
                     self.deviceCapabilities = response.capabilities
+                    
+                    print("家電能力: \(self.deviceCapabilities)")
                 } catch {
-                    print("❌ Capabilities 解碼失敗: \(error)")
+                    print("❌ 家電能力 解碼失敗: \(error)")
                 }
             }
         }

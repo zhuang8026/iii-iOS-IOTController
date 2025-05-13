@@ -2,6 +2,7 @@
 import Foundation
 import CocoaMQTT
 
+// 取得家電所有資料、設備參數讀寫能力、發送與設定設備
 final class MQTTDeviceService {
     private let mqtt: CocoaMQTT
     private let userToken: () -> String

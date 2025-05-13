@@ -10,7 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject var appStore: AppStore  // 使用全域狀態
     @EnvironmentObject var mqttManagerMiddle: MQTTManagerMiddle // 從環境取得 MQTTManagerMiddle
-//        @EnvironmentObject var mqttManager: MQTTManager // 從環境取得 MQTTManager
+    //        @EnvironmentObject var mqttManager: MQTTManager // 從環境取得 MQTTManager
     
     @State private var selectedTab = "" // 選擇設備控制
     @State private var status = false // 控制顯示標題名稱（內含 返回 icon）
@@ -257,7 +257,6 @@ struct ContentView: View {
                         //                        appStore.isAIControl = true
                         //                        mqttManager.publishSetDecisionConfig(accepted: true) // [MQTT] AI決策
                         MQTTManagerMiddle.shared.setDecisionAccepted(accepted: true) // [MQTT] AI決策
-                        sendLocalNotification(title: appStore.title, body: appStore.notificationsResult)
                     },
                     onCancel: {
                         //                        appStore.isAIControl = false

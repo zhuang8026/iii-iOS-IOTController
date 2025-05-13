@@ -16,12 +16,12 @@ final class MQTTDecisionService {
         subscribe(to: "to/app/\(userToken())/appliances/decision/config")
         subscribe(to: "to/app/\(userToken())/appliances/decision/notify")
     }
-    
+
     func publishDecisionAccepted(_ accepted: Bool) {
         let payload: [String: Bool] = ["accepted": accepted]
         publish(payload, to: "from/app/\(userToken())/appliances/decision/config")
     }
-    
+
     private func subscribe(to topic: String) {
         mqtt.subscribe(topic, qos: .qos1)
         print("📡 訂閱 AI 決策 Topic: \(topic)")

@@ -1,6 +1,7 @@
 import Foundation
 import CocoaMQTT
 
+// 綁定 環控主機 到 用戶帳號
 final class MQTTSmartControlService {
     private let mqtt: CocoaMQTT
     private let userToken: () -> String
@@ -17,13 +18,13 @@ final class MQTTSmartControlService {
         print("📡 訂閱 Smart 控制 topic: \(topic)")
     }
     
-    // MARK: -  step2. 送出
+    // MARK: -  step2. 綁定
     func publishBind(deviceMac: String) {
         let payload: [String: String] = ["bind": deviceMac]
         publish(payload)
         print("Smart綁定: \(payload)")
     }
-
+    // MARK: -  step3. 解除綁定
     func publishUnbind(deviceMac: String) {
         let payload: [String: String] = ["unbind": deviceMac]
         publish(payload)

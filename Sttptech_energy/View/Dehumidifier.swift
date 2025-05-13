@@ -12,7 +12,7 @@ struct Dehumidifier: View {
     
     // 控制提示
     //    @EnvironmentObject var appStore: AppStore  // 使用全域狀態
-//    @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
+    //    @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
     
     // 選項列表
     @State private var humidityOptions:[Int] = [] // 設定：40% - 80% (ex: Array(stride(from: 1, through: 100, by: 1)))
@@ -66,14 +66,16 @@ struct Dehumidifier: View {
             self.waterLevelOptions = waterFullValue
         }
         
-        // 解析 `modeOptions` -> Array ("read", "auto", "manual", "continuous", "clothes_drying", "purification", "sanitize", "fan", "comfort", "low_drying")
+        // 解析 `cfg_mode` -> Array ("read", "auto", "manual", "continuous", "clothes_drying", "purification", "sanitize", "fan", "comfort", "low_drying")
         if let modeStrings = DF_Capabilities["cfg_mode"] {
             let modeValues = modeStrings
                 .filter { $0 != "read" }               // ❌ 排除 "read"
             self.modeOptions = modeValues
+            
+            print("除濕機：\(self.modeOptions)")
         }
         
-        // 解析 `modeOptions` -> Array ("read", "auto", "low", "medium", "high", "strong", "max")
+        // 解析 `cfg_fan_level` -> Array ("read", "auto", "low", "medium", "high", "strong", "max")
         if let fanLevelStrings = DF_Capabilities["cfg_fan_level"] {
             let fanLevelValues = fanLevelStrings
                 .filter { $0 != "read" }               // ❌ 排除 "read"
@@ -142,7 +144,7 @@ struct Dehumidifier: View {
         let paylod: [String: Any] = [
             "dehumidifier": mode
         ]
-//        mqttManager.publishSetDeviceControl(model: paylod)
+        //        mqttManager.publishSetDeviceControl(model: paylod)
         MQTTManagerMiddle.shared.setDeviceControl(model: paylod)
     }
     
@@ -259,6 +261,11 @@ struct Dehumidifier: View {
                                         print("selectedMode: \(newVal)")
                                         let paylodModel: [String: Any] = ["cfg_mode": newVal]
                                         postDehumidifierSetting(mode: paylodModel)
+                                    }
+                                    .onAppear {
+                                        if !modeOptions.contains(selectedMode) {
+                                            selectedMode = modeOptions.first ?? ""
+                                        }
                                     }
                                 }
                                 .frame(maxWidth: .infinity, minHeight: 60.0)
