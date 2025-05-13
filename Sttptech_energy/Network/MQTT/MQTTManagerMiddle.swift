@@ -40,9 +40,9 @@ final class MQTTManagerMiddle: NSObject, ObservableObject {
     private var decisionService: MQTTDecisionService!
     
     // MARK: - 用戶 token
-    //    private var userToken: String {
-    //        UserDefaults.standard.string(forKey: "MQTTAccessToken") ?? ""
-    //    }
+    private var userToken: String {
+        UserDefaults.standard.string(forKey: "MQTTAccessToken") ?? ""
+    }
     
     //  MARK: - 加載
     private override init() {
@@ -65,7 +65,7 @@ final class MQTTManagerMiddle: NSObject, ObservableObject {
         smartService = MQTTSmartControlService(
             mqtt: connectionService.instance,
             userTokenProvider: {
-                return userToken ?? ""
+                return self.userToken ?? ""
             }
         )
         
@@ -73,7 +73,7 @@ final class MQTTManagerMiddle: NSObject, ObservableObject {
         deviceService = MQTTDeviceService(
             mqtt: connectionService.instance,
             userTokenProvider: {
-                return userToken ?? ""
+                return self.userToken ?? ""
             }
         )
         
@@ -81,7 +81,7 @@ final class MQTTManagerMiddle: NSObject, ObservableObject {
         decisionService = MQTTDecisionService(
             mqtt: connectionService.instance,
             userTokenProvider: {
-                return userToken ?? ""
+                return self.userToken ?? ""
             }
         )
         
