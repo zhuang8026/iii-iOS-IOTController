@@ -90,7 +90,8 @@ struct ContentView: View {
         // 建立 ISO8601 格式的解析器（支援毫秒）
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime]
-        
+        formatter.timeZone = TimeZone(secondsFromGMT: 8 * 3600) // 台灣時區 +8
+
         // 將 updated 字串轉為 Date 物件（若格式錯誤則離線）
         guard let updatedDate = formatter.date(from: updatedTime.updated) else {
             return false
