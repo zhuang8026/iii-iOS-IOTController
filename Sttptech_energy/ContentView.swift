@@ -108,7 +108,7 @@ struct ContentView: View {
         
         // 若差距在 300 分鐘內，代表在線，否則離線
         print("\(tab) -> \(timeInterval <= 1800 ? "資料已更新":"資料未更新")")
-        return timeInterval <= 1800 // 300分鐘 = 1800秒
+        return timeInterval <= 18000000 // 300分鐘 = 1800秒
     }
     
     // 判斷設備是否 綁定 或 設備上線
@@ -135,11 +135,17 @@ struct ContentView: View {
         case "溫濕度":
             return mqttManager.appliances["sensor"]?["updated"]?.value == nil
         case "空調":
+<<<<<<< HEAD
             return mqttManager
                 .appliances["air_conditioner"]?["updated"]?.value == nil
         case "除濕機":
             return mqttManager
                 .appliances["dehumidifier"]?["updated"]?.value == nil
+=======
+            return mqttManager.appliances["air_conditioner"]?["updated"]?.value == nil
+        case "除濕機":
+            return mqttManager.appliances["dehumidifier"]?["updated"]?.value == nil
+>>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
         case "遙控器":
             return mqttManager.appliances["remote"]?["updated"]?.value == nil
         case "插座":
@@ -357,6 +363,7 @@ struct ContentView: View {
                     isREMCConnected = availables.contains("remote")
                 }
                 
+<<<<<<< HEAD
                 // [全局][自訂彈窗] 提供空調 與 遙控器 頁面使用
                 if mqttManager.decisionControl {
                     CustomPopupView(
@@ -394,6 +401,60 @@ struct ContentView: View {
         //                Text("AI決策已關閉")
         //            }
         //        )
+=======
+            }
+            .onDisappear {
+                MQTTManagerMiddle.shared.disconnect() // 離開畫面 斷開 MQTT 連線
+            }
+            .onChange(of: mqttManager.isConnected) { oldConnect, newConnect in
+                print("[入口] isConnected:  \(oldConnect) \(newConnect)")
+                // 連線MQTT
+                if newConnect {
+                    //  mqttManager.publishApplianceUserLogin(username: "app", password: "app:ppa")
+                    //  MQTTManagerMiddle.shared.login(username: "user", password: "app:ppa")
+                    //                    mqttManager.publishTelemetryCommand(subscribe: true)
+                    mqttManager.startTelemetry() // 接收家電資訊指令
+                    //                    mqttManager.publishCapabilities()
+                    mqttManager.requestCapabilities() // 查詢 家電參數讀寫能力 指令
+                }
+            }
+            .onReceive(mqttManager.$isSmartBind) { newValue in
+                print("[入口] 智能環控綁定狀態: \(newValue)")
+                isSmartControlConnected = newValue // 連動 智能環控 綁定
+            }
+            .onReceive(mqttManager.$availables) { availables in
+                print("已綁定家電列表:\(availables)")
+                isTempConnected = availables.contains("sensor")
+                isACConnected = availables.contains("air_conditioner")
+                isDFConnected = availables.contains("dehumidifier")
+                isREMCConnected = availables.contains("remote")
+            }
+            
+            // [全局][自訂彈窗] 提供空調 與 遙控器 頁面使用
+            if mqttManager.decisionControl {
+                CustomPopupView(
+                    isPresented: $mqttManager.decisionControl, // 開關
+                    title: appStore.title,
+                    message: mqttManager.decisionMessage,
+                    onConfirm: {
+                        mqttManager.setDecisionAccepted(accepted: true) // [MQTT] AI決策
+                    },
+                    onCancel: {
+                        mqttManager.setDecisionAccepted(accepted: false) // [MQTT] AI決策
+                    }
+                )
+            }
+        }
+        .alert("能源管家提示",
+            isPresented: $mqttManager.showDeviceAlert,
+            actions: {
+                Button("好的", role: .cancel) {}
+            },
+            message: {
+                Text("AI決策已關閉")
+            }
+        )
+>>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
     }
 }
 

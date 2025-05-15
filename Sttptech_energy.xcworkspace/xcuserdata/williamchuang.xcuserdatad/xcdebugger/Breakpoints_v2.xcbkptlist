@@ -63,12 +63,21 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
 <<<<<<< HEAD
+<<<<<<< HEAD
             startingLineNumber = "204"
             endingLineNumber = "204"
 =======
             startingLineNumber = "154"
             endingLineNumber = "154"
 >>>>>>> 29a838e (Fixed - [timeZone] add 台灣時區 +8)
+=======
+            startingLineNumber = "154"
+            endingLineNumber = "154"
+=======
+            startingLineNumber = "156"
+            endingLineNumber = "156"
+>>>>>>> 492de98 (Fixed - [UI] login UI tracking firtt)
+>>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -99,12 +108,18 @@
             filePath = "Sttptech_energy/Network/MQTT/MQTTManagerMiddle.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
+<<<<<<< HEAD
             startingLineNumber = "264"
             endingLineNumber = "264"
+=======
+            startingLineNumber = "249"
+            endingLineNumber = "249"
+>>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
             landmarkName = "mqtt(_:didReceiveMessage:id:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
+<<<<<<< HEAD
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
@@ -121,5 +136,7 @@
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
+=======
+>>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
    </Breakpoints>
 </Bucket>
