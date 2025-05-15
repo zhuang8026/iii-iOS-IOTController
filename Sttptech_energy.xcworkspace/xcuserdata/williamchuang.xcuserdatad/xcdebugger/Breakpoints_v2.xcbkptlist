@@ -62,22 +62,8 @@
             filePath = "Sttptech_energy/ContentView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-<<<<<<< HEAD
-<<<<<<< HEAD
-            startingLineNumber = "156"
-            endingLineNumber = "156"
-=======
-            startingLineNumber = "154"
-            endingLineNumber = "154"
->>>>>>> 29a838e (Fixed - [timeZone] add 台灣時區 +8)
-=======
-            startingLineNumber = "154"
-            endingLineNumber = "154"
-=======
-            startingLineNumber = "156"
-            endingLineNumber = "156"
->>>>>>> 492de98 (Fixed - [UI] login UI tracking firtt)
->>>>>>> 99dba66 (testing)
+            startingLineNumber = "161"
+            endingLineNumber = "161"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
