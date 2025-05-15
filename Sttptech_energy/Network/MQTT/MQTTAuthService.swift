@@ -1,6 +1,7 @@
 import Foundation
 import CocoaMQTT
 
+// MARK: - 用戶
 final class MQTTAuthService {
     private let mqtt: CocoaMQTT
     private let appID: String

@@ -88,7 +88,7 @@ struct GradientProgress: View {
                     .onEnded { _ in
                         // ✅ 只有在用戶停止拖動後才觸發 API 呼叫
                         currentTemperature = temperature // ✅ 結束時再更新
-                        print("溫度數據送出：\(currentTemperature)")
+//                        print("溫度數據送出：\(currentTemperature)")
                     }
             )
         }
@@ -119,8 +119,7 @@ struct GradientProgress: View {
 
         let adjustedSegments = totalSegments // 確保分為 15 段
         let progress = rawProgress / CGFloat(adjustedSegments)
-        print("溫度:", progress)
-        
+    
         if !progress.isFinite || progress < 0 {
             return 0
         }

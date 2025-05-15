@@ -23,7 +23,7 @@ struct ModeSelector: View {
         case "dry": return "除濕"
         case "fan": return "送風"
         case "auto": return "自動"
-        default: return "其他"
+        default: return "未知"
         }
     }
 

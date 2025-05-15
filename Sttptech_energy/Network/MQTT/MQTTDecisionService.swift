@@ -2,7 +2,7 @@
 import Foundation
 import CocoaMQTT
 
-// MARK: - 未定案 用戶是否接受 AI 執行
+// MARK: - AI決策 啟動 與 訊息收集
 final class MQTTDecisionService {
     private let mqtt: CocoaMQTT
     private let userToken: () -> String

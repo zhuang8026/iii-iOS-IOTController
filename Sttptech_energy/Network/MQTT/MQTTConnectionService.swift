@@ -1,6 +1,7 @@
 import Foundation
 import CocoaMQTT
 
+// MARK: - 其次 連接
 final class MQTTConnectionService {
     private let mqtt: CocoaMQTT
 

@@ -9,8 +9,6 @@ import SwiftUI
 
 struct Dehumidifier: View {
     @Binding var isConnected: Bool // 設備藍芽是否已連線
-    
-    // 控制提示
     //    @EnvironmentObject var appStore: AppStore  // 使用全域狀態
     //    @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
     
@@ -29,6 +27,11 @@ struct Dehumidifier: View {
     @State private var checkWaterFullAlarm: String = "alarm" // ["正常", "滿水"]
     @State private var fanSpeed: String = "auto" // 風速設定變數-> API cfg_fan_level
     
+    // 首次進入畫面不觸法 onchange
+    @State private var humdifPicker = false // 除濕百分比
+    @State private var timePicker = false // 定時
+    @State private var modePicker = false // 模式
+    @State private var fansPicker = false // 風速
     
     // 藍芽連線顯示
     @State private var isShowingNewDeviceView = false // 是否要開始藍芽配對介面，默認：關閉
@@ -39,9 +42,7 @@ struct Dehumidifier: View {
     
     // MARK: - 取得 MQTT 設備讀取能力，更新 UI
     private func checkDehumidifierCapabilities() {
-        guard let DF_Capabilities = MQTTManagerMiddle.shared.deviceCapabilities["dehumidifier"] else {
-            return
-        }
+        guard let DF_Capabilities = MQTTManagerMiddle.shared.deviceCapabilities["dehumidifier"] else {return }
         
         // 解析 `cfg_humidity` -> Array ("read", "50", "55", "60", "65", "70", "75")
         if let humidityString = DF_Capabilities["cfg_humidity"] {
@@ -71,8 +72,6 @@ struct Dehumidifier: View {
             let modeValues = modeStrings
                 .filter { $0 != "read" }               // ❌ 排除 "read"
             self.modeOptions = modeValues
-            
-            print("除濕機：\(self.modeOptions)")
         }
         
         // 解析 `cfg_fan_level` -> Array ("read", "auto", "low", "medium", "high", "strong", "max")
@@ -84,7 +83,7 @@ struct Dehumidifier: View {
         
     }
     
-    // MARK: - 解析 MQTT 家電數據，更新 UI
+    // MARK: - 取得 MQTT 家電數據，更新 UI
     private func updateDehumidifierData() {
         guard let dehumidifierData = MQTTManagerMiddle.shared.appliances["dehumidifier"] else { return }
         
@@ -134,8 +133,8 @@ struct Dehumidifier: View {
         case "sanitize": return "防霉抗菌"
         case "fan": return "空氣循環"
         case "comfort": return "舒適除濕"
-        case "low_drying": return "低濕乾燥"
-        default: return "其他"
+        case "low_drying": return "低溫乾燥"
+        default: return "未知模式"
         }
     }
     
@@ -144,7 +143,6 @@ struct Dehumidifier: View {
         let paylod: [String: Any] = [
             "dehumidifier": mode
         ]
-        //        mqttManager.publishSetDeviceControl(model: paylod)
         MQTTManagerMiddle.shared.setDeviceControl(model: paylod)
     }
     
@@ -157,7 +155,7 @@ struct Dehumidifier: View {
                     PowerToggle(isPowerOn: $isPowerOn)
                     // 🔥 監聽 isPowerOn 的變化
                         .onChange(of: isPowerOn) { oldVal, newVal in
-                            print("isPowerOn: \(newVal)")
+                            print("除濕機開關: \(newVal)")
                             let paylodModel: [String: Any] = ["cfg_power": newVal ? "on" : "off"]
                             postDehumidifierSetting(mode: paylodModel)
                         }
@@ -184,9 +182,13 @@ struct Dehumidifier: View {
                                         .tint(Color.g_blue) // 🔴 修改點擊時的選單顏色
                                         .pickerStyle(MenuPickerStyle()) // 下拉選單
                                         .onChange(of: selectedHumidity) { oldVal, newVal in // 🔥 監聽 isPowerOn 的變化
-                                            print("selectedHumidity: \(newVal)")
-                                            let paylodModel: [String: Any] = ["cfg_humidity": String(newVal)]
-                                            postDehumidifierSetting(mode: paylodModel)
+                                            if humdifPicker {
+                                                print("設定濕度: \(newVal)")
+                                                let paylodModel: [String: Any] = ["cfg_humidity": String(newVal)]
+                                                postDehumidifierSetting(mode: paylodModel)
+                                            } else {
+                                                humdifPicker = true
+                                            }
                                         }
                                         .onChange(of: selectedHumidity) { // ✅ iOS 17 兼容
                                             
@@ -211,9 +213,13 @@ struct Dehumidifier: View {
                                         .tint(Color.g_blue) // 🔴 修改點擊時的選單顏色
                                         .pickerStyle(MenuPickerStyle()) // 下拉選單
                                         .onChange(of: selectedTimer) { oldVal, newVal in  // 🔥 監聽 isPowerOn 的變化
-                                            print("selectedTimer: \(newVal)")
-                                            let paylodModel: [String: Any] = ["cfg_timer": String(newVal)]
-                                            postDehumidifierSetting(mode: paylodModel)
+                                            if timePicker {
+                                                print("設定時間: \(newVal)")
+                                                let paylodModel: [String: Any] = ["cfg_timer": String(newVal)]
+                                                postDehumidifierSetting(mode: paylodModel)
+                                            } else {
+                                                timePicker = true
+                                            }
                                         }
                                     }
                                     .frame(maxWidth: .infinity, minHeight: 60.0)
@@ -255,12 +261,16 @@ struct Dehumidifier: View {
                                                 .tag(value) // 保持原始模式代號，確保 selection 維持一致
                                         }
                                     }
-                                    .tint(Color.g_blue) // 🔴 修改點擊時的選單顏色
+                                    .tint(Color.g_blue) // 修改點擊時的選單顏色
                                     .pickerStyle(MenuPickerStyle()) // 下拉選單
                                     .onChange(of: selectedMode) { oldVal, newVal in  // 🔥 監聽 isPowerOn 的變化
-                                        print("selectedMode: \(newVal)")
-                                        let paylodModel: [String: Any] = ["cfg_mode": newVal]
-                                        postDehumidifierSetting(mode: paylodModel)
+                                        if modePicker {
+                                            print("設定模式: \(newVal)")
+                                            let paylodModel: [String: Any] = ["cfg_mode": newVal]
+                                            postDehumidifierSetting(mode: paylodModel)
+                                        } else {
+                                            modePicker = true
+                                        }
                                     }
                                     .onAppear {
                                         if !modeOptions.contains(selectedMode) {
@@ -306,9 +316,13 @@ struct Dehumidifier: View {
                                 //  FanSpeedSlider(fanSpeed: $fanSpeed) // 風速控制
                                 WindSpeedView(selectedSpeed: $fanSpeed, fanMode: $fanModeOptions) // 風速控制
                                     .onChange(of: fanSpeed) { oldVal, newVal in  // 🔥 監聽 isPowerOn 的變化
-                                        print("fanSpeed: \(newVal)")
-                                        let paylodModel: [String: Any] = ["cfg_fan_level": newVal]
-                                        postDehumidifierSetting(mode: paylodModel)
+                                        if fansPicker {
+                                            print("設定風速: \(newVal)")
+                                            let paylodModel: [String: Any] = ["cfg_fan_level": newVal]
+                                            postDehumidifierSetting(mode: paylodModel)
+                                        } else {
+                                            fansPicker = true
+                                        }
                                     }
                             }
                         }

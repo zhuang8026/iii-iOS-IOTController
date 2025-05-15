@@ -1,7 +1,7 @@
 import Foundation
 import CocoaMQTT
 
-// 綁定 環控主機 到 用戶帳號
+// MARK: - 綁定 環控主機 到 用戶帳號
 final class MQTTSmartControlService {
     private let mqtt: CocoaMQTT
     private let userToken: () -> String
