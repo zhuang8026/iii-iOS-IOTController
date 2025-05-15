@@ -26,7 +26,7 @@ struct AirConditioner: View {
     // 藍芽連線顯示
     @State private var isShowingNewDeviceView = false // 是否要開始藍芽配對介面，默認：關閉
     @State private var selectedTab = "空調"
-    
+
     let titleWidth = 8.0;
     let titleHeight = 20.0;
     
@@ -115,9 +115,13 @@ struct AirConditioner: View {
                     PowerToggle(isPowerOn: $isPowerOn) { newVal in
                         print("AC power: \(newVal)")
                         let paylodModel: [String: Any] = ["cfg_power": newVal ? "on" : "off"]
+<<<<<<< HEAD
                         postAirConditionerRemote(mode: paylodModel) // 送出資料
                         MQTTManagerMiddle.shared.startTelemetry() // 接收家電資訊指令
                         MQTTManagerMiddle.shared.requestCapabilities() // 查詢 家電參數讀寫能力 指令
+=======
+                        postAirConditionerRemote(mode: paylodModel)
+>>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
                     }
                     // 🔥 監聽 isPowerOn 的變化
                     // .onChange(of: isPowerOn) { oldVal, newVal in
@@ -194,7 +198,11 @@ struct AirConditioner: View {
                                 maxTemperature: $maxTemp  // max temp
                             ) /// 溫度控制視圖
                             // 🔥 監聽 temperature 的變化
+<<<<<<< HEAD
                             .onChange(of: temperature) { _, newVal in
+=======
+                            .onChange(of: temperature) { newVal in
+>>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
                                 print("送出溫度:", newVal)
                                 let paylodModel: [String: Any] = ["cfg_temperature": String(newVal)]
                                 postAirConditionerRemote(mode: paylodModel)
