@@ -287,8 +287,8 @@ extension MQTTManager: CocoaMQTTDelegate {
             subscribeToSmart()            //「環控主機」連線後自動訂閱
             subscribeToTelemetry()        //「溫濕度」連線後自動訂閱
             subscribeToSetDeviceControl() //「設定裝置」連線後自動訂閱
-            subscribeDecisionConfig()     // [未定案]「是否接受AI決策」連線後自動訂閱
-            subscribeDecisionNotify()     // [未定案]「 AI已決策玩笑通知」連線後自動訂閱
+            subscribeDecisionConfig()     //「是否接受AI決策」連線後自動訂閱
+            subscribeDecisionNotify()     //「 AI已決策玩笑通知」連線後自動訂閱
             
         } else {
             // print("❌ MQTT 連線失敗: \(ack)")

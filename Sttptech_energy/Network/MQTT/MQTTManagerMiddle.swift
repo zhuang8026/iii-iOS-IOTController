@@ -2,6 +2,7 @@ import Foundation
 import CocoaMQTT
 import Combine
 
+// MARK: - 主要
 final class MQTTManagerMiddle: NSObject, ObservableObject {
     static let shared = MQTTManagerMiddle()
     
@@ -11,6 +12,12 @@ final class MQTTManagerMiddle: NSObject, ObservableObject {
     @Published var isSmartBind: Bool = false
     // MARK: - AI決策 是否同意 AI控制狀態
     @Published var decisionEnabled: Bool = false
+    // MARK: - AI決策alert開啟
+    @Published var decisionControl: Bool = false
+    // MARK: - AI決策啟動 && 用戶要關閉AI決策
+    @Published var showDeviceAlert: Bool = false
+    // MARK: - AI決策建議內容顯示
+    @Published var decisionMessage: String = ""
     // MARK: - 登入狀態
     @Published var loginResponse: String? // 儲存「登入」結果
     // MARK: - 導航欄資料
@@ -21,6 +28,7 @@ final class MQTTManagerMiddle: NSObject, ObservableObject {
     @Published var serverLoading: Bool = true
     // MARK: - 家電總資料
     @Published var appliances: [String: [String: ApplianceData]] = [:] // 安裝的家電參數狀態
+    
     
     private let appID = "1d51e92d-e623-41dd-b367-d955a0d44d66"
     
@@ -123,9 +131,15 @@ final class MQTTManagerMiddle: NSObject, ObservableObject {
         deviceService.publishRequestCapabilities()
     }
     
-    // [對外]
+    // [對外] 設定設備資料
     func setDeviceControl(model: [String: Any]) {
+        print("----------------- set device at the beginning -----------------")
         deviceService.publishSetDeviceControl(model: model)
+        
+        if(self.decisionEnabled){
+            self.showDeviceAlert = true
+            self.setDecisionAccepted(accepted: false)
+        }
     }
     
     // [對外]
@@ -138,7 +152,7 @@ final class MQTTManagerMiddle: NSObject, ObservableObject {
         deviceService.publishTelemetryCommand(subscribe: false)
     }
     
-    // [對外]
+    // [對外] 是否開啟AI決策
     func setDecisionAccepted(accepted: Bool) {
         decisionService.publishDecisionAccepted(accepted)
     }
@@ -155,11 +169,10 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
             DispatchQueue.main.async {
                 self.isConnected = true
             }
-            self.authService.subscribe()  // 訂閱: 用戶登入
-            self.smartService.subscribe() // 訂閱: 智慧環控
-            self.deviceService.subscribeAll() // 訂閱: 取得家電所有資料
-            // 訂閱: 設備參數讀寫能力
-            // 訂閱: 發送與設定設備
+            
+            // self.authService.subscribe()  // v1 關閉 - 訂閱: 用戶登入
+            self.smartService.subscribe()        // 訂閱: 智慧環控
+            self.deviceService.subscribeAll()    // 訂閱: 取得家電所有資料、設備參數讀寫能力、發送與設定設備
             self.decisionService.subscribeAll()  // 訂閱: 用戶是否接受 AI 執行
         }
     }
@@ -191,13 +204,30 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
             print("📬 收到智慧環控 edge 回應: \(payload)")
         }
         
-        // MARK: - AI 已執行家電調控 回應
+        // MARK: - AI決策建議 回應
         if topic == "to/app/\(userToken)/appliances/decision/notify" {
-            // 可加 smart 綁定狀態解析
-            print("📬 AI 已執行家電調控 回應: \(payload)")
-            sendLocalNotification(title: "執行AI決策", body: "冷氣: 27度 \n除濕機: 開啟55%濕度 \n電風扇: 開啟") // [TEST][MQTT] 取得AI決策內容並送到Apple_Server
-        }
+            guard let data = payload.data(using: .utf8) else { return }
+            do {
+                let response = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
 
+                if let res = response, !res.isEmpty {
+                    print("✅ AI決策建議 回應: \(res)")
+                    
+                    // 文字轉換
+                    let message = returnAIDecisionText(from: res)
+                    // ✅ 成功取得並推送通知
+                    sendLocalNotification(title: "執行AI決策", body: message)
+                    // ✅ 啟動alert視窗
+                    self.decisionMessage = message
+                    self.decisionControl = true
+                } else {
+                    print("⚠️ 回傳資料為空，略過通知")
+                }
+            } catch {
+                print("❌ 家電能力 解碼失敗: \(error)")
+            }
+        }
+        
         // MARK: - 讀寫能力 回應
         if topic == "to/app/\(userToken)/appliances/capabilities" {
             DispatchQueue.main.async {
@@ -316,5 +346,117 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
             self.isConnected = false
         }
         print("❌ MQTT 斷線：\(err?.localizedDescription ?? "未知錯誤")")
+    }
+}
+
+// MARK: - AI決策建議 整合功能
+func returnAIDecisionText(from data: [String: Any]) -> String {
+    var result = ""
+    
+    // MARK: - ac_outlet
+    if let outlet = data["ac_outlet"] as? [String: Any],
+       let power = outlet["cfg_power"] as? String {
+        result += "遙控器電源：\(translateStringToChinese(power))\n"
+    }
+    
+    // MARK: - air_conditioner
+    if let aircon = data["air_conditioner"] as? [String: Any] {
+        if let power = aircon["cfg_power"] as? String, power != "<null>" {
+            result += "冷氣電源：\(translateStringToChinese(power))\n"
+        }
+        
+        if let mode = aircon["cfg_mode"] as? String, mode != "<null>" {
+            result += "冷氣模式：\(translateStringToChinese(mode))\n"
+        }
+        
+        if let fanLevel = aircon["cfg_fan_level"] as? String, fanLevel != "<null>" {
+            result += "冷氣風速：\(translateStringToChinese(fanLevel))\n"
+        }
+        
+        if let temp = aircon["cfg_temperature"] {
+            let value = String(describing: temp)
+            if value != "<null>" {
+                result += "冷氣設定溫度：\(value) 度\n"
+            }
+        }
+        
+        if let opTemp = aircon["op_temperature"] {
+            let value = String(describing: opTemp)
+            if value != "<null>" {
+                result += "冷氣操作溫度：\(value) 度\n"
+            }
+        }
+    }
+    
+    // MARK: - dehumidifier
+    if let dehumidifier = data["dehumidifier"] as? [String: Any] {
+        if let power = dehumidifier["cfg_power"] as? String {
+            result += "除濕機電源：\(translateStringToChinese(power))\n"
+        }
+        
+        if let mode = dehumidifier["cfg_mode"] as? String {
+            result += "除濕機模式：\(translateStringToChinese(mode))\n"
+        }
+        
+        if let fan = dehumidifier["cfg_fan_level"] as? String {
+            result += "除濕機風速：\(translateStringToChinese(fan))\n"
+        }
+        
+        if let humidity = dehumidifier["cfg_humidity"] {
+            result += "除濕機設定濕度：\(humidity)%\n"
+        }
+        
+        if let timer = dehumidifier["cfg_timer"] {
+            result += "除濕機定時設定：\(timer) 小時\n"
+        }
+        
+        if let opHumidity = dehumidifier["op_humidity"] {
+            result += "除濕機操作濕度：\(opHumidity)%\n"
+        }
+        
+        if let alarm = dehumidifier["op_water_full_alarm"] as? String {
+            result += "\(translateStringToChinese(alarm))\n"
+        }
+    }
+    return result.trimmingCharacters(in: .whitespacesAndNewlines)
+}
+
+// MARK: - 中文轉換工具
+func translateStringToChinese(_ val: String) -> String {
+    switch val {
+    // 開關
+    case "on":     return "開啟"
+    case "off":    return "關閉"
+        
+    // 冷氣模式
+    case "cool":    return "冷氣"
+    case "heat":    return "暖風"
+    case "dry":     return "除濕"
+//    case "fan":     return "送風"
+    case "auto":    return "自動"
+        
+    // 除濕機
+//    case "auto": return "自動除濕"
+    case "manual": return "自訂除濕"
+    case "continuous": return "連續除濕"
+    case "clothes_drying": return "強力乾衣"
+    case "purification": return "空氣淨化"
+    case "sanitize": return "防霉抗菌"
+    case "fan": return "空氣循環"
+    case "comfort": return "舒適除濕"
+    case "low_drying": return "低溫乾燥"
+
+    // 風速強度
+    case "low":     return "低"
+    case "medium":  return "中"
+    case "high":    return "高"
+    case "strong":  return "強"
+    case "max":     return "最強"
+        
+    // 水位
+    case "alarm":   return "⚠️ 滿水警報"
+    case "normal":  return "✅ 水位正常"
+        
+    default:        return "未知"
     }
 }

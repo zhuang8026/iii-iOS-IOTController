@@ -26,7 +26,7 @@ struct AirConditioner: View {
     // 藍芽連線顯示
     @State private var isShowingNewDeviceView = false // 是否要開始藍芽配對介面，默認：關閉
     @State private var selectedTab = "空調"
-    
+
     let titleWidth = 8.0;
     let titleHeight = 20.0;
     
@@ -107,16 +107,17 @@ struct AirConditioner: View {
         if (isConnected) {
             ZStack {
                 VStack(alignment: .leading, spacing: 20) {
-                    PowerToggle(isPowerOn: $isPowerOn)
+                    PowerToggle(isPowerOn: $isPowerOn) { newVal in
+                        print("AC power: \(newVal)")
+                        let paylodModel: [String: Any] = ["cfg_power": newVal ? "on" : "off"]
+                        postAirConditionerRemote(mode: paylodModel)
+                    }
                     // 🔥 監聽 isPowerOn 的變化
-                        .onChange(of: isPowerOn) { oldVal, newVal in
-                            print("isPowerOn: \(newVal)")
-                            if newVal {
-                                appStore.showPopup = true // 開啟提示窗
-                            }
-                            let paylodModel: [String: Any] = ["cfg_power": newVal ? "on" : "off"]
-                            postAirConditionerRemote(mode: paylodModel)
-                        }
+                    // .onChange(of: isPowerOn) { oldVal, newVal in
+                    //     print("AC power: \(newVal)")
+                    //     let paylodModel: [String: Any] = ["cfg_power": newVal ? "on" : "off"]
+                    //     postAirConditionerRemote(mode: paylodModel)
+                    // }
                     
                     if isPowerOn {
                         // 風量和空調溫度顯示
@@ -139,7 +140,7 @@ struct AirConditioner: View {
                             )
                             // 🔥 監聽 selectedTab 的變化
                             .onChange(of: selectedMode) {oldVal, newVal in
-                                print("ModeSelector: \(newVal)")
+                                print("送出模式: \(newVal)")
                                 let paylodModel: [String: Any] = ["cfg_mode": newVal]
                                 postAirConditionerRemote(mode: paylodModel)
                             }
@@ -162,7 +163,7 @@ struct AirConditioner: View {
                                 WindSpeedView(selectedSpeed: $fanSpeed, fanMode: $fanModeOptions) // 風速控制
                                 // 🔥 監聽 fanSpeed 的變化
                                     .onChange(of: fanSpeed) { oldVal, newVal in
-                                        print("fanSpeed: \(newVal)")
+                                        print("送出風速: \(newVal)")
                                         let paylodModel: [String: Any] = ["cfg_fan_level": newVal]
                                         postAirConditionerRemote(mode: paylodModel)
                                     }
@@ -185,10 +186,8 @@ struct AirConditioner: View {
                                 maxTemperature: $maxTemp  // max temp
                             ) /// 溫度控制視圖
                             // 🔥 監聽 temperature 的變化
-                            .onChange(of: temperature) {
-                                oldVal,
-                                newVal in
-                                // print("temperature: \(newVal)")
+                            .onChange(of: temperature) { newVal in
+                                print("送出溫度:", newVal)
                                 let paylodModel: [String: Any] = ["cfg_temperature": String(newVal)]
                                 postAirConditionerRemote(mode: paylodModel)
                             }

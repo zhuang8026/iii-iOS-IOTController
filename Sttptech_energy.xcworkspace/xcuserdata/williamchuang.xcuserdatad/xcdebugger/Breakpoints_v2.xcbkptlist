@@ -62,8 +62,13 @@
             filePath = "Sttptech_energy/ContentView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
+<<<<<<< HEAD
             startingLineNumber = "154"
             endingLineNumber = "154"
+=======
+            startingLineNumber = "156"
+            endingLineNumber = "156"
+>>>>>>> 492de98 (Fixed - [UI] login UI tracking firtt)
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -81,6 +86,22 @@
             startingLineNumber = "87"
             endingLineNumber = "87"
             landmarkName = "sendRequest(endpoint:method:payload:decodingType:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "CFD75C7A-7732-4E75-A361-2EBCA0CD4959"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Sttptech_energy/Network/MQTT/MQTTManagerMiddle.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "249"
+            endingLineNumber = "249"
+            landmarkName = "mqtt(_:didReceiveMessage:id:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

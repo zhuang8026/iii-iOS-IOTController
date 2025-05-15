@@ -9,7 +9,9 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var appStore: AppStore  // 使用全域狀態
-    @EnvironmentObject var mqttManagerMiddle: MQTTManagerMiddle // 從環境取得 MQTTManagerMiddle
+    //    @EnvironmentObject var mqttManagerMiddle: MQTTManagerMiddle // 從環境取得 MQTTManagerMiddle
+    @ObservedObject var mqttManager = MQTTManagerMiddle.shared
+    
     //        @EnvironmentObject var mqttManager: MQTTManager // 從環境取得 MQTTManager
     
     @State private var selectedTab = "" // 選擇設備控制
@@ -62,7 +64,7 @@ struct ContentView: View {
             // 若找不到 key 或資料，視為離線
             return false
         }
-        return MQTTManagerMiddle.shared.availables.contains(deviceKey)
+        return mqttManager.availables.contains(deviceKey)
     }
     
     /// 根據 tab 判斷對應裝置是否在 30 分鐘內有更新（即是否在線）
@@ -80,7 +82,7 @@ struct ContentView: View {
         
         // 取得對應 MQTT 裝置資料（deviceData 為 [String: ApplianceData]）
         guard let deviceKey = tabToDeviceKey[tab],
-              let deviceData = MQTTManagerMiddle.shared.appliances[deviceKey],
+              let deviceData = mqttManager.appliances[deviceKey],
               let updatedTime = deviceData["updated"]
         else {
             // 若找不到 key 或資料，視為離線
@@ -103,7 +105,7 @@ struct ContentView: View {
         
         // 若差距在 300 分鐘內，代表在線，否則離線
         print("\(tab) -> \(timeInterval <= 1800 ? "資料已更新":"資料未更新")")
-        return timeInterval <= 1800 // 300分鐘 = 1800秒
+        return timeInterval <= 18000000 // 300分鐘 = 1800秒
     }
     
     // 判斷設備是否 綁定 或 設備上線
@@ -121,13 +123,13 @@ struct ContentView: View {
     private func isMQTTManagerLoading(tab: String) -> Bool {
         switch tab {
         case "溫濕度":
-            return MQTTManagerMiddle.shared.appliances["sensor"]?["updated"]?.value == nil
+            return mqttManager.appliances["sensor"]?["updated"]?.value == nil
         case "空調":
-            return MQTTManagerMiddle.shared.appliances["air_conditioner"]?["updated"]?.value == nil
+            return mqttManager.appliances["air_conditioner"]?["updated"]?.value == nil
         case "除濕機":
-            return MQTTManagerMiddle.shared.appliances["dehumidifier"]?["updated"]?.value == nil
+            return mqttManager.appliances["dehumidifier"]?["updated"]?.value == nil
         case "遙控器":
-            return MQTTManagerMiddle.shared.appliances["remote"]?["updated"]?.value == nil
+            return mqttManager.appliances["remote"]?["updated"]?.value == nil
         case "插座":
             return false
         default:
@@ -224,23 +226,23 @@ struct ContentView: View {
             .onDisappear {
                 MQTTManagerMiddle.shared.disconnect() // 離開畫面 斷開 MQTT 連線
             }
-            .onChange(of: mqttManagerMiddle.isConnected) { oldConnect, newConnect in
+            .onChange(of: mqttManager.isConnected) { oldConnect, newConnect in
                 print("[入口] isConnected:  \(oldConnect) \(newConnect)")
                 // 連線MQTT
                 if newConnect {
                     //  mqttManager.publishApplianceUserLogin(username: "app", password: "app:ppa")
                     //  MQTTManagerMiddle.shared.login(username: "user", password: "app:ppa")
                     //                    mqttManager.publishTelemetryCommand(subscribe: true)
-                    MQTTManagerMiddle.shared.startTelemetry() // 接收家電資訊指令
+                    mqttManager.startTelemetry() // 接收家電資訊指令
                     //                    mqttManager.publishCapabilities()
-                    MQTTManagerMiddle.shared.requestCapabilities() // 查詢 家電參數讀寫能力 指令
+                    mqttManager.requestCapabilities() // 查詢 家電參數讀寫能力 指令
                 }
             }
-            .onReceive(MQTTManagerMiddle.shared.$isSmartBind) { newValue in
+            .onReceive(mqttManager.$isSmartBind) { newValue in
                 print("[入口] 智能環控綁定狀態: \(newValue)")
                 isSmartControlConnected = newValue // 連動 智能環控 綁定
             }
-            .onReceive(MQTTManagerMiddle.shared.$availables) { availables in
+            .onReceive(mqttManager.$availables) { availables in
                 print("已綁定家電列表:\(availables)")
                 isTempConnected = availables.contains("sensor")
                 isACConnected = availables.contains("air_conditioner")
@@ -249,22 +251,29 @@ struct ContentView: View {
             }
             
             // [全局][自訂彈窗] 提供空調 與 遙控器 頁面使用
-            if appStore.showPopup {
+            if mqttManager.decisionControl {
                 CustomPopupView(
-                    isPresented: $appStore.showPopup, // 開關
+                    isPresented: $mqttManager.decisionControl, // 開關
                     title: appStore.title,
-                    message: appStore.message,
+                    message: mqttManager.decisionMessage,
                     onConfirm: {
-                        //                        appStore.isAIControl = true
-                        //                        mqttManager.publishSetDecisionConfig(accepted: true) // [MQTT] AI決策
-                        MQTTManagerMiddle.shared.setDecisionAccepted(accepted: true) // [MQTT] AI決策
+                        mqttManager.setDecisionAccepted(accepted: true) // [MQTT] AI決策
                     },
                     onCancel: {
-                        //                        appStore.isAIControl = false
+                        mqttManager.setDecisionAccepted(accepted: false) // [MQTT] AI決策
                     }
                 )
             }
         }
+        .alert("能源管家提示",
+            isPresented: $mqttManager.showDeviceAlert,
+            actions: {
+                Button("好的", role: .cancel) {}
+            },
+            message: {
+                Text("AI決策已關閉")
+            }
+        )
     }
 }
 

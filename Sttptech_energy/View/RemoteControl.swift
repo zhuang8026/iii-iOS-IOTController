@@ -9,7 +9,7 @@ import SwiftUI
 
 struct RemoteControl: View {
     @Binding var isConnected: Bool  // [父層控制] 設備藍芽是否已連線
-//    @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
+    //    @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
     
     // MARK: - 自定義遙控器名稱功能 暫時 默認：完成，用久不關閉
     //    @AppStorage("editRemoteName") private var editRemoteName: String = ""   // ✅ 自定義設備名稱 記住連線狀態
@@ -31,13 +31,19 @@ struct RemoteControl: View {
     @State private var minTemp: Int = 16
     @State private var maxTemp: Int = 30
     
+    // 首次進入畫面不觸法 onchange
+    @State private var isPower = false // 開關
+    @State private var isMode = false // 模式
+    @State private var isFans = false // 風速
+    @State private var isTemperature = false // 溫度
+    
     // 控制提示
     @EnvironmentObject var appStore: AppStore  // 使用全域狀態
     
     let titleWidth = 8.0;
     let titleHeight = 20.0;
     
-    /// 解析 MQTT 家電數據，更新 UI
+    // MARK: 取得 MQTT 家電數據，更新 UI
     private func updateRemoteControlData() {
         guard let remoteData = MQTTManagerMiddle.shared.appliances["remote"] else { return }
         
@@ -69,7 +75,7 @@ struct RemoteControl: View {
         let paylod: [String: Any] = [
             "remote": mode
         ]
-//        mqttManager.publishSetDeviceControl(model: paylod)
+        //        mqttManager.publishSetDeviceControl(model: paylod)
         MQTTManagerMiddle.shared.setDeviceControl(model: paylod)
     }
     
@@ -88,12 +94,14 @@ struct RemoteControl: View {
                         )
                         // 🔥 監聽 isPowerOn 的變化
                         .onChange(of: isPowerOn) { oldVal, newVal in
-                            print("isPowerOn: \(newVal)")
-                            //                            if newVal {
-                            //                                appStore.showPopup = true // 開啟提示窗
-                            //                            }
-                            let paylodModel: [String: Any] = ["cfg_power": newVal ? "on" : "off"]
-                            postSettingRemoteControl(mode: paylodModel)
+                            if isPower {
+                                print("開關設定: \(newVal)")
+                                let paylodModel: [String: Any] = ["cfg_power": newVal ? "on" : "off"]
+                                postSettingRemoteControl(mode: paylodModel)
+                            } else {
+                                isPower = true
+                            }
+                            
                         }
                         // ✅ 設備已連線
                         if (hasControl) {
@@ -108,9 +116,13 @@ struct RemoteControl: View {
                                 RemoteControlTag(selectedTab: $selectedTab)
                                 // 🔥 監聽 selectedTab 的變化
                                     .onChange(of: selectedTab) { oldVal, newVal in
-                                        print("selectedTab: \(newVal)")
-                                        let paylodModel: [String: Any] = ["cfg_mode": newVal]
-                                        postSettingRemoteControl(mode: paylodModel)
+                                        if (isMode) {
+                                            print("模式設定: \(newVal)")
+                                            let paylodModel: [String: Any] = ["cfg_mode": newVal]
+                                            postSettingRemoteControl(mode: paylodModel)
+                                        } else {
+                                            isMode = true
+                                        }
                                     }
                             }
                             
@@ -128,9 +140,13 @@ struct RemoteControl: View {
                                     WindSpeedView(selectedSpeed: $fanSpeed, fanMode: $fanMode) // 風速控制
                                     // 🔥 監聽 fanSpeed 的變化
                                         .onChange(of: fanSpeed) { oldVal, newVal in
-                                            print("fanSpeed: \(newVal)")
-                                            let paylodModel: [String: Any] = ["cfg_fan_level": newVal]
-                                            postSettingRemoteControl(mode: paylodModel)
+                                            if isFans {
+                                                print("風速設定: \(newVal)")
+                                                let paylodModel: [String: Any] = ["cfg_fan_level": newVal]
+                                                postSettingRemoteControl(mode: paylodModel)
+                                            } else {
+                                                isFans = true
+                                            }
                                         }
                                 }
                                 
@@ -149,9 +165,13 @@ struct RemoteControl: View {
                                     ) // 溫度控制視圖
                                     //🔥 監聽 temperature 的變化
                                     .onChange(of: temperature) { oldVal, newVal in
-                                        print("API setting temperature: \(newVal)")
-                                        let paylodModel: [String: Any] = ["cfg_temperature": String(newVal)]
-                                        postSettingRemoteControl(mode: paylodModel)
+                                        if isTemperature {
+                                            print("溫度設定: \(newVal)")
+                                            let paylodModel: [String: Any] = ["cfg_temperature": String(newVal)]
+                                            postSettingRemoteControl(mode: paylodModel)
+                                        } else {
+                                            isTemperature = true
+                                        }
                                     }
                                 }
                             } else {
