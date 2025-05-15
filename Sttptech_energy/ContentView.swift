@@ -104,7 +104,7 @@ struct ContentView: View {
         
         // 若差距在 300 分鐘內，代表在線，否則離線
         print("\(tab) -> \(timeInterval <= 1800 ? "資料已更新":"資料未更新")")
-        return timeInterval <= 1800 // 300分鐘 = 1800秒
+        return timeInterval <= 18000000 // 300分鐘 = 1800秒
     }
     
     // 判斷設備是否 綁定 或 設備上線

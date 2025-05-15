@@ -26,7 +26,7 @@ struct AirConditioner: View {
     // 藍芽連線顯示
     @State private var isShowingNewDeviceView = false // 是否要開始藍芽配對介面，默認：關閉
     @State private var selectedTab = "空調"
-    
+
     let titleWidth = 8.0;
     let titleHeight = 20.0;
     
