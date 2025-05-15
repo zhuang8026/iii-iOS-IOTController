@@ -108,7 +108,7 @@ struct ContentView: View {
         
         // 若差距在 300 分鐘內，代表在線，否則離線
         print("\(tab) -> \(timeInterval <= 1800 ? "資料已更新":"資料未更新")")
-        return timeInterval <= 18000000 // 300分鐘 = 1800秒
+        return timeInterval <= 1800 // 300分鐘 = 1800秒
     }
     
     // 判斷設備是否 綁定 或 設備上線
@@ -226,10 +226,14 @@ struct ContentView: View {
             } else {
                 VStack(spacing: 20) {
                     // ✅ 傳遞 selectedTab 和 status
+<<<<<<< HEAD
                     HeaderName(
                         selectedTab: $selectedTab,
                         status: bindingForSelectedTab()
                     )
+=======
+                    HeaderName(selectedTab: $selectedTab, status: bindingForSelectedTab())
+>>>>>>> fb6af41 (Added - [W20/loading] add login)
                     
                     // 測試使用，可去除
                     // Text(mqttManager.loginResponse ?? "等待登入回應...")
@@ -237,14 +241,19 @@ struct ContentView: View {
                     
                     if(isSmartControlConnected) {
                         VStack() {
+<<<<<<< HEAD
                             // 設備已綁定環控，進入 主要控制畫面
                             if isBindingOrOUpdated(tab: selectedTab) {
+=======
+                            if(selectedTab == "插座" || isBindingOrOUpdated(tab: selectedTab)) {
+>>>>>>> fb6af41 (Added - [W20/loading] add login)
                                 ZStack() {
                                     /// ✅ 設備已連線
                                     VStack() {
                                         // 根據 selectedTab 顯示對應元件
                                         switch self.selectedTab {
                                         case "溫濕度":
+<<<<<<< HEAD
                                             Temperature(
                                                 isConnected: $isTempConnected
                                             )
@@ -260,6 +269,15 @@ struct ContentView: View {
                                             RemoteControl(
                                                 isConnected: $isREMCConnected
                                             )
+=======
+                                            Temperature(isConnected: $isTempConnected)
+                                        case "空調":
+                                            AirConditioner(isConnected: $isACConnected)
+                                        case "除濕機":
+                                            Dehumidifier(isConnected: $isDFConnected)
+                                        case "遙控器":
+                                            RemoteControl(isConnected: $isREMCConnected)
+>>>>>>> fb6af41 (Added - [W20/loading] add login)
                                         case "插座":
                                             ElectricSocket()
                                         default:
@@ -267,6 +285,7 @@ struct ContentView: View {
                                             Loading(text: "Loading..")
                                             Spacer()
                                         }
+<<<<<<< HEAD
                                     }
                                     
                                     // 條件一：❌ 無資料 → 顯示 Loading 畫面
@@ -287,6 +306,19 @@ struct ContentView: View {
                                 }
                             } else {
                                 // 設備未連線
+=======
+                                        
+                                    }
+                                    // ❌ 無資料 → 顯示 Loading 畫面
+                                    if isMQTTManagerLoading(tab: selectedTab) {
+                                        Color.light_green.opacity(0.85) // 透明磨砂黑背景
+                                            .edgesIgnoringSafeArea(.all) // 覆蓋整個畫面
+                                        Loading(text: "載入\(selectedTab)資料中...",color: Color.g_blue)
+                                    }
+                                }
+                            } else {
+                                /// 請開始電源
+>>>>>>> fb6af41 (Added - [W20/loading] add login)
                                 VStack {
                                     Spacer()
                                     Image("unconnect")
@@ -295,16 +327,21 @@ struct ContentView: View {
                                         .multilineTextAlignment(.center)
                                     Spacer()
                                 }
+<<<<<<< HEAD
                                 .frame(
                                     maxWidth: .infinity,
                                     maxHeight: .infinity
                                 )
+=======
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+>>>>>>> fb6af41 (Added - [W20/loading] add login)
                             }
                             
                             Spacer()
                             
                             // 底部導航欄
                             NavigationBar(selectedTab: $selectedTab)
+<<<<<<< HEAD
                                 .environmentObject(
                                     mqttManager
                                 ) // 確保能讀取 availables
@@ -312,13 +349,24 @@ struct ContentView: View {
                     } else {
                         ZStack() {
                             // ✅ 智能環控 連結
+=======
+                                .environmentObject(MQTTManagerMiddle.shared) // 確保能讀取 availables
+                        }
+                    } else {
+                        ZStack() {
+                            /// ✅ 智能環控 連結
+>>>>>>> fb6af41 (Added - [W20/loading] add login)
                             AddSmartControlView(
                                 isShowingSmartControl: $isShowingSmartControl,  // 是否要開始 智慧環控連線 頁面，默認：關閉
                                 isConnected: $isSmartControlConnected // 連線狀態
                             )
                             
                             // ❌ 無資料 → 顯示 Loading 畫面
+<<<<<<< HEAD
                             if (mqttManager.serverLoading) {
+=======
+                            if (MQTTManagerMiddle.shared.serverLoading) {
+>>>>>>> fb6af41 (Added - [W20/loading] add login)
                                 Color.light_green.opacity(0.85) // 透明磨砂黑背景
                                     .edgesIgnoringSafeArea(.all) // 覆蓋整個畫面
                                 Loading(text: "環控確認中...",color: Color.g_blue)
@@ -330,6 +378,7 @@ struct ContentView: View {
                 .background(Color.light_green.opacity(1))
                 .animation(.easeInOut, value: appStore.showPopup)
                 .onAppear {
+<<<<<<< HEAD
                     // mqttManager.connectMQTT() // 當 isConnected 變為 true，啟動 MQTT
                     mqttManager.connect()// 啟動 MQTT
                     
@@ -340,14 +389,30 @@ struct ContentView: View {
                 .onChange(
                     of: mqttManager.isConnected
                 ) { oldConnect, newConnect in
+=======
+                    //                mqttManager.connectMQTT() // 當 isConnected 變為 true，啟動 MQTT
+                    MQTTManagerMiddle.shared.connect()// 啟動 MQTT
+                    
+                }
+                .onDisappear {
+                    MQTTManagerMiddle.shared.disconnect() // 離開畫面 斷開 MQTT 連線
+                }
+                .onChange(of: mqttManager.isConnected) { oldConnect, newConnect in
+>>>>>>> fb6af41 (Added - [W20/loading] add login)
                     print("[入口] isConnected:  \(oldConnect) \(newConnect)")
                     // 連線MQTT
                     if newConnect {
                         //  mqttManager.publishApplianceUserLogin(username: "app", password: "app:ppa")
                         //  MQTTManagerMiddle.shared.login(username: "user", password: "app:ppa")
+<<<<<<< HEAD
                         //  mqttManager.publishTelemetryCommand(subscribe: true)
                         mqttManager.startTelemetry() // 接收家電資訊指令
                         //  mqttManager.publishCapabilities()
+=======
+                        //                    mqttManager.publishTelemetryCommand(subscribe: true)
+                        mqttManager.startTelemetry() // 接收家電資訊指令
+                        //                    mqttManager.publishCapabilities()
+>>>>>>> fb6af41 (Added - [W20/loading] add login)
                         mqttManager.requestCapabilities() // 查詢 家電參數讀寫能力 指令
                     }
                 }
@@ -363,6 +428,7 @@ struct ContentView: View {
                     isREMCConnected = availables.contains("remote")
                 }
                 
+<<<<<<< HEAD
 <<<<<<< HEAD
                 // [全局][自訂彈窗] 提供空調 與 遙控器 頁面使用
                 if mqttManager.decisionControl {
@@ -416,33 +482,22 @@ struct ContentView: View {
                     mqttManager.startTelemetry() // 接收家電資訊指令
                     //                    mqttManager.publishCapabilities()
                     mqttManager.requestCapabilities() // 查詢 家電參數讀寫能力 指令
+=======
+                // [全局][自訂彈窗] 提供空調 與 遙控器 頁面使用
+                if mqttManager.decisionControl {
+                    CustomPopupView(
+                        isPresented: $mqttManager.decisionControl, // 開關
+                        title: appStore.title,
+                        message: mqttManager.decisionMessage,
+                        onConfirm: {
+                            mqttManager.setDecisionAccepted(accepted: true) // [MQTT] AI決策
+                        },
+                        onCancel: {
+                            mqttManager.setDecisionAccepted(accepted: false) // [MQTT] AI決策
+                        }
+                    )
+>>>>>>> fb6af41 (Added - [W20/loading] add login)
                 }
-            }
-            .onReceive(mqttManager.$isSmartBind) { newValue in
-                print("[入口] 智能環控綁定狀態: \(newValue)")
-                isSmartControlConnected = newValue // 連動 智能環控 綁定
-            }
-            .onReceive(mqttManager.$availables) { availables in
-                print("已綁定家電列表:\(availables)")
-                isTempConnected = availables.contains("sensor")
-                isACConnected = availables.contains("air_conditioner")
-                isDFConnected = availables.contains("dehumidifier")
-                isREMCConnected = availables.contains("remote")
-            }
-            
-            // [全局][自訂彈窗] 提供空調 與 遙控器 頁面使用
-            if mqttManager.decisionControl {
-                CustomPopupView(
-                    isPresented: $mqttManager.decisionControl, // 開關
-                    title: appStore.title,
-                    message: mqttManager.decisionMessage,
-                    onConfirm: {
-                        mqttManager.setDecisionAccepted(accepted: true) // [MQTT] AI決策
-                    },
-                    onCancel: {
-                        mqttManager.setDecisionAccepted(accepted: false) // [MQTT] AI決策
-                    }
-                )
             }
         }
         .alert("能源管家提示",
