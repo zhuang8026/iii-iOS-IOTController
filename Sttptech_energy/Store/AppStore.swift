@@ -14,4 +14,20 @@ class AppStore: ObservableObject {
     @Published var title: String = "執行AI決策"
     @Published var message: String  = "冷氣: 27度 \n除濕機: 開啟55%濕度 \n電風扇: 開啟"
     @Published var notificationsResult: String  = "冷氣: 27度 \n除濕機: 開啟55%濕度 \n電風扇: 開啟"
+    
+    @Published var userToken: String? {
+        didSet {
+            if let token = userToken {
+                UserDefaults.standard.set(token, forKey: "MQTTAccessToken")
+            } else {
+                UserDefaults.standard.removeObject(forKey: "MQTTAccessToken")
+            }
+        }
+    }
+    
+    init() {
+        // 嘗試還原 UserDefaults 中的 token
+        self.userToken = UserDefaults.standard.string(forKey: "MQTTAccessToken")
+    }
+
 }

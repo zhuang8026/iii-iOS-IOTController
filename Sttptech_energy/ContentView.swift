@@ -105,7 +105,7 @@ struct ContentView: View {
         
         // 若差距在 300 分鐘內，代表在線，否則離線
         print("\(tab) -> \(timeInterval <= 1800 ? "資料已更新":"資料未更新")")
-        return timeInterval <= 18000000 // 300分鐘 = 1800秒
+        return timeInterval <= 1800 // 300分鐘 = 1800秒
     }
     
     // 判斷設備是否 綁定 或 設備上線
@@ -139,130 +139,136 @@ struct ContentView: View {
     
     var body: some View {
         ZStack() {
-            VStack(spacing: 20) {
-                // ✅ 傳遞 selectedTab 和 status
-                HeaderName(selectedTab: $selectedTab, status: bindingForSelectedTab())
-                
-                // 測試使用，可去除
-                // Text(mqttManager.loginResponse ?? "等待登入回應...")
-                // Text(isDeviceUpdatedOnline(tab: selectedTab) ? "畫面正常顯示" : "已離線")
-                
-                if(isSmartControlConnected) {
-                    VStack() {
-                        if(selectedTab == "插座" || isBindingOrOUpdated(tab: selectedTab)) {
-                            ZStack() {
-                                /// ✅ 設備已連線
-                                VStack() {
-                                    // 根據 selectedTab 顯示對應元件
-                                    switch self.selectedTab {
-                                    case "溫濕度":
-                                        Temperature(isConnected: $isTempConnected)
-                                    case "空調":
-                                        AirConditioner(isConnected: $isACConnected)
-                                    case "除濕機":
-                                        Dehumidifier(isConnected: $isDFConnected)
-                                    case "遙控器":
-                                        RemoteControl(isConnected: $isREMCConnected)
-                                    case "插座":
-                                        ElectricSocket()
-                                    default:
-                                        Spacer()
-                                        Loading(text: "Loading..")
-                                        Spacer()
+            if(appStore.userToken == nil) {
+                VStack(){
+                    UserLogin()
+                }
+            } else {
+                VStack(spacing: 20) {
+                    // ✅ 傳遞 selectedTab 和 status
+                    HeaderName(selectedTab: $selectedTab, status: bindingForSelectedTab())
+                    
+                    // 測試使用，可去除
+                    // Text(mqttManager.loginResponse ?? "等待登入回應...")
+                    // Text(isDeviceUpdatedOnline(tab: selectedTab) ? "畫面正常顯示" : "已離線")
+                    
+                    if(isSmartControlConnected) {
+                        VStack() {
+                            if(selectedTab == "插座" || isBindingOrOUpdated(tab: selectedTab)) {
+                                ZStack() {
+                                    /// ✅ 設備已連線
+                                    VStack() {
+                                        // 根據 selectedTab 顯示對應元件
+                                        switch self.selectedTab {
+                                        case "溫濕度":
+                                            Temperature(isConnected: $isTempConnected)
+                                        case "空調":
+                                            AirConditioner(isConnected: $isACConnected)
+                                        case "除濕機":
+                                            Dehumidifier(isConnected: $isDFConnected)
+                                        case "遙控器":
+                                            RemoteControl(isConnected: $isREMCConnected)
+                                        case "插座":
+                                            ElectricSocket()
+                                        default:
+                                            Spacer()
+                                            Loading(text: "Loading..")
+                                            Spacer()
+                                        }
+                                        
                                     }
-                                    
+                                    // ❌ 無資料 → 顯示 Loading 畫面
+                                    if isMQTTManagerLoading(tab: selectedTab) {
+                                        Color.light_green.opacity(0.85) // 透明磨砂黑背景
+                                            .edgesIgnoringSafeArea(.all) // 覆蓋整個畫面
+                                        Loading(text: "載入\(selectedTab)資料中...",color: Color.g_blue)
+                                    }
                                 }
-                                // ❌ 無資料 → 顯示 Loading 畫面
-                                if isMQTTManagerLoading(tab: selectedTab) {
-                                    Color.light_green.opacity(0.85) // 透明磨砂黑背景
-                                        .edgesIgnoringSafeArea(.all) // 覆蓋整個畫面
-                                    Loading(text: "載入\(selectedTab)資料中...",color: Color.g_blue)
+                            } else {
+                                /// 請開始電源
+                                VStack {
+                                    Spacer()
+                                    Image("unconnect")
+                                    Text("設備未連線")
+                                        .font(.system(size: 14)) // 调整图标大小
+                                        .multilineTextAlignment(.center)
+                                    Spacer()
                                 }
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
                             }
-                        } else {
-                            /// 請開始電源
-                            VStack {
-                                Spacer()
-                                Image("unconnect")
-                                Text("設備未連線")
-                                    .font(.system(size: 14)) // 调整图标大小
-                                    .multilineTextAlignment(.center)
-                                Spacer()
-                            }
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            
+                            Spacer()
+                            
+                            // 底部導航欄
+                            NavigationBar(selectedTab: $selectedTab)
+                                .environmentObject(MQTTManagerMiddle.shared) // 確保能讀取 availables
                         }
-                        
-                        Spacer()
-                        
-                        // 底部導航欄
-                        NavigationBar(selectedTab: $selectedTab)
-                            .environmentObject(MQTTManagerMiddle.shared) // 確保能讀取 availables
-                    }
-                } else {
-                    ZStack() {
-                        /// ✅ 智能環控 連結
-                        AddSmartControlView(
-                            isShowingSmartControl: $isShowingSmartControl,  // 是否要開始 智慧環控連線 頁面，默認：關閉
-                            isConnected: $isSmartControlConnected // 連線狀態
-                        )
-                        
-                        // ❌ 無資料 → 顯示 Loading 畫面
-                        if (MQTTManagerMiddle.shared.serverLoading) {
-                            Color.light_green.opacity(0.85) // 透明磨砂黑背景
-                                .edgesIgnoringSafeArea(.all) // 覆蓋整個畫面
-                            Loading(text: "環控確認中...",color: Color.g_blue)
+                    } else {
+                        ZStack() {
+                            /// ✅ 智能環控 連結
+                            AddSmartControlView(
+                                isShowingSmartControl: $isShowingSmartControl,  // 是否要開始 智慧環控連線 頁面，默認：關閉
+                                isConnected: $isSmartControlConnected // 連線狀態
+                            )
+                            
+                            // ❌ 無資料 → 顯示 Loading 畫面
+                            if (MQTTManagerMiddle.shared.serverLoading) {
+                                Color.light_green.opacity(0.85) // 透明磨砂黑背景
+                                    .edgesIgnoringSafeArea(.all) // 覆蓋整個畫面
+                                Loading(text: "環控確認中...",color: Color.g_blue)
+                            }
                         }
                     }
                 }
-            }
-            .padding()
-            .background(Color.light_green.opacity(1))
-            .animation(.easeInOut, value: appStore.showPopup)
-            .onAppear {
-                //                mqttManager.connectMQTT() // 當 isConnected 變為 true，啟動 MQTT
-                MQTTManagerMiddle.shared.connect()// 啟動 MQTT
+                .padding()
+                .background(Color.light_green.opacity(1))
+                .animation(.easeInOut, value: appStore.showPopup)
+                .onAppear {
+                    //                mqttManager.connectMQTT() // 當 isConnected 變為 true，啟動 MQTT
+                    MQTTManagerMiddle.shared.connect()// 啟動 MQTT
+                    
+                }
+                .onDisappear {
+                    MQTTManagerMiddle.shared.disconnect() // 離開畫面 斷開 MQTT 連線
+                }
+                .onChange(of: mqttManager.isConnected) { oldConnect, newConnect in
+                    print("[入口] isConnected:  \(oldConnect) \(newConnect)")
+                    // 連線MQTT
+                    if newConnect {
+                        //  mqttManager.publishApplianceUserLogin(username: "app", password: "app:ppa")
+                        //  MQTTManagerMiddle.shared.login(username: "user", password: "app:ppa")
+                        //                    mqttManager.publishTelemetryCommand(subscribe: true)
+                        mqttManager.startTelemetry() // 接收家電資訊指令
+                        //                    mqttManager.publishCapabilities()
+                        mqttManager.requestCapabilities() // 查詢 家電參數讀寫能力 指令
+                    }
+                }
+                .onReceive(mqttManager.$isSmartBind) { newValue in
+                    print("[入口] 智能環控綁定狀態: \(newValue)")
+                    isSmartControlConnected = newValue // 連動 智能環控 綁定
+                }
+                .onReceive(mqttManager.$availables) { availables in
+                    print("已綁定家電列表:\(availables)")
+                    isTempConnected = availables.contains("sensor")
+                    isACConnected = availables.contains("air_conditioner")
+                    isDFConnected = availables.contains("dehumidifier")
+                    isREMCConnected = availables.contains("remote")
+                }
                 
-            }
-            .onDisappear {
-                MQTTManagerMiddle.shared.disconnect() // 離開畫面 斷開 MQTT 連線
-            }
-            .onChange(of: mqttManager.isConnected) { oldConnect, newConnect in
-                print("[入口] isConnected:  \(oldConnect) \(newConnect)")
-                // 連線MQTT
-                if newConnect {
-                    //  mqttManager.publishApplianceUserLogin(username: "app", password: "app:ppa")
-                    //  MQTTManagerMiddle.shared.login(username: "user", password: "app:ppa")
-                    //                    mqttManager.publishTelemetryCommand(subscribe: true)
-                    mqttManager.startTelemetry() // 接收家電資訊指令
-                    //                    mqttManager.publishCapabilities()
-                    mqttManager.requestCapabilities() // 查詢 家電參數讀寫能力 指令
+                // [全局][自訂彈窗] 提供空調 與 遙控器 頁面使用
+                if mqttManager.decisionControl {
+                    CustomPopupView(
+                        isPresented: $mqttManager.decisionControl, // 開關
+                        title: appStore.title,
+                        message: mqttManager.decisionMessage,
+                        onConfirm: {
+                            mqttManager.setDecisionAccepted(accepted: true) // [MQTT] AI決策
+                        },
+                        onCancel: {
+                            mqttManager.setDecisionAccepted(accepted: false) // [MQTT] AI決策
+                        }
+                    )
                 }
-            }
-            .onReceive(mqttManager.$isSmartBind) { newValue in
-                print("[入口] 智能環控綁定狀態: \(newValue)")
-                isSmartControlConnected = newValue // 連動 智能環控 綁定
-            }
-            .onReceive(mqttManager.$availables) { availables in
-                print("已綁定家電列表:\(availables)")
-                isTempConnected = availables.contains("sensor")
-                isACConnected = availables.contains("air_conditioner")
-                isDFConnected = availables.contains("dehumidifier")
-                isREMCConnected = availables.contains("remote")
-            }
-            
-            // [全局][自訂彈窗] 提供空調 與 遙控器 頁面使用
-            if mqttManager.decisionControl {
-                CustomPopupView(
-                    isPresented: $mqttManager.decisionControl, // 開關
-                    title: appStore.title,
-                    message: mqttManager.decisionMessage,
-                    onConfirm: {
-                        mqttManager.setDecisionAccepted(accepted: true) // [MQTT] AI決策
-                    },
-                    onCancel: {
-                        mqttManager.setDecisionAccepted(accepted: false) // [MQTT] AI決策
-                    }
-                )
             }
         }
         .alert("能源管家提示",
