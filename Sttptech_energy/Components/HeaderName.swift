@@ -12,10 +12,14 @@ struct HeaderName: View {
     @EnvironmentObject var appStore: AppStore  // 使用全域狀態
     @ObservedObject var mqttManager = MQTTManagerMiddle.shared
 <<<<<<< HEAD
+<<<<<<< HEAD
     
 =======
 
 >>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
+=======
+    
+>>>>>>> 8bdcbdb (Upgrade - [v1.0.1] demo)
     @Binding var selectedTab: String // 標題名稱
     @Binding var status: Bool // 是否要顯示返回（false -> back, true -> show title）
     

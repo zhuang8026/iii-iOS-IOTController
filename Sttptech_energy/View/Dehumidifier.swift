@@ -82,12 +82,18 @@ struct Dehumidifier: View {
             let modeValues = modeStrings
                 .filter { $0 != "read" }               // ❌ 排除 "read"
 <<<<<<< HEAD
+<<<<<<< HEAD
             if(!modeValues.isEmpty) {
                 self.modeOptions = modeValues
             }
 =======
             self.modeOptions = modeValues
 >>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
+=======
+            if(!modeValues.isEmpty) {
+                self.modeOptions = modeValues
+            }
+>>>>>>> 8bdcbdb (Upgrade - [v1.0.1] demo)
         }
         
         // 解析 `cfg_fan_level` -> Array ("read", "auto", "low", "medium", "high", "strong", "max")
