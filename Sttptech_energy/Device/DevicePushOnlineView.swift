@@ -33,13 +33,13 @@ struct DevicePushOnlineView: View {
         self.isLoading = true
         Task {
             do {
-                let data = try await apiService.apiGetWiFiScanApInfo(useMock: apiMock)
-//                print("fetchWiFiList: \(data.ap_list), isEmpty: \(data.ap_list.isEmpty)")
+                let response = try await apiService.apiGetWiFiScanApInfo(useMock: apiMock)
+                print("✅ Step1 API 回傳：\(response)")
 
                 // 確保 UI 更新在主執行緒
                 await MainActor.run {
-                    self.wifiList = data.ap_list // ✅ 整個 ap_list 賦值給 wifiList
-                    self.isEmpty = data.ap_list.isEmpty
+                    self.wifiList = response.ap_list // ✅ 整個 ap_list 賦值給 wifiList
+                    self.isEmpty = response.ap_list.isEmpty
                     DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                         self.isLoading = false
                     }

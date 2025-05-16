@@ -21,6 +21,8 @@ struct UserLogin: View {
             Text("登入")
                 .font(.largeTitle)
                 .bold()
+            Text("\(version)")
+                .font(.system(size: 12)) 
             
             // 帳號欄位
             TextField("帳號", text: $username)

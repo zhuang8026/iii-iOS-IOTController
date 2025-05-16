@@ -36,7 +36,7 @@ struct ElectricSocket: View {
         
         // 測試使用 - 解除綁定
 //        mqttManager.publishUnBindSmart(deviceMac: "DE:AD:BE:EF:00:01")
-        MQTTManagerMiddle.shared.unbindSmartDevice(mac: "DE:AD:BE:EF:00:01")
+//        MQTTManagerMiddle.shared.unbindSmartDevice(mac: "DE:AD:BE:EF:00:01")
     }
     
     var body: some View {
