@@ -11,15 +11,65 @@ import SwiftUI
 struct HeaderName: View {
     @EnvironmentObject var appStore: AppStore  // 使用全域狀態
     @ObservedObject var mqttManager = MQTTManagerMiddle.shared
-
+    
     @Binding var selectedTab: String // 標題名稱
     @Binding var status: Bool // 是否要顯示返回（false -> back, true -> show title）
     @State private var isAnimating = false // AI決策動畫
     @State private var showPopup = false //
+
+    @State private var isLogout = false // 是否登出用戶
+    @State private var isMessage = "" // 是否登出用戶
     
     // 判斷是否為"空調", "除濕機" -> true
     private func showDeleteIconSetting(tab: String) -> Bool {
         return ["空調", "除濕機"].contains(tab)
+    }
+    
+    func logout(completion: @escaping (Bool) -> Void) {
+        guard let url = URL(string: "https://www.energy-active.org.tw/api/main/logout") else {
+            completion(false)
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("application/json", forHTTPHeaderField: "Accept")
+
+        if let token = UserDefaults.standard.string(forKey: "MQTTAccessToken") {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            print("登出 -> \(token)")
+            // 登出成功，刪除 token
+            UserDefaults.standard.removeObject(forKey: "MQTTAccessToken")
+            UserDefaults.standard.synchronize()
+            appStore.userToken = nil
+        }
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            guard
+                let data = data,
+                error == nil,
+                let httpResponse = response as? HTTPURLResponse,
+                httpResponse.statusCode == 200
+            else {
+                completion(false)
+                return
+            }
+
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let code = json["code"] as? Int,
+                   code == 200 {
+                    // 登出成功，刪除 token
+                    UserDefaults.standard.removeObject(forKey: "MQTTAccessToken")
+                    UserDefaults.standard.synchronize()
+                    completion(true)
+                } else {
+                    completion(false)
+                }
+            } catch {
+                completion(false)
+            }
+        }.resume()
     }
     
     var body: some View {
@@ -28,7 +78,16 @@ struct HeaderName: View {
                 // 改成返回按鈕
                 Image("arrow-left")
                     .font(.system(size: 20))
-                
+                    .onTapGesture {
+                        logout { success in
+                            if success {
+                                DispatchQueue.main.async {
+                                    self.isLogout = true
+                                    self.isMessage = "登出成功"
+                                }
+                            }
+                        }
+                    }
                 Spacer()
                 
                 // [顯示] 是否啟動AI決策
@@ -91,7 +150,6 @@ struct HeaderName: View {
                                         onCancel: {
                                             showPopup = false // 關閉視窗
                                             status = true // 保持畫面
-                                            
                                         }
                                     )
                                 }
@@ -108,14 +166,32 @@ struct HeaderName: View {
                 // 返回上一層
                 Image("arrow-left") // 改成返回按鈕
                     .font(.system(size: 20))
+//                    .onTapGesture {
+//                        status = true // ✅ 點擊後切換 status
+//                    }
                     .onTapGesture {
-                        status = true // ✅ 點擊後切換 status
+                        logout { success in
+                            if success {
+                                DispatchQueue.main.async {
+                                    self.isLogout = true
+                                    self.isMessage = "登出成功"
+                                }
+                            }
+                        }
                     }
                 
                 Spacer() // 推動其他內容到右側
             }
         }
         .frame(height: 30.0)
-        
+        .alert("能源管家提示",
+            isPresented: $isLogout,
+            actions: {
+                Button("確認", role: .cancel) {}
+            },
+            message: {
+                Text("\(isMessage)")
+            }
+        )
     }
 }

@@ -13,7 +13,7 @@ class WiFiManager: NSObject {
     static let shared = WiFiManager() // 單例模式
     
     func connectToWiFi(mac:String, ssid: String, password: String, isWEP: Bool = false, completion: @escaping (Bool, String) -> Void) {
-        print("connectToWiFi:\(mac), \(ssid), \(password)")
+        print("connectToWiFi: \(ssid), \(password)")
         
         // Step 1: 先移除舊設定，避免衝突
         NEHotspotConfigurationManager.shared.removeConfiguration(forSSID: ssid)

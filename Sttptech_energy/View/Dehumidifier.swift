@@ -13,11 +13,11 @@ struct Dehumidifier: View {
     //    @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
     
     // 選項列表
-    @State private var humidityOptions:[Int] = [] // 設定：40% - 80% (ex: Array(stride(from: 1, through: 100, by: 1)))
-    @State private var timerOptions:[Int] = [] // 設定：1 - 12 小時 (ex: Array(1...100))
-    @State private var modeOptions:[String] = [] // 除濕類型(ex: "auto", "manual", "continuous", "clothes_drying","purification", "sanitize", "fan", "comfort", "low_drying")
+    @State private var humidityOptions:[Int] = [10, 20, 30, 40, 50, 60, 70, 80, 90] // 設定：40% - 80% (ex: Array(stride(from: 1, through: 100, by: 1)))
+    @State private var timerOptions:[Int] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] // 設定：1 - 12 小時 (ex: Array(1...100))
+    @State private var modeOptions:[String] = ["auto", "manual", "continuous", "clothes_drying","purification", "sanitize", "fan", "comfort", "low_drying"] // 除濕類型(ex: "auto", "manual", "continuous", "clothes_drying","purification", "sanitize", "fan", "comfort", "low_drying")
     @State private var waterLevelOptions = ["normal", "alarm"] // ["正常", "滿水"] (注意：畫面上用不到此參數)
-    @State private var fanModeOptions:[String] = [] // ["auto", "low", "medium", "high", "strong", "max"]
+    @State private var fanModeOptions:[String] = ["auto", "low", "medium", "high", "strong", "max"] // ["auto", "low", "medium", "high", "strong", "max"]
     
     // 選項結果
     @State private var isPowerOn = true
@@ -49,7 +49,9 @@ struct Dehumidifier: View {
             let humidityValue = humidityString
                 .filter {  $0 != "read" }  // ❌ 排除 "read"
                 .compactMap { Int($0) }    // ✅ 字串轉 Int
-            self.humidityOptions = humidityValue
+            if(!humidityValue.isEmpty) {
+                self.humidityOptions = humidityValue
+            }
         }
         
         // 解析 `cfg_timer` -> Array ("read", "off", "1", "2", "3", "4"....)
@@ -57,28 +59,36 @@ struct Dehumidifier: View {
             let timerValue = timerString
                 .filter { $0 != "read" && $0 != "off" }  // ❌ 排除 "read", "off"
                 .compactMap { Int($0) }    // ✅ 字串轉 Int
-            self.timerOptions = timerValue
+            if(!timerValue.isEmpty) {
+                self.timerOptions = timerValue
+            }
         }
         
         // 解析 `op_water_full_alarm` -> Array ("read", "normal", "alarm")
         if let waterFullString = DF_Capabilities["op_water_full_alarm"] {
             let waterFullValue = waterFullString
                 .filter { $0 != "read"}  // ❌ 排除 "read", "off"
-            self.waterLevelOptions = waterFullValue
+            if(!waterFullValue.isEmpty) {
+                self.waterLevelOptions = waterFullValue
+            }
         }
         
         // 解析 `cfg_mode` -> Array ("read", "auto", "manual", "continuous", "clothes_drying", "purification", "sanitize", "fan", "comfort", "low_drying")
         if let modeStrings = DF_Capabilities["cfg_mode"] {
             let modeValues = modeStrings
                 .filter { $0 != "read" }               // ❌ 排除 "read"
-            self.modeOptions = modeValues
+            if(!modeValues.isEmpty) {
+                self.modeOptions = modeValues
+            }
         }
         
         // 解析 `cfg_fan_level` -> Array ("read", "auto", "low", "medium", "high", "strong", "max")
         if let fanLevelStrings = DF_Capabilities["cfg_fan_level"] {
             let fanLevelValues = fanLevelStrings
                 .filter { $0 != "read" }               // ❌ 排除 "read"
-            self.fanModeOptions = fanLevelValues
+            if(!fanLevelValues.isEmpty) {
+                self.fanModeOptions = fanLevelValues
+            }
         }
         
     }

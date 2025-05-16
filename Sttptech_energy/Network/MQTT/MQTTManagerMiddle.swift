@@ -319,7 +319,7 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
     }
     
     func mqtt(_ mqtt: CocoaMQTT, didPublishAck id: UInt16) {
-        print("📬 發布確認 ID：\(id)")
+        print("🔵 發布確認 ID：\(id)")
     }
     
     func mqtt(_ mqtt: CocoaMQTT, didSubscribeTopics success: NSDictionary, failed: [String]) {
@@ -330,15 +330,15 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
     }
     
     func mqtt(_ mqtt: CocoaMQTT, didUnsubscribeTopics topics: [String]) {
-        print("📭 取消訂閱 topic：\(topics)")
+        print("🔴 取消訂閱 topic：\(topics)")
     }
     
     func mqttDidPing(_ mqtt: CocoaMQTT) {
-        print("🔃 發送 PING")
+        print("🔵 發送 PING")
     }
     
     func mqttDidReceivePong(_ mqtt: CocoaMQTT) {
-        print("🔁 收到 PONG")
+        print("🟢 收到 PONG")
     }
     
     func mqttDidDisconnect(_ mqtt: CocoaMQTT, withError err: Error?) {
