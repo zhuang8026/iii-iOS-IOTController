@@ -47,7 +47,7 @@ struct ElectricSocket: View {
                 withAnimation(.easeInOut(duration: 0.1)) { // 設定動畫時間為 0.1 秒
                     isPowerOn.toggle()
 
-                    let paylodModel: [String: Any] = ["cfg_power": isPowerOn]
+                    let paylodModel: [String: Any] = ["cfg_power": isPowerOn ? "on":"off"]
                     postElectricSocket(mode: paylodModel)
                 }
                 triggerHapticFeedback() // 觸發震動
