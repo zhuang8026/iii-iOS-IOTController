@@ -14,6 +14,7 @@ struct HeaderName: View {
     
     @Binding var selectedTab: String // 標題名稱
     @Binding var status: Bool // 是否要顯示返回（false -> back, true -> show title）
+    
     @State private var isAnimating = false // AI決策動畫
     @State private var showPopup = false //
 
@@ -131,7 +132,7 @@ struct HeaderName: View {
                     Button(action: {
                         showPopup = true
                     }) {
-                        Image(systemName: "trash") // 垃圾桶
+                        Image(systemName: "personalhotspot.slash") // 垃圾桶
                             .font(.system(size: 20)) // 調整圖示大小
                             .foregroundColor(Color.g_blue) // 確保顏色存在
                             .contentShape(Rectangle()) // 🔧 指定觸控區形狀，避免預設 highlight
@@ -158,7 +159,7 @@ struct HeaderName: View {
                     .buttonStyle(PlainButtonStyle())
                 } else {
                     // 👇透明佔位符佔住空間，保持中心對齊
-                    Image(systemName: "trash")
+                    Image(systemName: "personalhotspot.slash")
                         .opacity(0) // 完全透明
                         .font(.system(size: 20)) // 調整圖示大小
                 }

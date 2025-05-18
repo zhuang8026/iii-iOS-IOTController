@@ -110,7 +110,9 @@ struct AirConditioner: View {
                     PowerToggle(isPowerOn: $isPowerOn) { newVal in
                         print("AC power: \(newVal)")
                         let paylodModel: [String: Any] = ["cfg_power": newVal ? "on" : "off"]
-                        postAirConditionerRemote(mode: paylodModel)
+                        postAirConditionerRemote(mode: paylodModel) // 送出資料
+                        MQTTManagerMiddle.shared.startTelemetry() // 接收家電資訊指令
+                        MQTTManagerMiddle.shared.requestCapabilities() // 查詢 家電參數讀寫能力 指令
                     }
                     // 🔥 監聽 isPowerOn 的變化
                     // .onChange(of: isPowerOn) { oldVal, newVal in
