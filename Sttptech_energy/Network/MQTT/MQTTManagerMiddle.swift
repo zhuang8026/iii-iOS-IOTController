@@ -178,8 +178,9 @@ final class MQTTManagerMiddle: NSObject, ObservableObject {
         deviceService.publishSetDeviceControl(model: model)
         
         if(self.decisionEnabled){
-            self.showDeviceAlert = true
+            self.showDeviceAlert = true // 
             self.setDecisionAccepted(accepted: false)
+            self.decisionEnabled = false
         }
 >>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
     }
@@ -304,7 +305,11 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
                         if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
                             
                             print("✅ 總家電參數更新: \(json)")
+<<<<<<< HEAD
                             //  print("✅ 總家電參數: \(json.isEmpty ? "無資料": "有資料")")
+=======
+//                            print("✅ 總家電參數: \(json.isEmpty ? "無資料": "有資料")")
+>>>>>>> 3ae4c29 (Fixed - [page] ai decision function modify)
                             
                             self.serverLoading = json.isEmpty // 資料為空
                             self.serverLoading = json["error"] != nil // 出現error

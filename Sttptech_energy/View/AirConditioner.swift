@@ -116,12 +116,18 @@ struct AirConditioner: View {
                         print("AC power: \(newVal)")
                         let paylodModel: [String: Any] = ["cfg_power": newVal ? "on" : "off"]
 <<<<<<< HEAD
+<<<<<<< HEAD
                         postAirConditionerRemote(mode: paylodModel) // 送出資料
                         MQTTManagerMiddle.shared.startTelemetry() // 接收家電資訊指令
                         MQTTManagerMiddle.shared.requestCapabilities() // 查詢 家電參數讀寫能力 指令
 =======
                         postAirConditionerRemote(mode: paylodModel)
 >>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
+=======
+                        postAirConditionerRemote(mode: paylodModel) // 送出資料
+                        MQTTManagerMiddle.shared.startTelemetry() // 接收家電資訊指令
+                        MQTTManagerMiddle.shared.requestCapabilities() // 查詢 家電參數讀寫能力 指令
+>>>>>>> 3ae4c29 (Fixed - [page] ai decision function modify)
                     }
                     // 🔥 監聽 isPowerOn 的變化
                     // .onChange(of: isPowerOn) { oldVal, newVal in

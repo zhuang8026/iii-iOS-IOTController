@@ -491,6 +491,7 @@ struct ContentView: View {
                         message: mqttManager.decisionMessage,
                         onConfirm: {
                             mqttManager.setDecisionAccepted(accepted: true) // [MQTT] AI決策
+                            mqttManager.decisionEnabled = true
                         },
                         onCancel: {
                             mqttManager.setDecisionAccepted(accepted: false) // [MQTT] AI決策
@@ -501,9 +502,12 @@ struct ContentView: View {
             }
         }
         .alert("能源管家提示",
-            isPresented: $mqttManager.showDeviceAlert,
+               isPresented: $mqttManager.showDeviceAlert,
             actions: {
-                Button("好的", role: .cancel) {}
+                Button("好的", role: .cancel) {
+                    print("執行 -> AI決策關閉")
+                    mqttManager.decisionEnabled = false
+                }
             },
             message: {
                 Text("AI決策已關閉")
