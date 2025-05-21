@@ -101,7 +101,7 @@ struct ContentView: View {
         
         let now = Date()
         let timeInterval = now.timeIntervalSince(updatedDate)
-        
+
         // 若差距在 300 分鐘內，代表在線，否則離線
         print("\(tab) -> \(timeInterval <= 1800 ? "資料已更新":"資料未更新")")
         return timeInterval <= 1800 // 300分鐘 = 1800秒
@@ -142,6 +142,37 @@ struct ContentView: View {
             return false
         default:
             return false
+        }
+    }
+    
+    // 設備綁定紀錄
+    // 1. time >  5min -> loading no
+    // 2. time <= 5min -> loading yes
+    // 3. null         -> loading no
+    private func isDeviceRecordToLoading(tab: String) -> Bool {
+        let tabToDeviceKey: [String: String] = [
+            "空調": "air_conditioner",
+            "除濕機": "dehumidifier"
+        ]
+        switch tab {
+            case "空調", "除濕機":
+                guard let deviceKey = tabToDeviceKey[tab],
+                  let updatedTime = mqttManager.appBinds[deviceKey] as? String,
+                      !updatedTime.isEmpty,
+                      let updatedDate = DateUtils.parseISO8601DateInTaiwanTimezone(from: updatedTime) else {
+                    print("\(tab) 時間為空")
+                    return false
+                }
+                
+                let now = Date()
+                let timeInterval = now.timeIntervalSince(updatedDate)
+                print("\(tab) 記錄時間是否在5min之內 -> \(timeInterval <= 300)")
+
+                return timeInterval <= 300
+            case "溫濕度", "遙控器", "插座":
+                return false
+            default:
+                return false
         }
     }
     

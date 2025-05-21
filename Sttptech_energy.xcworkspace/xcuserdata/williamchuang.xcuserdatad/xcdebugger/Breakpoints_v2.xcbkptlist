@@ -62,8 +62,8 @@
             filePath = "Sttptech_energy/ContentView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "169"
-            endingLineNumber = "169"
+            startingLineNumber = "199"
+            endingLineNumber = "199"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -94,8 +94,13 @@
             filePath = "Sttptech_energy/Network/MQTT/MQTTManagerMiddle.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
+<<<<<<< HEAD
             startingLineNumber = "264"
             endingLineNumber = "264"
+=======
+            startingLineNumber = "263"
+            endingLineNumber = "263"
+>>>>>>> 2496e4a (Added - [loading] add API 'from/app/{User Token}/userdata')
             landmarkName = "mqtt(_:didReceiveMessage:id:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -110,8 +115,13 @@
             filePath = "Sttptech_energy/Network/MQTT/MQTTManagerMiddle.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
+<<<<<<< HEAD
             startingLineNumber = "406"
             endingLineNumber = "406"
+=======
+            startingLineNumber = "395"
+            endingLineNumber = "395"
+>>>>>>> 2496e4a (Added - [loading] add API 'from/app/{User Token}/userdata')
             landmarkName = "returnAIDecisionText(from:)"
             landmarkType = "9">
          </BreakpointContent>
