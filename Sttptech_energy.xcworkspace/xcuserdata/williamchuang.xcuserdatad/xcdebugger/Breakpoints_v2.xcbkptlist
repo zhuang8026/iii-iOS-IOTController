@@ -67,6 +67,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             startingLineNumber = "204"
             endingLineNumber = "204"
 =======
@@ -80,6 +81,8 @@
 >>>>>>> 6a8a21e (testing)
 =======
 >>>>>>> fb6af41 (Added - [W20/loading] add login)
+=======
+>>>>>>> bc4d4e1 (Fixed - [page] device upate time remove '遙控器')
             startingLineNumber = "154"
             endingLineNumber = "154"
 =======
@@ -120,7 +123,14 @@
             startingLineNumber = "161"
             endingLineNumber = "161"
 >>>>>>> 20cf977 (Added - [W20/loading] add login)
+<<<<<<< HEAD
 >>>>>>> fb6af41 (Added - [W20/loading] add login)
+=======
+=======
+            startingLineNumber = "162"
+            endingLineNumber = "162"
+>>>>>>> 026d7b1 (Fixed - [page] device upate time remove '遙控器')
+>>>>>>> bc4d4e1 (Fixed - [page] device upate time remove '遙控器')
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
