@@ -117,7 +117,7 @@ struct ContentView: View {
         
         let now = Date()
         let timeInterval = now.timeIntervalSince(updatedDate)
-        
+
         // 若差距在 300 分鐘內，代表在線，否則離線
         print("\(tab) -> \(timeInterval <= 1800 ? "資料已更新":"資料未更新")")
         return timeInterval <= 1800 // 300分鐘 = 1800秒
@@ -177,6 +177,7 @@ struct ContentView: View {
             "除濕機": "dehumidifier"
         ]
         switch tab {
+<<<<<<< HEAD
         case "空調", "除濕機":
             guard let deviceKey = tabToDeviceKey[tab],
                   let updatedTime = mqttManager.appBinds[deviceKey] as? String,
@@ -229,6 +230,29 @@ struct ContentView: View {
         }
     }
     
+=======
+            case "空調", "除濕機":
+                guard let deviceKey = tabToDeviceKey[tab],
+                  let updatedTime = mqttManager.appBinds[deviceKey] as? String,
+                      !updatedTime.isEmpty,
+                      let updatedDate = DateUtils.parseISO8601DateInTaiwanTimezone(from: updatedTime) else {
+                    print("\(tab) 時間為空")
+                    return false
+                }
+                
+                let now = Date()
+                let timeInterval = now.timeIntervalSince(updatedDate)
+                print("\(tab) 記錄時間是否在5min之內 -> \(timeInterval <= 300)")
+
+                return timeInterval <= 300
+            case "溫濕度", "遙控器", "插座":
+                return false
+            default:
+                return false
+        }
+    }
+
+>>>>>>> 9e3122f (Added - [loading] add API 'from/app/{User Token}/userdata')
     var body: some View {
         ZStack() {
             if(appStore.userToken == nil) {
@@ -274,6 +298,7 @@ struct ContentView: View {
                                     VStack() {
                                         // 根據 selectedTab 顯示對應元件
                                         switch self.selectedTab {
+<<<<<<< HEAD
                                         case "溫濕度":
 <<<<<<< HEAD
                                             Temperature(
@@ -330,17 +355,39 @@ struct ContentView: View {
                                 // 設備未連線
 =======
                                         
+=======
+                                            case "溫濕度":
+                                                Temperature(isConnected: $isTempConnected)
+                                            case "空調":
+                                                AirConditioner(isConnected: $isACConnected)
+                                            case "除濕機":
+                                                Dehumidifier(isConnected: $isDFConnected)
+                                            case "遙控器":
+                                                RemoteControl(isConnected: $isREMCConnected)
+                                            case "插座":
+                                                ElectricSocket()
+                                            default:
+                                                Spacer()
+                                                Loading(text: "Loading..")
+                                                Spacer()
+                                        }
+>>>>>>> 9e3122f (Added - [loading] add API 'from/app/{User Token}/userdata')
                                     }
+
                                     // ❌ 無資料 → 顯示 Loading 畫面
-                                    if isMQTTManagerLoading(tab: selectedTab) {
+                                    if isMQTTManagerLoading(tab: selectedTab) || isDeviceRecordToLoading(tab: selectedTab) {
                                         Color.light_green.opacity(0.85) // 透明磨砂黑背景
                                             .edgesIgnoringSafeArea(.all) // 覆蓋整個畫面
                                         Loading(text: "載入\(selectedTab)資料中...",color: Color.g_blue)
                                     }
                                 }
                             } else {
+<<<<<<< HEAD
                                 /// 請開始電源
 >>>>>>> fb6af41 (Added - [W20/loading] add login)
+=======
+                                // 設備未連線
+>>>>>>> 9e3122f (Added - [loading] add API 'from/app/{User Token}/userdata')
                                 VStack {
                                     Spacer()
                                     Image("unconnect")
@@ -376,8 +423,12 @@ struct ContentView: View {
                         }
                     } else {
                         ZStack() {
+<<<<<<< HEAD
                             /// ✅ 智能環控 連結
 >>>>>>> fb6af41 (Added - [W20/loading] add login)
+=======
+                            // ✅ 智能環控 連結
+>>>>>>> 9e3122f (Added - [loading] add API 'from/app/{User Token}/userdata')
                             AddSmartControlView(
                                 isShowingSmartControl: $isShowingSmartControl,  // 是否要開始 智慧環控連線 頁面，默認：關閉
                                 isConnected: $isSmartControlConnected // 連線狀態
@@ -401,6 +452,7 @@ struct ContentView: View {
                 .animation(.easeInOut, value: appStore.showPopup)
                 .onAppear {
 <<<<<<< HEAD
+<<<<<<< HEAD
                     // mqttManager.connectMQTT() // 當 isConnected 變為 true，啟動 MQTT
                     mqttManager.connect()// 啟動 MQTT
                     
@@ -413,6 +465,9 @@ struct ContentView: View {
                 ) { oldConnect, newConnect in
 =======
                     //                mqttManager.connectMQTT() // 當 isConnected 變為 true，啟動 MQTT
+=======
+                    // mqttManager.connectMQTT() // 當 isConnected 變為 true，啟動 MQTT
+>>>>>>> 9e3122f (Added - [loading] add API 'from/app/{User Token}/userdata')
                     MQTTManagerMiddle.shared.connect()// 啟動 MQTT
                     
                 }

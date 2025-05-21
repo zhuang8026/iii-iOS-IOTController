@@ -69,6 +69,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             startingLineNumber = "204"
             endingLineNumber = "204"
 =======
@@ -86,6 +87,8 @@
 >>>>>>> bc4d4e1 (Fixed - [page] device upate time remove '遙控器')
 =======
 >>>>>>> 338f4fa (Fixed - [AI] modify AI decide function content)
+=======
+>>>>>>> 9e3122f (Added - [loading] add API 'from/app/{User Token}/userdata')
             startingLineNumber = "154"
             endingLineNumber = "154"
 =======
@@ -140,7 +143,14 @@
             startingLineNumber = "169"
             endingLineNumber = "169"
 >>>>>>> 2c45415 (Fixed - [AI] modify AI decide function content)
+<<<<<<< HEAD
 >>>>>>> 338f4fa (Fixed - [AI] modify AI decide function content)
+=======
+=======
+            startingLineNumber = "199"
+            endingLineNumber = "199"
+>>>>>>> 2496e4a (Added - [loading] add API 'from/app/{User Token}/userdata')
+>>>>>>> 9e3122f (Added - [loading] add API 'from/app/{User Token}/userdata')
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -173,6 +183,7 @@
             endingColumnNumber = "9223372036854775807"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             startingLineNumber = "264"
             endingLineNumber = "264"
 =======
@@ -183,6 +194,10 @@
             startingLineNumber = "250"
             endingLineNumber = "250"
 >>>>>>> 3ae4c29 (Fixed - [page] ai decision function modify)
+=======
+            startingLineNumber = "263"
+            endingLineNumber = "263"
+>>>>>>> 9e3122f (Added - [loading] add API 'from/app/{User Token}/userdata')
             landmarkName = "mqtt(_:didReceiveMessage:id:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -202,12 +217,17 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
 <<<<<<< HEAD
+<<<<<<< HEAD
             startingLineNumber = "406"
             endingLineNumber = "406"
 =======
             startingLineNumber = "369"
             endingLineNumber = "369"
 >>>>>>> 338f4fa (Fixed - [AI] modify AI decide function content)
+=======
+            startingLineNumber = "395"
+            endingLineNumber = "395"
+>>>>>>> 9e3122f (Added - [loading] add API 'from/app/{User Token}/userdata')
             landmarkName = "returnAIDecisionText(from:)"
             landmarkType = "9">
          </BreakpointContent>
