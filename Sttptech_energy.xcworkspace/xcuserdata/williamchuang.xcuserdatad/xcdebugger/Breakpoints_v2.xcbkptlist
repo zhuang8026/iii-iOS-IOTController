@@ -68,6 +68,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             startingLineNumber = "204"
             endingLineNumber = "204"
 =======
@@ -83,6 +84,8 @@
 >>>>>>> fb6af41 (Added - [W20/loading] add login)
 =======
 >>>>>>> bc4d4e1 (Fixed - [page] device upate time remove '遙控器')
+=======
+>>>>>>> 338f4fa (Fixed - [AI] modify AI decide function content)
             startingLineNumber = "154"
             endingLineNumber = "154"
 =======
@@ -130,7 +133,14 @@
             startingLineNumber = "162"
             endingLineNumber = "162"
 >>>>>>> 026d7b1 (Fixed - [page] device upate time remove '遙控器')
+<<<<<<< HEAD
 >>>>>>> bc4d4e1 (Fixed - [page] device upate time remove '遙控器')
+=======
+=======
+            startingLineNumber = "169"
+            endingLineNumber = "169"
+>>>>>>> 2c45415 (Fixed - [AI] modify AI decide function content)
+>>>>>>> 338f4fa (Fixed - [AI] modify AI decide function content)
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -178,6 +188,9 @@
          </BreakpointContent>
       </BreakpointProxy>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 338f4fa (Fixed - [AI] modify AI decide function content)
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
@@ -188,13 +201,21 @@
             filePath = "Sttptech_energy/Network/MQTT/MQTTManagerMiddle.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
+<<<<<<< HEAD
             startingLineNumber = "406"
             endingLineNumber = "406"
+=======
+            startingLineNumber = "369"
+            endingLineNumber = "369"
+>>>>>>> 338f4fa (Fixed - [AI] modify AI decide function content)
             landmarkName = "returnAIDecisionText(from:)"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
+<<<<<<< HEAD
 =======
 >>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
+=======
+>>>>>>> 338f4fa (Fixed - [AI] modify AI decide function content)
    </Breakpoints>
 </Bucket>
