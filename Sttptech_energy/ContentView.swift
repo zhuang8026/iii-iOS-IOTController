@@ -77,7 +77,7 @@ struct ContentView: View {
             "溫濕度": "sensor",
             "空調": "air_conditioner",
             "除濕機": "dehumidifier",
-//            "遙控器": "remote"
+            //            "遙控器": "remote"
         ]
         
         // 取得對應 MQTT 裝置資料（deviceData 為 [String: ApplianceData]）
@@ -93,7 +93,7 @@ struct ContentView: View {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime]
         formatter.timeZone = TimeZone(secondsFromGMT: 8 * 3600) // 台灣時區 +8
-
+        
         // 將 updated 字串轉為 Date 物件（若格式錯誤則離線）
         guard let updatedDate = formatter.date(from: updatedTime.updated) else {
             return false
@@ -110,11 +110,18 @@ struct ContentView: View {
     
     // 判斷設備是否 綁定 或 設備上線
     private func isBindingOrOUpdated(tab: String) -> Bool {
-        let isBinding: Bool = deviceBindingForTab(tab: tab) // 綁定
-        let isUpdated: Bool = isDeviceUpdatedOnline(tab: tab) // 資料更新
+        // 插座、遙控器 不會收到設備更新資料影響，
+        if selectedTab == "插座" || selectedTab == "遙控器" {
+            return true
+        } else {
+            let isBinding: Bool = deviceBindingForTab(tab: tab) // 已綁定設備資料
+            let isUpdated: Bool = isDeviceUpdatedOnline(tab: tab) // 已綁定設備 資料更新時間
+            
+            print("\(tab) 是否已經綁定 -> \(isBinding)")
+            print("\(tab) 更新資料是否在30min之內 -> \(isUpdated)")
+            return isBinding ? isUpdated : true // 有綁定 -> 檢查資料， 無綁定 -> 去畫面綁定
+        }
         
-        print("isBindingOrOUpdated -> \(isBinding), \(isUpdated)")
-        return isBinding ? isUpdated : true // 有綁定 -> 檢查資料， 無綁定 -> 去畫面綁定
     }
     
     // 判斷MQTT設備是否有回傳資料
@@ -154,8 +161,8 @@ struct ContentView: View {
                     
                     if(isSmartControlConnected) {
                         VStack() {
-                            // 插座、遙控器 不會被 device upateTime 控制
-                            if selectedTab == "插座" || selectedTab == "遙控器" || isBindingOrOUpdated(tab: selectedTab) {
+                            // 設備已綁定環控，進入 主要控制畫面
+                            if isBindingOrOUpdated(tab: selectedTab) {
                                 ZStack() {
                                     /// ✅ 設備已連線
                                     VStack() {
@@ -275,15 +282,15 @@ struct ContentView: View {
         }
         .alert("能源管家提示",
                isPresented: $mqttManager.showDeviceAlert,
-            actions: {
-                Button("好的", role: .cancel) {
-                    print("執行 -> AI決策關閉")
-                    mqttManager.decisionEnabled = false
-                }
-            },
-            message: {
-                Text("AI決策已關閉")
+               actions: {
+            Button("好的", role: .cancel) {
+                print("執行 -> AI決策關閉")
+                mqttManager.decisionEnabled = false
             }
+        },
+               message: {
+            Text("AI決策已關閉")
+        }
         )
     }
 }

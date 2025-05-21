@@ -352,12 +352,17 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
 
 // MARK: - AI決策建議 整合功能
 func returnAIDecisionText(from data: [String: Any]) -> String {
-    var result = ""
-    
+    var socketAI = "" // 插座
+    var airconAI = "" // 冷氣
+    var dehumidifierAI = "" // 除濕機
+    var aiReply = "" // 用戶使用
+    var result = ""  // 工程人員測試用，已關閉使用
+
     // MARK: - ac_outlet
     if let outlet = data["ac_outlet"] as? [String: Any],
        let power = outlet["cfg_power"] as? String {
-        result += "插座電源：\(translateStringToChinese(power))\n"
+            socketAI = "\(translateStringToChinese(power))"
+            result += "插座電源：\(translateStringToChinese(power))\n"
     }
     
     // MARK: - air_conditioner
@@ -371,12 +376,14 @@ func returnAIDecisionText(from data: [String: Any]) -> String {
         }
         
         if let fanLevel = aircon["cfg_fan_level"] as? String, fanLevel != "<null>" {
+            airconAI += "風速\(translateStringToChinese(fanLevel)) "
             result += "冷氣風速：\(translateStringToChinese(fanLevel))\n"
         }
         
         if let temp = aircon["cfg_temperature"] {
             let value = String(describing: temp)
             if value != "<null>" {
+                airconAI += "調到\(value)度 "
                 result += "冷氣設定溫度：\(value) 度\n"
             }
         }
@@ -396,14 +403,17 @@ func returnAIDecisionText(from data: [String: Any]) -> String {
         }
         
         if let mode = dehumidifier["cfg_mode"] as? String {
+            dehumidifierAI += "模式\(translateStringToChinese(mode)) "
             result += "除濕機模式：\(translateStringToChinese(mode))\n"
         }
         
         if let fan = dehumidifier["cfg_fan_level"] as? String {
+            dehumidifierAI += "風速\(translateStringToChinese(fan)) "
             result += "除濕機風速：\(translateStringToChinese(fan))\n"
         }
         
         if let humidity = dehumidifier["cfg_humidity"] {
+            dehumidifierAI += "設定濕度\(humidity)% "
             result += "除濕機設定濕度：\(humidity)%\n"
         }
         
@@ -419,7 +429,13 @@ func returnAIDecisionText(from data: [String: Any]) -> String {
             result += "\(translateStringToChinese(alarm))\n"
         }
     }
-    return result.trimmingCharacters(in: .whitespacesAndNewlines)
+    
+    // MARK: - 書安通知寫死這句話 20250521
+    aiReply = "依照您現在的室溫、濕度狀態，我們建議把\(airconAI != "" ? "冷氣\(airconAI)" : "")\(dehumidifierAI != "" ? "，除濕機\(dehumidifierAI)" : "")\(socketAI != "" ? "，再將電扇\(socketAI)" : "")，這樣就能因應環境變化，保持涼爽舒適，又輕鬆省電，快試試看吧！"
+
+    return aiReply.trimmingCharacters(in: .whitespacesAndNewlines)
+
+//    return result.trimmingCharacters(in: .whitespacesAndNewlines)
 }
 
 // MARK: - 中文轉換工具

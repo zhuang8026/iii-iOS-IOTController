@@ -67,6 +67,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             startingLineNumber = "154"
             endingLineNumber = "154"
 =======
@@ -102,6 +103,10 @@
             startingLineNumber = "162"
             endingLineNumber = "162"
 >>>>>>> 026d7b1 (Fixed - [page] device upate time remove '遙控器')
+=======
+            startingLineNumber = "169"
+            endingLineNumber = "169"
+>>>>>>> 2c45415 (Fixed - [AI] modify AI decide function content)
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -136,6 +141,22 @@
             endingLineNumber = "250"
             landmarkName = "mqtt(_:didReceiveMessage:id:)"
             landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "DC5E9FEA-E674-4923-A6B7-491103B5F4B8"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Sttptech_energy/Network/MQTT/MQTTManagerMiddle.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "369"
+            endingLineNumber = "369"
+            landmarkName = "returnAIDecisionText(from:)"
+            landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
