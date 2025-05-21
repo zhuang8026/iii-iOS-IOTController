@@ -357,7 +357,7 @@ func returnAIDecisionText(from data: [String: Any]) -> String {
     // MARK: - ac_outlet
     if let outlet = data["ac_outlet"] as? [String: Any],
        let power = outlet["cfg_power"] as? String {
-        result += "遙控器電源：\(translateStringToChinese(power))\n"
+        result += "插座電源：\(translateStringToChinese(power))\n"
     }
     
     // MARK: - air_conditioner
