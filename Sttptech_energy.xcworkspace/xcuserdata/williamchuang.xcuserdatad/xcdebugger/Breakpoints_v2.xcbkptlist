@@ -66,6 +66,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             startingLineNumber = "154"
             endingLineNumber = "154"
 =======
@@ -97,6 +98,10 @@
             startingLineNumber = "161"
             endingLineNumber = "161"
 >>>>>>> 20cf977 (Added - [W20/loading] add login)
+=======
+            startingLineNumber = "162"
+            endingLineNumber = "162"
+>>>>>>> 026d7b1 (Fixed - [page] device upate time remove '遙控器')
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
