@@ -78,10 +78,14 @@ struct ContentView: View {
             "空調": "air_conditioner",
             "除濕機": "dehumidifier",
 <<<<<<< HEAD
+<<<<<<< HEAD
             //            "遙控器": "remote"
 =======
 //            "遙控器": "remote"
 >>>>>>> bc4d4e1 (Fixed - [page] device upate time remove '遙控器')
+=======
+            //            "遙控器": "remote"
+>>>>>>> 338f4fa (Fixed - [AI] modify AI decide function content)
         ]
         
         // 取得對應 MQTT 裝置資料（deviceData 為 [String: ApplianceData]）
@@ -98,10 +102,14 @@ struct ContentView: View {
         formatter.formatOptions = [.withInternetDateTime]
         formatter.timeZone = TimeZone(secondsFromGMT: 8 * 3600) // 台灣時區 +8
 <<<<<<< HEAD
+<<<<<<< HEAD
         
 =======
 
 >>>>>>> 29a838e (Fixed - [timeZone] add 台灣時區 +8)
+=======
+        
+>>>>>>> 338f4fa (Fixed - [AI] modify AI decide function content)
         // 將 updated 字串轉為 Date 物件（若格式錯誤則離線）
         guard let updatedDate = formatter.date(from: updatedTime.updated) else {
             return false
@@ -247,6 +255,7 @@ struct ContentView: View {
                         VStack() {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                             // 設備已綁定環控，進入 主要控制畫面
                             if isBindingOrOUpdated(tab: selectedTab) {
 =======
@@ -256,6 +265,10 @@ struct ContentView: View {
                             // 插座、遙控器 不會被 device upateTime 控制
                             if selectedTab == "插座" || selectedTab == "遙控器" || isBindingOrOUpdated(tab: selectedTab) {
 >>>>>>> bc4d4e1 (Fixed - [page] device upate time remove '遙控器')
+=======
+                            // 設備已綁定環控，進入 主要控制畫面
+                            if isBindingOrOUpdated(tab: selectedTab) {
+>>>>>>> 338f4fa (Fixed - [AI] modify AI decide function content)
                                 ZStack() {
                                     /// ✅ 設備已連線
                                     VStack() {
@@ -512,15 +525,15 @@ struct ContentView: View {
         }
         .alert("能源管家提示",
                isPresented: $mqttManager.showDeviceAlert,
-            actions: {
-                Button("好的", role: .cancel) {
-                    print("執行 -> AI決策關閉")
-                    mqttManager.decisionEnabled = false
-                }
-            },
-            message: {
-                Text("AI決策已關閉")
+               actions: {
+            Button("好的", role: .cancel) {
+                print("執行 -> AI決策關閉")
+                mqttManager.decisionEnabled = false
             }
+        },
+               message: {
+            Text("AI決策已關閉")
+        }
         )
 >>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
     }

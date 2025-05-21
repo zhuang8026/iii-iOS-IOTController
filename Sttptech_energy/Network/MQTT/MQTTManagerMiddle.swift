@@ -431,11 +431,15 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
 // MARK: - AI決策建議 整合功能
 func returnAIDecisionText(from data: [String: Any]) -> String {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 338f4fa (Fixed - [AI] modify AI decide function content)
     var socketAI = "" // 插座
     var airconAI = "" // 冷氣
     var dehumidifierAI = "" // 除濕機
     var aiReply = "" // 用戶使用
     var result = ""  // 工程人員測試用，已關閉使用
+<<<<<<< HEAD
 =======
     var result = ""
 >>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
@@ -453,6 +457,14 @@ func returnAIDecisionText(from data: [String: Any]) -> String {
 =======
         result += "插座電源：\(translateStringToChinese(power))\n"
 >>>>>>> bc4d4e1 (Fixed - [page] device upate time remove '遙控器')
+=======
+
+    // MARK: - ac_outlet
+    if let outlet = data["ac_outlet"] as? [String: Any],
+       let power = outlet["cfg_power"] as? String {
+            socketAI = "\(translateStringToChinese(power))"
+            result += "插座電源：\(translateStringToChinese(power))\n"
+>>>>>>> 338f4fa (Fixed - [AI] modify AI decide function content)
     }
     
     // MARK: - air_conditioner
@@ -467,9 +479,13 @@ func returnAIDecisionText(from data: [String: Any]) -> String {
         
         if let fanLevel = aircon["cfg_fan_level"] as? String, fanLevel != "<null>" {
 <<<<<<< HEAD
+<<<<<<< HEAD
             airconAI += "風速\(translateStringToChinese(fanLevel))"
 =======
 >>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
+=======
+            airconAI += "風速\(translateStringToChinese(fanLevel)) "
+>>>>>>> 338f4fa (Fixed - [AI] modify AI decide function content)
             result += "冷氣風速：\(translateStringToChinese(fanLevel))\n"
         }
         
@@ -477,9 +493,13 @@ func returnAIDecisionText(from data: [String: Any]) -> String {
             let value = String(describing: temp)
             if value != "<null>" {
 <<<<<<< HEAD
+<<<<<<< HEAD
                 airconAI += "調到\(value)度"
 =======
 >>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
+=======
+                airconAI += "調到\(value)度 "
+>>>>>>> 338f4fa (Fixed - [AI] modify AI decide function content)
                 result += "冷氣設定溫度：\(value) 度\n"
             }
         }
@@ -500,25 +520,37 @@ func returnAIDecisionText(from data: [String: Any]) -> String {
         
         if let mode = dehumidifier["cfg_mode"] as? String {
 <<<<<<< HEAD
+<<<<<<< HEAD
             dehumidifierAI += "模式\(translateStringToChinese(mode))"
 =======
 >>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
+=======
+            dehumidifierAI += "模式\(translateStringToChinese(mode)) "
+>>>>>>> 338f4fa (Fixed - [AI] modify AI decide function content)
             result += "除濕機模式：\(translateStringToChinese(mode))\n"
         }
         
         if let fan = dehumidifier["cfg_fan_level"] as? String {
 <<<<<<< HEAD
+<<<<<<< HEAD
             dehumidifierAI += "風速\(translateStringToChinese(fan))"
 =======
 >>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
+=======
+            dehumidifierAI += "風速\(translateStringToChinese(fan)) "
+>>>>>>> 338f4fa (Fixed - [AI] modify AI decide function content)
             result += "除濕機風速：\(translateStringToChinese(fan))\n"
         }
         
         if let humidity = dehumidifier["cfg_humidity"] {
 <<<<<<< HEAD
+<<<<<<< HEAD
             dehumidifierAI += "設定濕度\(humidity)% "
 =======
 >>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
+=======
+            dehumidifierAI += "設定濕度\(humidity)% "
+>>>>>>> 338f4fa (Fixed - [AI] modify AI decide function content)
             result += "除濕機設定濕度：\(humidity)%\n"
         }
         
@@ -535,6 +567,7 @@ func returnAIDecisionText(from data: [String: Any]) -> String {
         }
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
     
     // MARK: - 書安通知寫死這句話 20250521
     aiReply = "依照您現在的室溫、濕度狀態，我們建議把\(airconAI != "" ? "冷氣\(airconAI)" : "")\(dehumidifierAI != "" ? "，除濕機\(dehumidifierAI)" : "")\(socketAI != "" ? "，再將電扇\(socketAI)" : "")，這樣就能因應環境變化，保持涼爽舒適，又輕鬆省電，快試試看吧！"
@@ -545,6 +578,15 @@ func returnAIDecisionText(from data: [String: Any]) -> String {
 =======
     return result.trimmingCharacters(in: .whitespacesAndNewlines)
 >>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
+=======
+    
+    // MARK: - 書安通知寫死這句話 20250521
+    aiReply = "依照您現在的室溫、濕度狀態，我們建議把\(airconAI != "" ? "冷氣\(airconAI)" : "")\(dehumidifierAI != "" ? "，除濕機\(dehumidifierAI)" : "")\(socketAI != "" ? "，再將電扇\(socketAI)" : "")，這樣就能因應環境變化，保持涼爽舒適，又輕鬆省電，快試試看吧！"
+
+    return aiReply.trimmingCharacters(in: .whitespacesAndNewlines)
+
+//    return result.trimmingCharacters(in: .whitespacesAndNewlines)
+>>>>>>> 338f4fa (Fixed - [AI] modify AI decide function content)
 }
 
 // MARK: - 中文轉換工具
