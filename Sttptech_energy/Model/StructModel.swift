@@ -30,3 +30,14 @@ struct ApplianceData: Equatable {
     var value: String
     var updated: String
 }
+
+
+struct DateUtils {
+    /// 將 ISO8601 字串轉為 Date（台灣時區）
+    static func parseISO8601DateInTaiwanTimezone(from string: String) -> Date? {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime]
+        formatter.timeZone = TimeZone(secondsFromGMT: 8 * 3600) // 台灣時區 +8
+        return formatter.date(from: string)
+    }
+}

@@ -12,7 +12,7 @@ struct AirConditioner: View {
     
     // 控制提示
     @EnvironmentObject var appStore: AppStore  // 全局倉庫
-//    @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
+    //    @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
     
     @State private var isPowerOn = true
     @State private var selectedMode = "cool"
@@ -26,7 +26,7 @@ struct AirConditioner: View {
     // 藍芽連線顯示
     @State private var isShowingNewDeviceView = false // 是否要開始藍芽配對介面，默認：關閉
     @State private var selectedTab = "空調"
-
+    
     let titleWidth = 8.0;
     let titleHeight = 20.0;
     
@@ -86,11 +86,16 @@ struct AirConditioner: View {
         }
         
         // 解析 `cfg_temperature` -> Int
-        if let temp = airConditionerData["cfg_temperature"]?.value, let tempInt = Int(
-            temp
-        ) {
+        if let temp = airConditionerData["cfg_temperature"]?.value, let tempInt = Int(temp) {
             temperature = tempInt
         }
+    }
+    
+    // MARK: - 取得 設備綁定時間
+    private func getDeviceRecord() {
+        //        guard let airConditionerData = MQTTManagerMiddle.shared.appliances["air_conditioner"] else {
+        //            return
+        //        }
     }
     
     // MARK: - POST API
@@ -98,14 +103,14 @@ struct AirConditioner: View {
         let paylod: [String: Any] = [
             "air_conditioner": mode
         ]
-//        mqttManager.publishSetDeviceControl(model: paylod)
+        //        mqttManager.publishSetDeviceControl(model: paylod)
         MQTTManagerMiddle.shared.setDeviceControl(model: paylod)
     }
     
     //MARK: - HStack 控制水平排列，VStack 控制垂直排列
     var body: some View {
-        if (isConnected) {
-            ZStack {
+        ZStack {
+            if (isConnected) {
                 VStack(alignment: .leading, spacing: 20) {
                     PowerToggle(isPowerOn: $isPowerOn) { newVal in
                         print("AC power: \(newVal)")
@@ -123,7 +128,7 @@ struct AirConditioner: View {
                     
                     if isPowerOn {
                         // 風量和空調溫度顯示
-                        //                    ACnumber(fanSpeed:$fanSpeed, temperature: $temperature)
+                        // ACnumber(fanSpeed:$fanSpeed, temperature: $temperature)
                         
                         // 模式
                         VStack(alignment: .leading, spacing: 9) {
@@ -161,7 +166,7 @@ struct AirConditioner: View {
                                     Text("風速")
                                 }
                                 
-                                //                        FanSpeedSlider(fanSpeed: $fanSpeed) /// 風量控制
+                                // FanSpeedSlider(fanSpeed: $fanSpeed) /// 風量控制
                                 WindSpeedView(selectedSpeed: $fanSpeed, fanMode: $fanModeOptions) // 風速控制
                                 // 🔥 監聽 fanSpeed 的變化
                                     .onChange(of: fanSpeed) { oldVal, newVal in
@@ -171,6 +176,7 @@ struct AirConditioner: View {
                                     }
                             }
                         }
+                        
                         // 溫度
                         VStack(alignment: .leading, spacing: 12) {
                             HStack {
@@ -196,7 +202,7 @@ struct AirConditioner: View {
                         }
                         
                     } else {
-                        /// 請開始電源
+                        // 請先啟動設備
                         VStack {
                             Spacer()
                             Image("open-power")
@@ -209,25 +215,26 @@ struct AirConditioner: View {
                     }
                 }
                 .onAppear {
-                    checkAirConditionerCapabilities() // 檢查設備可讀取資料
-                    updateAirConditionerData()        // 畫面載入時初始化數據
+                    MQTTManagerMiddle.shared.setRecord(appBind: "air_conditioner") // 紀錄設備綁定時間
+                    checkAirConditionerCapabilities() // 檢查 設備可讀取資料
+                    updateAirConditionerData()        // 載入 畫面時初始化數據
                 }
-                //            .onChange(of: mqttManager.appliances["dehumidifier"]?.id) { _ in
-                //                updateDehumidifierData()
-                //            }
+                //                .onChange(of: mqttManager.appliances["dehumidifier"]?.id) { _ in
+                //                    updateDehumidifierData()
+                //                }
                 .onChange(
                     of: MQTTManagerMiddle.shared.appliances["air_conditioner"]
                 ) { _, _ in
                     updateAirConditionerData()
                 }
+            } else {
+                /// ✅ 設備已斷線
+                AddDeviceView(
+                    isShowingNewDeviceView: $isShowingNewDeviceView,
+                    selectedTab: $selectedTab,
+                    isConnected: $isConnected // 連線狀態
+                )
             }
-        } else {
-            /// ✅ 設備已斷線
-            AddDeviceView(
-                isShowingNewDeviceView: $isShowingNewDeviceView,
-                selectedTab: $selectedTab,
-                isConnected: $isConnected // 連線狀態
-            )
         }
     }
 }

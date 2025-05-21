@@ -22,17 +22,20 @@ final class MQTTDeviceService {
         mqtt.subscribe(topic, qos: .qos1)
         print("📡 訂閱設備 Topic: \(topic)")
     }
-
+    
+    // 發送 (publish)【開始/停止訂閱家電參數讀寫紀錄】指令
     func publishTelemetryCommand(subscribe: Bool) {
         let payload: [String: Any] = ["token": userToken(), "subscribe": subscribe]
         publish(payload, to: "from/app/\(userToken())/appliances/telemetry")
     }
-
+    
+    // 發送 (publish)【查詢家電能力】指令
     func publishRequestCapabilities() {
         let payload: [String: Any] = ["appliance": NSNull()]
         publish(payload, to: "from/app/\(userToken())/appliances/capabilities")
     }
-
+    
+    // 發送 (publish) 家電控制指令
     func publishSetDeviceControl(model: [String: Any]) {
         let payload: [String: Any] = [
             "token": userToken(),
@@ -41,7 +44,16 @@ final class MQTTDeviceService {
         ]
         publish(payload, to: "from/app/\(userToken())/appliances/control")
     }
+    
+    // 發送 (publish) 紀錄綁定時間指令
+    func publishSetRecord(appBind: String) {
+        let payload: [String: Any] = [
+            "app_bind": "\(appBind)" // air_conditioner, dehumidifier
+        ]
+        publish(payload, to: "from/app/\(userToken())/userdata")
+    }
 
+    // 發送 (publish)
     private func publish(_ payload: [String: Any], to topic: String) {
         guard mqtt.connState == .connected else {
             print("❌ MQTT 尚未連線，無法發送 \(topic)")
