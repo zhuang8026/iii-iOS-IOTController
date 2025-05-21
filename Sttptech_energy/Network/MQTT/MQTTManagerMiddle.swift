@@ -444,11 +444,15 @@ func returnAIDecisionText(from data: [String: Any]) -> String {
     if let outlet = data["ac_outlet"] as? [String: Any],
        let power = outlet["cfg_power"] as? String {
 <<<<<<< HEAD
+<<<<<<< HEAD
         socketAI = "\(translateStringToChinese(power))"
         result += "插座電源：\(translateStringToChinese(power))\n"
 =======
         result += "遙控器電源：\(translateStringToChinese(power))\n"
 >>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
+=======
+        result += "插座電源：\(translateStringToChinese(power))\n"
+>>>>>>> bc4d4e1 (Fixed - [page] device upate time remove '遙控器')
     }
     
     // MARK: - air_conditioner

@@ -77,7 +77,11 @@ struct ContentView: View {
             "溫濕度": "sensor",
             "空調": "air_conditioner",
             "除濕機": "dehumidifier",
+<<<<<<< HEAD
             //            "遙控器": "remote"
+=======
+//            "遙控器": "remote"
+>>>>>>> bc4d4e1 (Fixed - [page] device upate time remove '遙控器')
         ]
         
         // 取得對應 MQTT 裝置資料（deviceData 為 [String: ApplianceData]）
@@ -242,11 +246,16 @@ struct ContentView: View {
                     if(isSmartControlConnected) {
                         VStack() {
 <<<<<<< HEAD
+<<<<<<< HEAD
                             // 設備已綁定環控，進入 主要控制畫面
                             if isBindingOrOUpdated(tab: selectedTab) {
 =======
                             if(selectedTab == "插座" || isBindingOrOUpdated(tab: selectedTab)) {
 >>>>>>> fb6af41 (Added - [W20/loading] add login)
+=======
+                            // 插座、遙控器 不會被 device upateTime 控制
+                            if selectedTab == "插座" || selectedTab == "遙控器" || isBindingOrOUpdated(tab: selectedTab) {
+>>>>>>> bc4d4e1 (Fixed - [page] device upate time remove '遙控器')
                                 ZStack() {
                                     /// ✅ 設備已連線
                                     VStack() {
