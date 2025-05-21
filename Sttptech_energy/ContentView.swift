@@ -67,10 +67,10 @@ struct ContentView: View {
         return mqttManager.availables.contains(deviceKey)
     }
     
-    /// 根據 tab 判斷對應裝置是否在 30 分鐘內有更新（即是否在線）
-    /// - Parameter tab: UI 分頁名稱，例如 "溫濕度"
-    /// - Returns: 若裝置在 30 分鐘內有回傳資料，回傳 true（在線），否則 false（離線）
-    /// - Returns: 畫面正常 (true)、設備未連線 (false)
+    // 根據 tab 判斷對應裝置是否在 30 分鐘內有更新（即是否在線）
+    // - Parameter tab: UI 分頁名稱，例如 "溫濕度"
+    // - Returns: 若裝置在 30 分鐘內有回傳資料，回傳 true（在線），否則 false（離線）
+    // - Returns: 畫面正常 (true)、設備未連線 (false)
     private func isDeviceUpdatedOnline(tab: String) -> Bool {
         // 將 tab 名稱對應到實際裝置的 MQTT key
         let tabToDeviceKey: [String: String] = [
@@ -99,10 +99,9 @@ struct ContentView: View {
             return false
         }
         
-        // 取得目前時間與更新時間的差距（秒）
         let now = Date()
         let timeInterval = now.timeIntervalSince(updatedDate)
-        
+
         // 若差距在 300 分鐘內，代表在線，否則離線
         print("\(tab) -> \(timeInterval <= 1800 ? "資料已更新":"資料未更新")")
         return timeInterval <= 1800 // 300分鐘 = 1800秒
@@ -144,6 +143,37 @@ struct ContentView: View {
         }
     }
     
+    // 設備綁定紀錄
+    // 1. time >  5min -> loading no
+    // 2. time <= 5min -> loading yes
+    // 3. null         -> loading no
+    private func isDeviceRecordToLoading(tab: String) -> Bool {
+        let tabToDeviceKey: [String: String] = [
+            "空調": "air_conditioner",
+            "除濕機": "dehumidifier"
+        ]
+        switch tab {
+            case "空調", "除濕機":
+                guard let deviceKey = tabToDeviceKey[tab],
+                  let updatedTime = mqttManager.appBinds[deviceKey] as? String,
+                      !updatedTime.isEmpty,
+                      let updatedDate = DateUtils.parseISO8601DateInTaiwanTimezone(from: updatedTime) else {
+                    print("\(tab) 時間為空")
+                    return false
+                }
+                
+                let now = Date()
+                let timeInterval = now.timeIntervalSince(updatedDate)
+                print("\(tab) 記錄時間是否在5min之內 -> \(timeInterval <= 300)")
+
+                return timeInterval <= 300
+            case "溫濕度", "遙控器", "插座":
+                return false
+            default:
+                return false
+        }
+    }
+
     var body: some View {
         ZStack() {
             if(appStore.userToken == nil) {
@@ -168,32 +198,32 @@ struct ContentView: View {
                                     VStack() {
                                         // 根據 selectedTab 顯示對應元件
                                         switch self.selectedTab {
-                                        case "溫濕度":
-                                            Temperature(isConnected: $isTempConnected)
-                                        case "空調":
-                                            AirConditioner(isConnected: $isACConnected)
-                                        case "除濕機":
-                                            Dehumidifier(isConnected: $isDFConnected)
-                                        case "遙控器":
-                                            RemoteControl(isConnected: $isREMCConnected)
-                                        case "插座":
-                                            ElectricSocket()
-                                        default:
-                                            Spacer()
-                                            Loading(text: "Loading..")
-                                            Spacer()
+                                            case "溫濕度":
+                                                Temperature(isConnected: $isTempConnected)
+                                            case "空調":
+                                                AirConditioner(isConnected: $isACConnected)
+                                            case "除濕機":
+                                                Dehumidifier(isConnected: $isDFConnected)
+                                            case "遙控器":
+                                                RemoteControl(isConnected: $isREMCConnected)
+                                            case "插座":
+                                                ElectricSocket()
+                                            default:
+                                                Spacer()
+                                                Loading(text: "Loading..")
+                                                Spacer()
                                         }
-                                        
                                     }
+
                                     // ❌ 無資料 → 顯示 Loading 畫面
-                                    if isMQTTManagerLoading(tab: selectedTab) {
+                                    if isMQTTManagerLoading(tab: selectedTab) || isDeviceRecordToLoading(tab: selectedTab) {
                                         Color.light_green.opacity(0.85) // 透明磨砂黑背景
                                             .edgesIgnoringSafeArea(.all) // 覆蓋整個畫面
                                         Loading(text: "載入\(selectedTab)資料中...",color: Color.g_blue)
                                     }
                                 }
                             } else {
-                                /// 請開始電源
+                                // 設備未連線
                                 VStack {
                                     Spacer()
                                     Image("unconnect")
@@ -213,7 +243,7 @@ struct ContentView: View {
                         }
                     } else {
                         ZStack() {
-                            /// ✅ 智能環控 連結
+                            // ✅ 智能環控 連結
                             AddSmartControlView(
                                 isShowingSmartControl: $isShowingSmartControl,  // 是否要開始 智慧環控連線 頁面，默認：關閉
                                 isConnected: $isSmartControlConnected // 連線狀態
@@ -232,7 +262,7 @@ struct ContentView: View {
                 .background(Color.light_green.opacity(1))
                 .animation(.easeInOut, value: appStore.showPopup)
                 .onAppear {
-                    //                mqttManager.connectMQTT() // 當 isConnected 變為 true，啟動 MQTT
+                    // mqttManager.connectMQTT() // 當 isConnected 變為 true，啟動 MQTT
                     MQTTManagerMiddle.shared.connect()// 啟動 MQTT
                     
                 }

@@ -10,6 +10,8 @@ final class MQTTManagerMiddle: NSObject, ObservableObject {
     @Published var isConnected: Bool = false
     // MARK: - Smart Control 連線狀態
     @Published var isSmartBind: Bool = false
+    // MARK: - 設備綁定紀錄
+    @Published var appBinds: [String: Any] = [:]
     // MARK: - AI決策 是否同意 AI控制狀態
     @Published var decisionEnabled: Bool = false
     // MARK: - AI決策alert開啟
@@ -137,7 +139,18 @@ final class MQTTManagerMiddle: NSObject, ObservableObject {
         deviceService.publishSetDeviceControl(model: model)
         
         if(self.decisionEnabled){
-            self.showDeviceAlert = true // 
+            self.showDeviceAlert = true //
+            self.setDecisionAccepted(accepted: false)
+            self.decisionEnabled = false
+        }
+    }
+    
+    // [對外] 設定設備資料
+    func setRecord(appBind: String) {
+        deviceService.publishSetRecord(appBind: appBind)
+        
+        if(self.decisionEnabled){
+            self.showDeviceAlert = true //
             self.setDecisionAccepted(accepted: false)
             self.decisionEnabled = false
         }
@@ -171,7 +184,7 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
                 self.isConnected = true
             }
             
-            // self.authService.subscribe()  // v1 關閉 - 訂閱: 用戶登入
+            // self.authService.subscribe()      // v1 關閉 - 訂閱: 用戶登入
             self.smartService.subscribe()        // 訂閱: 智慧環控
             self.deviceService.subscribeAll()    // 訂閱: 取得家電所有資料、設備參數讀寫能力、發送與設定設備
             self.decisionService.subscribeAll()  // 訂閱: 用戶是否接受 AI 執行
@@ -210,7 +223,7 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
             guard let data = payload.data(using: .utf8) else { return }
             do {
                 let response = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-
+                
                 if let res = response, !res.isEmpty {
                     print("✅ AI決策建議 回應: \(res)")
                     
@@ -254,10 +267,10 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
                         if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
                             
                             print("✅ 總家電參數更新: \(json)")
-//                            print("✅ 總家電參數: \(json.isEmpty ? "無資料": "有資料")")
+                            //  print("✅ 總家電參數: \(json.isEmpty ? "無資料": "有資料")")
                             
                             self.serverLoading = json.isEmpty
-                            print("✅ 總家電參數: \(self.serverLoading)")
+                            //                            print("✅ 總家電參數: \(self.serverLoading)")
                             
                             // 已綁定家電 確認
                             if let availableDevices = json["availables"] as? [String] {
@@ -267,6 +280,20 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
                             // 環控綁定 確認
                             if let edgeBind = json["edge_bind"] as? Bool {
                                 self.isSmartBind = edgeBind
+                            }
+                            
+                            // 設備綁定紀錄 確認
+                            if let rawBinds = json["app_binds"] as? [String: Any] {
+                                var result: [String: String] = [:]
+                                for (key, value) in rawBinds {
+                                    if let str = value as? String, str != "<null>" {
+                                        result[key] = str
+                                    } else {
+                                        result[key] = "" // 或者不要加進去，用 continue 過濾掉
+                                    }
+                                }
+                                self.appBinds = result
+                                print("設備綁定紀錄:\(self.appBinds)")
                             }
                             
                             // AI決策啟動 確認
@@ -308,7 +335,6 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
                 }
             }
         }
-        
     }
     
     func mqtt(_ mqtt: CocoaMQTT, didStateChangeTo state: CocoaMQTTConnState) {
@@ -357,12 +383,12 @@ func returnAIDecisionText(from data: [String: Any]) -> String {
     var dehumidifierAI = "" // 除濕機
     var aiReply = "" // 用戶使用
     var result = ""  // 工程人員測試用，已關閉使用
-
+    
     // MARK: - ac_outlet
     if let outlet = data["ac_outlet"] as? [String: Any],
        let power = outlet["cfg_power"] as? String {
-            socketAI = "\(translateStringToChinese(power))"
-            result += "插座電源：\(translateStringToChinese(power))\n"
+        socketAI = "\(translateStringToChinese(power))"
+        result += "插座電源：\(translateStringToChinese(power))\n"
     }
     
     // MARK: - air_conditioner
@@ -432,28 +458,28 @@ func returnAIDecisionText(from data: [String: Any]) -> String {
     
     // MARK: - 書安通知寫死這句話 20250521
     aiReply = "依照您現在的室溫、濕度狀態，我們建議把\(airconAI != "" ? "冷氣\(airconAI)" : "")\(dehumidifierAI != "" ? "，除濕機\(dehumidifierAI)" : "")\(socketAI != "" ? "，再將電扇\(socketAI)" : "")，這樣就能因應環境變化，保持涼爽舒適，又輕鬆省電，快試試看吧！"
-
+    
     return aiReply.trimmingCharacters(in: .whitespacesAndNewlines)
-
-//    return result.trimmingCharacters(in: .whitespacesAndNewlines)
+    
+    //    return result.trimmingCharacters(in: .whitespacesAndNewlines)
 }
 
 // MARK: - 中文轉換工具
 func translateStringToChinese(_ val: String) -> String {
     switch val {
-    // 開關
+        // 開關
     case "on":     return "開啟"
     case "off":    return "關閉"
         
-    // 冷氣模式
+        // 冷氣模式
     case "cool":    return "冷氣"
     case "heat":    return "暖風"
     case "dry":     return "除濕"
-//    case "fan":     return "送風"
+        //    case "fan":     return "送風"
     case "auto":    return "自動"
         
-    // 除濕機
-//    case "auto": return "自動除濕"
+        // 除濕機
+        //    case "auto": return "自動除濕"
     case "manual": return "自訂除濕"
     case "continuous": return "連續除濕"
     case "clothes_drying": return "強力乾衣"
@@ -462,15 +488,15 @@ func translateStringToChinese(_ val: String) -> String {
     case "fan": return "空氣循環"
     case "comfort": return "舒適除濕"
     case "low_drying": return "低溫乾燥"
-
-    // 風速強度
+        
+        // 風速強度
     case "low":     return "低"
     case "medium":  return "中"
     case "high":    return "高"
     case "strong":  return "強"
     case "max":     return "最強"
         
-    // 水位
+        // 水位
     case "alarm":   return "⚠️ 滿水警報"
     case "normal":  return "✅ 水位正常"
         
