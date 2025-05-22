@@ -146,8 +146,10 @@ final class MQTTManagerMiddle: NSObject, ObservableObject {
         }
     }
     
-    // [對外] 設定設備資料
+    // [對外] 紀錄設備紀錄時間
+    // 只需要 air_conditioner & dehumidifier
     func setRecord(appBind: String) {
+        print("🚀🚀🚀 送出\(appBind)紀錄時間 >>>>>>>>>>>>>>")
         deviceService.publishSetRecord(appBind: appBind)
         
         // decisionEnabled -> true, 說明「AI決策啟動」中並在「畫面上顯示」

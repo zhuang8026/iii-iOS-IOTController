@@ -101,7 +101,7 @@ struct ContentView: View {
         
         let now = Date()
         let timeInterval = now.timeIntervalSince(updatedDate)
-
+        
         // 若差距在 300 分鐘內，代表在線，否則離線
         print("\(tab) -> \(timeInterval <= 1800 ? "資料已更新":"資料未更新")")
         return timeInterval <= 1800 // 300分鐘 = 1800秒
@@ -155,8 +155,8 @@ struct ContentView: View {
             "除濕機": "dehumidifier"
         ]
         switch tab {
-            case "空調", "除濕機":
-                guard let deviceKey = tabToDeviceKey[tab],
+        case "空調", "除濕機":
+            guard let deviceKey = tabToDeviceKey[tab],
                   let updatedTime = mqttManager.appBinds[deviceKey] as? String,
                       !updatedTime.isEmpty,
                       let updatedDate = DateUtils.parseISO8601DateInTaiwanTimezone(from: updatedTime) else {
