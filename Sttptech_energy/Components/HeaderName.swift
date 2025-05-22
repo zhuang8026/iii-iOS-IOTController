@@ -132,7 +132,7 @@ struct HeaderName: View {
                     Button(action: {
                         showPopup = true
                     }) {
-                        Image(systemName: "personalhotspot.slash") // 垃圾桶
+                        Image(systemName: "link.badge.plus") // 垃圾桶
                             .font(.system(size: 20)) // 調整圖示大小
                             .foregroundColor(Color.g_blue) // 確保顏色存在
                             .contentShape(Rectangle()) // 🔧 指定觸控區形狀，避免預設 highlight

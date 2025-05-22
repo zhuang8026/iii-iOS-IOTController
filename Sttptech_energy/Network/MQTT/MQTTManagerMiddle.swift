@@ -135,29 +135,30 @@ final class MQTTManagerMiddle: NSObject, ObservableObject {
     
     // [對外] 設定設備資料
     func setDeviceControl(model: [String: Any]) {
-        print("----------------- set device at the beginning -----------------")
+        print("🚀🚀🚀 送出控制家電設定 >>>>>>>>>>>>>>")
         deviceService.publishSetDeviceControl(model: model)
         
+        // decisionEnabled -> true, 說明「AI決策啟動」中並在「畫面上顯示」
         if(self.decisionEnabled){
-            self.showDeviceAlert = true //
-            self.setDecisionAccepted(accepted: false)
-            self.decisionEnabled = false
+            self.showDeviceAlert = true // 關閉 -> AI決策提示
+            self.setDecisionAccepted(accepted: false) // 關閉AI決策MQTT
+            
+            AlertHelper.showAlert(title: "能源管家提示", message: "AI決策已關閉"){
+                self.decisionEnabled = false // 關閉UI AI決策 文字
+            }
         }
     }
     
-    // [對外] 設定設備資料
+    // [對外] 紀錄設備紀錄時間
+    // 只需要 air_conditioner & dehumidifier
     func setRecord(appBind: String) {
+        print("🚀🚀🚀 送出\(appBind)紀錄時間 >>>>>>>>>>>>>>")
         deviceService.publishSetRecord(appBind: appBind)
-        
-        if(self.decisionEnabled){
-            self.showDeviceAlert = true //
-            self.setDecisionAccepted(accepted: false)
-            self.decisionEnabled = false
-        }
     }
     
     // [對外]
     func startTelemetry() {
+        self.serverLoading = true // 環控頁面loading
         deviceService.publishTelemetryCommand(subscribe: true)
     }
     
@@ -269,8 +270,18 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
                             print("✅ 總家電參數更新: \(json)")
                             //  print("✅ 總家電參數: \(json.isEmpty ? "無資料": "有資料")")
                             
-                            self.serverLoading = json.isEmpty
-                            //                            print("✅ 總家電參數: \(self.serverLoading)")
+                            self.serverLoading = json.isEmpty // 資料為空
+                            self.serverLoading = json["error"] != nil // 出現error
+                            // ✅ 檢查是否出現 error
+                            if let errorMessage = json["error"] as? String {
+                                self.serverLoading = false
+                                print("❗發生錯誤：\(errorMessage)")
+                                AlertHelper.showAlert(title: "錯誤通知", message: "\(errorMessage)")
+                            } else {
+                                // ✅ 無錯誤，正常更新
+                                self.serverLoading = json.isEmpty
+//                                print("MQTT 是否已取得資料: \(self.serverLoading)")
+                            }
                             
                             // 已綁定家電 確認
                             if let availableDevices = json["availables"] as? [String] {
@@ -402,14 +413,14 @@ func returnAIDecisionText(from data: [String: Any]) -> String {
         }
         
         if let fanLevel = aircon["cfg_fan_level"] as? String, fanLevel != "<null>" {
-            airconAI += "風速\(translateStringToChinese(fanLevel)) "
+            airconAI += "風速\(translateStringToChinese(fanLevel))"
             result += "冷氣風速：\(translateStringToChinese(fanLevel))\n"
         }
         
         if let temp = aircon["cfg_temperature"] {
             let value = String(describing: temp)
             if value != "<null>" {
-                airconAI += "調到\(value)度 "
+                airconAI += "調到\(value)度"
                 result += "冷氣設定溫度：\(value) 度\n"
             }
         }
@@ -429,12 +440,12 @@ func returnAIDecisionText(from data: [String: Any]) -> String {
         }
         
         if let mode = dehumidifier["cfg_mode"] as? String {
-            dehumidifierAI += "模式\(translateStringToChinese(mode)) "
+            dehumidifierAI += "模式\(translateStringToChinese(mode))"
             result += "除濕機模式：\(translateStringToChinese(mode))\n"
         }
         
         if let fan = dehumidifier["cfg_fan_level"] as? String {
-            dehumidifierAI += "風速\(translateStringToChinese(fan)) "
+            dehumidifierAI += "風速\(translateStringToChinese(fan))"
             result += "除濕機風速：\(translateStringToChinese(fan))\n"
         }
         

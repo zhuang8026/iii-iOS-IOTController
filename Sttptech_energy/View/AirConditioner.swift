@@ -194,7 +194,7 @@ struct AirConditioner: View {
                                 maxTemperature: $maxTemp  // max temp
                             ) /// 溫度控制視圖
                             // 🔥 監聽 temperature 的變化
-                            .onChange(of: temperature) { newVal in
+                            .onChange(of: temperature) { _, newVal in
                                 print("送出溫度:", newVal)
                                 let paylodModel: [String: Any] = ["cfg_temperature": String(newVal)]
                                 postAirConditionerRemote(mode: paylodModel)
