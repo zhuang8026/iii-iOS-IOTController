@@ -70,6 +70,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             startingLineNumber = "204"
             endingLineNumber = "204"
 =======
@@ -89,6 +90,8 @@
 >>>>>>> 338f4fa (Fixed - [AI] modify AI decide function content)
 =======
 >>>>>>> 9e3122f (Added - [loading] add API 'from/app/{User Token}/userdata')
+=======
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
             startingLineNumber = "154"
             endingLineNumber = "154"
 =======
@@ -150,7 +153,14 @@
             startingLineNumber = "199"
             endingLineNumber = "199"
 >>>>>>> 2496e4a (Added - [loading] add API 'from/app/{User Token}/userdata')
+<<<<<<< HEAD
 >>>>>>> 9e3122f (Added - [loading] add API 'from/app/{User Token}/userdata')
+=======
+=======
+            startingLineNumber = "204"
+            endingLineNumber = "204"
+>>>>>>> fb566aa (Added - [AlertHelper] done)
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -184,6 +194,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             startingLineNumber = "264"
             endingLineNumber = "264"
 =======
@@ -198,6 +209,10 @@
             startingLineNumber = "263"
             endingLineNumber = "263"
 >>>>>>> 9e3122f (Added - [loading] add API 'from/app/{User Token}/userdata')
+=======
+            startingLineNumber = "264"
+            endingLineNumber = "264"
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
             landmarkName = "mqtt(_:didReceiveMessage:id:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -218,6 +233,7 @@
             endingColumnNumber = "9223372036854775807"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             startingLineNumber = "406"
             endingLineNumber = "406"
 =======
@@ -228,6 +244,10 @@
             startingLineNumber = "395"
             endingLineNumber = "395"
 >>>>>>> 9e3122f (Added - [loading] add API 'from/app/{User Token}/userdata')
+=======
+            startingLineNumber = "406"
+            endingLineNumber = "406"
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
             landmarkName = "returnAIDecisionText(from:)"
             landmarkType = "9">
          </BreakpointContent>

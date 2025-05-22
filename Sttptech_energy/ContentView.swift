@@ -117,7 +117,7 @@ struct ContentView: View {
         
         let now = Date()
         let timeInterval = now.timeIntervalSince(updatedDate)
-
+        
         // 若差距在 300 分鐘內，代表在線，否則離線
         print("\(tab) -> \(timeInterval <= 1800 ? "資料已更新":"資料未更新")")
         return timeInterval <= 1800 // 300分鐘 = 1800秒
@@ -148,6 +148,7 @@ struct ContentView: View {
             return mqttManager.appliances["sensor"]?["updated"]?.value == nil
         case "空調":
 <<<<<<< HEAD
+<<<<<<< HEAD
             return mqttManager
                 .appliances["air_conditioner"]?["updated"]?.value == nil
         case "除濕機":
@@ -158,6 +159,13 @@ struct ContentView: View {
         case "除濕機":
             return mqttManager.appliances["dehumidifier"]?["updated"]?.value == nil
 >>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
+=======
+            return mqttManager
+                .appliances["air_conditioner"]?["updated"]?.value == nil
+        case "除濕機":
+            return mqttManager
+                .appliances["dehumidifier"]?["updated"]?.value == nil
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
         case "遙控器":
             return mqttManager.appliances["remote"]?["updated"]?.value == nil
         case "插座":
@@ -177,6 +185,7 @@ struct ContentView: View {
             "除濕機": "dehumidifier"
         ]
         switch tab {
+<<<<<<< HEAD
 <<<<<<< HEAD
         case "空調", "除濕機":
             guard let deviceKey = tabToDeviceKey[tab],
@@ -233,26 +242,34 @@ struct ContentView: View {
 =======
             case "空調", "除濕機":
                 guard let deviceKey = tabToDeviceKey[tab],
+=======
+        case "空調", "除濕機":
+            guard let deviceKey = tabToDeviceKey[tab],
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
                   let updatedTime = mqttManager.appBinds[deviceKey] as? String,
-                      !updatedTime.isEmpty,
-                      let updatedDate = DateUtils.parseISO8601DateInTaiwanTimezone(from: updatedTime) else {
-                    print("\(tab) 時間為空")
-                    return false
-                }
+                  !updatedTime.isEmpty,
+                  let updatedDate = DateUtils.parseISO8601DateInTaiwanTimezone(from: updatedTime) else {
+                print("\(tab) 上線紀錄時間為空")
+                return false
+            }
                 
-                let now = Date()
-                let timeInterval = now.timeIntervalSince(updatedDate)
-                print("\(tab) 記錄時間是否在5min之內 -> \(timeInterval <= 300)")
-
-                return timeInterval <= 300
-            case "溫濕度", "遙控器", "插座":
-                return false
-            default:
-                return false
+            let now = Date()
+            let timeInterval = now.timeIntervalSince(updatedDate)
+            print("\(tab) 記錄時間是否在5min之內 -> \(timeInterval <= 300)")
+                
+            return timeInterval <= 300
+        case "溫濕度", "遙控器", "插座":
+            return false
+        default:
+            return false
         }
     }
+<<<<<<< HEAD
 
 >>>>>>> 9e3122f (Added - [loading] add API 'from/app/{User Token}/userdata')
+=======
+    
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
     var body: some View {
         ZStack() {
             if(appStore.userToken == nil) {
@@ -263,13 +280,19 @@ struct ContentView: View {
                 VStack(spacing: 20) {
                     // ✅ 傳遞 selectedTab 和 status
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
                     HeaderName(
                         selectedTab: $selectedTab,
                         status: bindingForSelectedTab()
                     )
+<<<<<<< HEAD
 =======
                     HeaderName(selectedTab: $selectedTab, status: bindingForSelectedTab())
 >>>>>>> fb6af41 (Added - [W20/loading] add login)
+=======
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
                     
                     // 測試使用，可去除
                     // Text(mqttManager.loginResponse ?? "等待登入回應...")
@@ -299,8 +322,12 @@ struct ContentView: View {
                                         // 根據 selectedTab 顯示對應元件
                                         switch self.selectedTab {
 <<<<<<< HEAD
+<<<<<<< HEAD
                                         case "溫濕度":
 <<<<<<< HEAD
+=======
+                                        case "溫濕度":
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
                                             Temperature(
                                                 isConnected: $isTempConnected
                                             )
@@ -316,6 +343,7 @@ struct ContentView: View {
                                             RemoteControl(
                                                 isConnected: $isREMCConnected
                                             )
+<<<<<<< HEAD
 =======
                                             Temperature(isConnected: $isTempConnected)
                                         case "空調":
@@ -325,6 +353,8 @@ struct ContentView: View {
                                         case "遙控器":
                                             RemoteControl(isConnected: $isREMCConnected)
 >>>>>>> fb6af41 (Added - [W20/loading] add login)
+=======
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
                                         case "插座":
                                             ElectricSocket()
                                         default:
@@ -333,6 +363,9 @@ struct ContentView: View {
                                             Spacer()
                                         }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
                                     }
                                     
                                     // 條件一：❌ 無資料 → 顯示 Loading 畫面
@@ -347,6 +380,7 @@ struct ContentView: View {
                                                 text: "載入\(selectedTab)資料中...",
                                                 color: Color.g_blue
                                             )
+<<<<<<< HEAD
                                         }
                                     }
 
@@ -370,16 +404,12 @@ struct ContentView: View {
                                                 Spacer()
                                                 Loading(text: "Loading..")
                                                 Spacer()
+=======
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
                                         }
 >>>>>>> 9e3122f (Added - [loading] add API 'from/app/{User Token}/userdata')
                                     }
 
-                                    // ❌ 無資料 → 顯示 Loading 畫面
-                                    if isMQTTManagerLoading(tab: selectedTab) || isDeviceRecordToLoading(tab: selectedTab) {
-                                        Color.light_green.opacity(0.85) // 透明磨砂黑背景
-                                            .edgesIgnoringSafeArea(.all) // 覆蓋整個畫面
-                                        Loading(text: "載入\(selectedTab)資料中...",color: Color.g_blue)
-                                    }
                                 }
                             } else {
 <<<<<<< HEAD
@@ -397,13 +427,19 @@ struct ContentView: View {
                                     Spacer()
                                 }
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
                                 .frame(
                                     maxWidth: .infinity,
                                     maxHeight: .infinity
                                 )
+<<<<<<< HEAD
 =======
                                 .frame(maxWidth: .infinity, maxHeight: .infinity)
 >>>>>>> fb6af41 (Added - [W20/loading] add login)
+=======
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
                             }
                             
                             Spacer()
@@ -411,6 +447,9 @@ struct ContentView: View {
                             // 底部導航欄
                             NavigationBar(selectedTab: $selectedTab)
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
                                 .environmentObject(
                                     mqttManager
                                 ) // 確保能讀取 availables
@@ -436,10 +475,14 @@ struct ContentView: View {
                             
                             // ❌ 無資料 → 顯示 Loading 畫面
 <<<<<<< HEAD
+<<<<<<< HEAD
                             if (mqttManager.serverLoading) {
 =======
                             if (MQTTManagerMiddle.shared.serverLoading) {
 >>>>>>> fb6af41 (Added - [W20/loading] add login)
+=======
+                            if (mqttManager.serverLoading) {
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
                                 Color.light_green.opacity(0.85) // 透明磨砂黑背景
                                     .edgesIgnoringSafeArea(.all) // 覆蓋整個畫面
                                 Loading(text: "環控確認中...",color: Color.g_blue)
@@ -455,6 +498,7 @@ struct ContentView: View {
 <<<<<<< HEAD
                     // mqttManager.connectMQTT() // 當 isConnected 變為 true，啟動 MQTT
                     mqttManager.connect()// 啟動 MQTT
+<<<<<<< HEAD
                     
                 }
                 .onDisappear {
@@ -469,18 +513,27 @@ struct ContentView: View {
                     // mqttManager.connectMQTT() // 當 isConnected 變為 true，啟動 MQTT
 >>>>>>> 9e3122f (Added - [loading] add API 'from/app/{User Token}/userdata')
                     MQTTManagerMiddle.shared.connect()// 啟動 MQTT
+=======
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
                     
                 }
                 .onDisappear {
-                    MQTTManagerMiddle.shared.disconnect() // 離開畫面 斷開 MQTT 連線
+                    mqttManager.disconnect() // 離開畫面 斷開 MQTT 連線
                 }
+<<<<<<< HEAD
                 .onChange(of: mqttManager.isConnected) { oldConnect, newConnect in
 >>>>>>> fb6af41 (Added - [W20/loading] add login)
+=======
+                .onChange(
+                    of: mqttManager.isConnected
+                ) { oldConnect, newConnect in
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
                     print("[入口] isConnected:  \(oldConnect) \(newConnect)")
                     // 連線MQTT
                     if newConnect {
                         //  mqttManager.publishApplianceUserLogin(username: "app", password: "app:ppa")
                         //  MQTTManagerMiddle.shared.login(username: "user", password: "app:ppa")
+<<<<<<< HEAD
 <<<<<<< HEAD
                         //  mqttManager.publishTelemetryCommand(subscribe: true)
                         mqttManager.startTelemetry() // 接收家電資訊指令
@@ -490,6 +543,11 @@ struct ContentView: View {
                         mqttManager.startTelemetry() // 接收家電資訊指令
                         //                    mqttManager.publishCapabilities()
 >>>>>>> fb6af41 (Added - [W20/loading] add login)
+=======
+                        //  mqttManager.publishTelemetryCommand(subscribe: true)
+                        mqttManager.startTelemetry() // 接收家電資訊指令
+                        //  mqttManager.publishCapabilities()
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
                         mqttManager.requestCapabilities() // 查詢 家電參數讀寫能力 指令
                     }
                 }
@@ -563,21 +621,29 @@ struct ContentView: View {
                 // [全局][自訂彈窗] 提供空調 與 遙控器 頁面使用
                 if mqttManager.decisionControl {
                     CustomPopupView(
-                        isPresented: $mqttManager.decisionControl, // 開關
+                        isPresented: $mqttManager.decisionControl,
+ // 開關
                         title: appStore.title,
                         message: mqttManager.decisionMessage,
                         onConfirm: {
-                            mqttManager.setDecisionAccepted(accepted: true) // [MQTT] AI決策
+                            mqttManager
+                                .setDecisionAccepted(
+                                    accepted: true
+                                ) // [MQTT] AI決策
                             mqttManager.decisionEnabled = true
                         },
                         onCancel: {
-                            mqttManager.setDecisionAccepted(accepted: false) // [MQTT] AI決策
+                            mqttManager
+                                .setDecisionAccepted(
+                                    accepted: false
+                                ) // [MQTT] AI決策
                         }
                     )
 >>>>>>> fb6af41 (Added - [W20/loading] add login)
                 }
             }
         }
+<<<<<<< HEAD
         .alert("能源管家提示",
                isPresented: $mqttManager.showDeviceAlert,
                actions: {
@@ -591,6 +657,21 @@ struct ContentView: View {
         }
         )
 >>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
+=======
+        //        .alert(
+        //            "能源管家提示",
+        //            isPresented: $mqttManager.showDeviceAlert,
+        //            actions: {
+        //                Button("好的", role: .cancel) {
+        //                    print("執行 -> AI決策關閉")
+        //                    mqttManager.decisionEnabled = false
+        //                }
+        //            },
+        //            message: {
+        //                Text("AI決策已關閉")
+        //            }
+        //        )
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
     }
 }
 

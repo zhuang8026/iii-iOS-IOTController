@@ -205,10 +205,14 @@ struct AirConditioner: View {
                             ) /// 溫度控制視圖
                             // 🔥 監聽 temperature 的變化
 <<<<<<< HEAD
+<<<<<<< HEAD
                             .onChange(of: temperature) { _, newVal in
 =======
                             .onChange(of: temperature) { newVal in
 >>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
+=======
+                            .onChange(of: temperature) { _, newVal in
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
                                 print("送出溫度:", newVal)
                                 let paylodModel: [String: Any] = ["cfg_temperature": String(newVal)]
                                 postAirConditionerRemote(mode: paylodModel)
