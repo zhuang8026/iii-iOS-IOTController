@@ -101,7 +101,7 @@ struct ContentView: View {
         
         let now = Date()
         let timeInterval = now.timeIntervalSince(updatedDate)
-
+        
         // 若差距在 300 分鐘內，代表在線，否則離線
         print("\(tab) -> \(timeInterval <= 1800 ? "資料已更新":"資料未更新")")
         return timeInterval <= 1800 // 300分鐘 = 1800秒
@@ -131,9 +131,11 @@ struct ContentView: View {
         case "溫濕度":
             return mqttManager.appliances["sensor"]?["updated"]?.value == nil
         case "空調":
-            return mqttManager.appliances["air_conditioner"]?["updated"]?.value == nil
+            return mqttManager
+                .appliances["air_conditioner"]?["updated"]?.value == nil
         case "除濕機":
-            return mqttManager.appliances["dehumidifier"]?["updated"]?.value == nil
+            return mqttManager
+                .appliances["dehumidifier"]?["updated"]?.value == nil
         case "遙控器":
             return mqttManager.appliances["remote"]?["updated"]?.value == nil
         case "插座":
@@ -153,27 +155,27 @@ struct ContentView: View {
             "除濕機": "dehumidifier"
         ]
         switch tab {
-            case "空調", "除濕機":
-                guard let deviceKey = tabToDeviceKey[tab],
+        case "空調", "除濕機":
+            guard let deviceKey = tabToDeviceKey[tab],
                   let updatedTime = mqttManager.appBinds[deviceKey] as? String,
-                      !updatedTime.isEmpty,
-                      let updatedDate = DateUtils.parseISO8601DateInTaiwanTimezone(from: updatedTime) else {
-                    print("\(tab) 時間為空")
-                    return false
-                }
+                  !updatedTime.isEmpty,
+                  let updatedDate = DateUtils.parseISO8601DateInTaiwanTimezone(from: updatedTime) else {
+                print("\(tab) 上線紀錄時間為空")
+                return false
+            }
                 
-                let now = Date()
-                let timeInterval = now.timeIntervalSince(updatedDate)
-                print("\(tab) 記錄時間是否在5min之內 -> \(timeInterval <= 300)")
-
-                return timeInterval <= 300
-            case "溫濕度", "遙控器", "插座":
-                return false
-            default:
-                return false
+            let now = Date()
+            let timeInterval = now.timeIntervalSince(updatedDate)
+            print("\(tab) 記錄時間是否在5min之內 -> \(timeInterval <= 300)")
+                
+            return timeInterval <= 300
+        case "溫濕度", "遙控器", "插座":
+            return false
+        default:
+            return false
         }
     }
-
+    
     var body: some View {
         ZStack() {
             if(appStore.userToken == nil) {
@@ -183,7 +185,10 @@ struct ContentView: View {
             } else {
                 VStack(spacing: 20) {
                     // ✅ 傳遞 selectedTab 和 status
-                    HeaderName(selectedTab: $selectedTab, status: bindingForSelectedTab())
+                    HeaderName(
+                        selectedTab: $selectedTab,
+                        status: bindingForSelectedTab()
+                    )
                     
                     // 測試使用，可去除
                     // Text(mqttManager.loginResponse ?? "等待登入回應...")
@@ -198,29 +203,46 @@ struct ContentView: View {
                                     VStack() {
                                         // 根據 selectedTab 顯示對應元件
                                         switch self.selectedTab {
-                                            case "溫濕度":
-                                                Temperature(isConnected: $isTempConnected)
-                                            case "空調":
-                                                AirConditioner(isConnected: $isACConnected)
-                                            case "除濕機":
-                                                Dehumidifier(isConnected: $isDFConnected)
-                                            case "遙控器":
-                                                RemoteControl(isConnected: $isREMCConnected)
-                                            case "插座":
-                                                ElectricSocket()
-                                            default:
-                                                Spacer()
-                                                Loading(text: "Loading..")
-                                                Spacer()
+                                        case "溫濕度":
+                                            Temperature(
+                                                isConnected: $isTempConnected
+                                            )
+                                        case "空調":
+                                            AirConditioner(
+                                                isConnected: $isACConnected
+                                            )
+                                        case "除濕機":
+                                            Dehumidifier(
+                                                isConnected: $isDFConnected
+                                            )
+                                        case "遙控器":
+                                            RemoteControl(
+                                                isConnected: $isREMCConnected
+                                            )
+                                        case "插座":
+                                            ElectricSocket()
+                                        default:
+                                            Spacer()
+                                            Loading(text: "Loading..")
+                                            Spacer()
+                                        }
+                                    }
+                                    
+                                    // 條件一：❌ 無資料 → 顯示 Loading 畫面
+                                    // 條件二：❌ 設備綁定紀錄 <= 5 min → 顯示 Loading 畫面
+                                    // 條件三：❌ 設備未綁定 → 顯示 Loading 畫面
+                                    if isMQTTManagerLoading(tab: selectedTab) || isDeviceRecordToLoading(tab: selectedTab) {
+                                        if !isBindingOrOUpdated(tab: selectedTab) {
+                                            Color.light_green
+                                                .opacity(0.85) // 透明磨砂黑背景
+                                                .edgesIgnoringSafeArea(.all) // 覆蓋整個畫面
+                                            Loading(
+                                                text: "載入\(selectedTab)資料中...",
+                                                color: Color.g_blue
+                                            )
                                         }
                                     }
 
-                                    // ❌ 無資料 → 顯示 Loading 畫面
-                                    if isMQTTManagerLoading(tab: selectedTab) || isDeviceRecordToLoading(tab: selectedTab) {
-                                        Color.light_green.opacity(0.85) // 透明磨砂黑背景
-                                            .edgesIgnoringSafeArea(.all) // 覆蓋整個畫面
-                                        Loading(text: "載入\(selectedTab)資料中...",color: Color.g_blue)
-                                    }
                                 }
                             } else {
                                 // 設備未連線
@@ -232,14 +254,19 @@ struct ContentView: View {
                                         .multilineTextAlignment(.center)
                                     Spacer()
                                 }
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                .frame(
+                                    maxWidth: .infinity,
+                                    maxHeight: .infinity
+                                )
                             }
                             
                             Spacer()
                             
                             // 底部導航欄
                             NavigationBar(selectedTab: $selectedTab)
-                                .environmentObject(MQTTManagerMiddle.shared) // 確保能讀取 availables
+                                .environmentObject(
+                                    mqttManager
+                                ) // 確保能讀取 availables
                         }
                     } else {
                         ZStack() {
@@ -250,7 +277,7 @@ struct ContentView: View {
                             )
                             
                             // ❌ 無資料 → 顯示 Loading 畫面
-                            if (MQTTManagerMiddle.shared.serverLoading) {
+                            if (mqttManager.serverLoading) {
                                 Color.light_green.opacity(0.85) // 透明磨砂黑背景
                                     .edgesIgnoringSafeArea(.all) // 覆蓋整個畫面
                                 Loading(text: "環控確認中...",color: Color.g_blue)
@@ -263,21 +290,23 @@ struct ContentView: View {
                 .animation(.easeInOut, value: appStore.showPopup)
                 .onAppear {
                     // mqttManager.connectMQTT() // 當 isConnected 變為 true，啟動 MQTT
-                    MQTTManagerMiddle.shared.connect()// 啟動 MQTT
+                    mqttManager.connect()// 啟動 MQTT
                     
                 }
                 .onDisappear {
-                    MQTTManagerMiddle.shared.disconnect() // 離開畫面 斷開 MQTT 連線
+                    mqttManager.disconnect() // 離開畫面 斷開 MQTT 連線
                 }
-                .onChange(of: mqttManager.isConnected) { oldConnect, newConnect in
+                .onChange(
+                    of: mqttManager.isConnected
+                ) { oldConnect, newConnect in
                     print("[入口] isConnected:  \(oldConnect) \(newConnect)")
                     // 連線MQTT
                     if newConnect {
                         //  mqttManager.publishApplianceUserLogin(username: "app", password: "app:ppa")
                         //  MQTTManagerMiddle.shared.login(username: "user", password: "app:ppa")
-                        //                    mqttManager.publishTelemetryCommand(subscribe: true)
+                        //  mqttManager.publishTelemetryCommand(subscribe: true)
                         mqttManager.startTelemetry() // 接收家電資訊指令
-                        //                    mqttManager.publishCapabilities()
+                        //  mqttManager.publishCapabilities()
                         mqttManager.requestCapabilities() // 查詢 家電參數讀寫能力 指令
                     }
                 }
@@ -296,32 +325,40 @@ struct ContentView: View {
                 // [全局][自訂彈窗] 提供空調 與 遙控器 頁面使用
                 if mqttManager.decisionControl {
                     CustomPopupView(
-                        isPresented: $mqttManager.decisionControl, // 開關
+                        isPresented: $mqttManager.decisionControl,
+ // 開關
                         title: appStore.title,
                         message: mqttManager.decisionMessage,
                         onConfirm: {
-                            mqttManager.setDecisionAccepted(accepted: true) // [MQTT] AI決策
+                            mqttManager
+                                .setDecisionAccepted(
+                                    accepted: true
+                                ) // [MQTT] AI決策
                             mqttManager.decisionEnabled = true
                         },
                         onCancel: {
-                            mqttManager.setDecisionAccepted(accepted: false) // [MQTT] AI決策
+                            mqttManager
+                                .setDecisionAccepted(
+                                    accepted: false
+                                ) // [MQTT] AI決策
                         }
                     )
                 }
             }
         }
-        .alert("能源管家提示",
-               isPresented: $mqttManager.showDeviceAlert,
-               actions: {
-            Button("好的", role: .cancel) {
-                print("執行 -> AI決策關閉")
-                mqttManager.decisionEnabled = false
-            }
-        },
-               message: {
-            Text("AI決策已關閉")
-        }
-        )
+        //        .alert(
+        //            "能源管家提示",
+        //            isPresented: $mqttManager.showDeviceAlert,
+        //            actions: {
+        //                Button("好的", role: .cancel) {
+        //                    print("執行 -> AI決策關閉")
+        //                    mqttManager.decisionEnabled = false
+        //                }
+        //            },
+        //            message: {
+        //                Text("AI決策已關閉")
+        //            }
+        //        )
     }
 }
 

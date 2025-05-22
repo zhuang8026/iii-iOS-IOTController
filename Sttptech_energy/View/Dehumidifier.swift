@@ -28,6 +28,7 @@ struct Dehumidifier: View {
     @State private var fanSpeed: String = "auto" // 風速設定變數-> API cfg_fan_level
     
     // 首次進入畫面不觸法 onchange
+    @State private var toggle = false // 開關
     @State private var humdifPicker = false // 除濕百分比
     @State private var timePicker = false // 定時
     @State private var modePicker = false // 模式
@@ -160,14 +161,18 @@ struct Dehumidifier: View {
         if (isConnected) {
             ZStack {
                 VStack(alignment: .leading, spacing: 20) {
-                    
                     // 電源開關
                     PowerToggle(isPowerOn: $isPowerOn)
                     // 🔥 監聽 isPowerOn 的變化
                         .onChange(of: isPowerOn) { oldVal, newVal in
-                            print("除濕機開關: \(newVal)")
-                            let paylodModel: [String: Any] = ["cfg_power": newVal ? "on" : "off"]
-                            postDehumidifierSetting(mode: paylodModel)
+                            if toggle {
+                                print("除濕機開關: \(newVal)")
+                                let paylodModel: [String: Any] = ["cfg_power": newVal ? "on" : "off"]
+                                postDehumidifierSetting(mode: paylodModel)
+                            } else {
+                                self.toggle = true
+                            }
+                            
                         }
                     if isPowerOn {
                         /// 設定
@@ -350,6 +355,7 @@ struct Dehumidifier: View {
                     }
                 }
                 .onAppear {
+                    MQTTManagerMiddle.shared.setRecord(appBind: "dehumidifier") // 紀錄設備綁定時間
                     checkDehumidifierCapabilities() // 檢查設備可讀取資料
                     updateDehumidifierData() // 畫面載入時初始化數據
                 }
