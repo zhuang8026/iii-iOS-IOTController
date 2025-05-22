@@ -29,9 +29,13 @@ struct Dehumidifier: View {
     
     // 首次進入畫面不觸法 onchange
 <<<<<<< HEAD
+<<<<<<< HEAD
     @State private var toggle = false // 開關
 =======
 >>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
+=======
+    @State private var toggle = false // 開關
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
     @State private var humdifPicker = false // 除濕百分比
     @State private var timePicker = false // 定時
     @State private var modePicker = false // 模式
@@ -179,6 +183,9 @@ struct Dehumidifier: View {
                     // 🔥 監聽 isPowerOn 的變化
                         .onChange(of: isPowerOn) { oldVal, newVal in
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
                             if toggle {
                                 print("除濕機開關: \(newVal)")
                                 let paylodModel: [String: Any] = ["cfg_power": newVal ? "on" : "off"]
@@ -187,11 +194,14 @@ struct Dehumidifier: View {
                                 self.toggle = true
                             }
                             
+<<<<<<< HEAD
 =======
                             print("除濕機開關: \(newVal)")
                             let paylodModel: [String: Any] = ["cfg_power": newVal ? "on" : "off"]
                             postDehumidifierSetting(mode: paylodModel)
 >>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
+=======
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
                         }
                     if isPowerOn {
                         /// 設定

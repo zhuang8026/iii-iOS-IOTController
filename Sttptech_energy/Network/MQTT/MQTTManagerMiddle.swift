@@ -136,6 +136,7 @@ final class MQTTManagerMiddle: NSObject, ObservableObject {
     // [對外] 設定設備資料
     func setDeviceControl(model: [String: Any]) {
 <<<<<<< HEAD
+<<<<<<< HEAD
         print("🚀🚀🚀 送出控制家電設定 >>>>>>>>>>>>>>")
         deviceService.publishSetDeviceControl(model: model)
         
@@ -157,18 +158,28 @@ final class MQTTManagerMiddle: NSObject, ObservableObject {
         deviceService.publishSetRecord(appBind: appBind)
 =======
         print("----------------- set device at the beginning -----------------")
+=======
+        print("🚀🚀🚀 送出控制家電設定 >>>>>>>>>>>>>>")
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
         deviceService.publishSetDeviceControl(model: model)
         
+        // decisionEnabled -> true, 說明「AI決策啟動」中並在「畫面上顯示」
         if(self.decisionEnabled){
-            self.showDeviceAlert = true //
-            self.setDecisionAccepted(accepted: false)
-            self.decisionEnabled = false
+            self.showDeviceAlert = true // 關閉 -> AI決策提示
+            self.setDecisionAccepted(accepted: false) // 關閉AI決策MQTT
+            
+            AlertHelper.showAlert(title: "能源管家提示", message: "AI決策已關閉"){
+                self.decisionEnabled = false // 關閉UI AI決策 文字
+            }
         }
     }
     
-    // [對外] 設定設備資料
+    // [對外] 紀錄設備紀錄時間
+    // 只需要 air_conditioner & dehumidifier
     func setRecord(appBind: String) {
+        print("🚀🚀🚀 送出\(appBind)紀錄時間 >>>>>>>>>>>>>>")
         deviceService.publishSetRecord(appBind: appBind)
+<<<<<<< HEAD
         
         if(self.decisionEnabled){
             self.showDeviceAlert = true //
@@ -176,6 +187,8 @@ final class MQTTManagerMiddle: NSObject, ObservableObject {
             self.decisionEnabled = false
         }
 >>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
+=======
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
     }
     
     // [對外]
@@ -328,9 +341,24 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
 =======
                             //  print("✅ 總家電參數: \(json.isEmpty ? "無資料": "有資料")")
                             
+<<<<<<< HEAD
                             self.serverLoading = json.isEmpty
                             //                            print("✅ 總家電參數: \(self.serverLoading)")
 >>>>>>> 9e3122f (Added - [loading] add API 'from/app/{User Token}/userdata')
+=======
+                            self.serverLoading = json.isEmpty // 資料為空
+                            self.serverLoading = json["error"] != nil // 出現error
+                            // ✅ 檢查是否出現 error
+                            if let errorMessage = json["error"] as? String {
+                                self.serverLoading = false
+                                print("❗發生錯誤：\(errorMessage)")
+                                AlertHelper.showAlert(title: "錯誤通知", message: "\(errorMessage)")
+                            } else {
+                                // ✅ 無錯誤，正常更新
+                                self.serverLoading = json.isEmpty
+//                                print("MQTT 是否已取得資料: \(self.serverLoading)")
+                            }
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
                             
                             // 已綁定家電 確認
                             if let availableDevices = json["availables"] as? [String] {
@@ -497,12 +525,16 @@ func returnAIDecisionText(from data: [String: Any]) -> String {
         if let fanLevel = aircon["cfg_fan_level"] as? String, fanLevel != "<null>" {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             airconAI += "風速\(translateStringToChinese(fanLevel))"
 =======
 >>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
 =======
             airconAI += "風速\(translateStringToChinese(fanLevel)) "
 >>>>>>> 338f4fa (Fixed - [AI] modify AI decide function content)
+=======
+            airconAI += "風速\(translateStringToChinese(fanLevel))"
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
             result += "冷氣風速：\(translateStringToChinese(fanLevel))\n"
         }
         
@@ -511,12 +543,16 @@ func returnAIDecisionText(from data: [String: Any]) -> String {
             if value != "<null>" {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                 airconAI += "調到\(value)度"
 =======
 >>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
 =======
                 airconAI += "調到\(value)度 "
 >>>>>>> 338f4fa (Fixed - [AI] modify AI decide function content)
+=======
+                airconAI += "調到\(value)度"
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
                 result += "冷氣設定溫度：\(value) 度\n"
             }
         }
@@ -538,16 +574,21 @@ func returnAIDecisionText(from data: [String: Any]) -> String {
         if let mode = dehumidifier["cfg_mode"] as? String {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             dehumidifierAI += "模式\(translateStringToChinese(mode))"
 =======
 >>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
 =======
             dehumidifierAI += "模式\(translateStringToChinese(mode)) "
 >>>>>>> 338f4fa (Fixed - [AI] modify AI decide function content)
+=======
+            dehumidifierAI += "模式\(translateStringToChinese(mode))"
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
             result += "除濕機模式：\(translateStringToChinese(mode))\n"
         }
         
         if let fan = dehumidifier["cfg_fan_level"] as? String {
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
             dehumidifierAI += "風速\(translateStringToChinese(fan))"
@@ -556,6 +597,9 @@ func returnAIDecisionText(from data: [String: Any]) -> String {
 =======
             dehumidifierAI += "風速\(translateStringToChinese(fan)) "
 >>>>>>> 338f4fa (Fixed - [AI] modify AI decide function content)
+=======
+            dehumidifierAI += "風速\(translateStringToChinese(fan))"
+>>>>>>> 1a28628 (Added - [AlertHelper] done)
             result += "除濕機風速：\(translateStringToChinese(fan))\n"
         }
         
