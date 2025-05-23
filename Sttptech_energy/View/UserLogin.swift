@@ -21,16 +21,8 @@ struct UserLogin: View {
             Text("登入")
                 .font(.largeTitle)
                 .bold()
-<<<<<<< HEAD
-<<<<<<< HEAD
             Text("\(version)")
-                .font(.system(size: 12)) 
-=======
->>>>>>> fb6af41 (Added - [W20/loading] add login)
-=======
-            Text("\(version)")
-                .font(.system(size: 12)) 
->>>>>>> 8bdcbdb (Upgrade - [v1.0.1] demo)
+                .font(.system(size: 12))
             
             // 帳號欄位
             TextField("帳號", text: $username)

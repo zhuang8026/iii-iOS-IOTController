@@ -16,6 +16,7 @@ struct ContentView: View {
     
     @State private var selectedTab = "" // 選擇設備控制
     @State private var status = false // 控制顯示標題名稱（內含 返回 icon）
+    @State private var enterBinding = false // // 關閉 設備未連線 or 主畫面
     @State private var isShowingSmartControl = false // [pop-up] 是否要開始 智慧環控連線 頁面，默認：關閉
     @State private var isSmartControlConnected = false // [status] 連線狀態，默認：API GET 告知
     
@@ -77,15 +78,7 @@ struct ContentView: View {
             "溫濕度": "sensor",
             "空調": "air_conditioner",
             "除濕機": "dehumidifier",
-<<<<<<< HEAD
-<<<<<<< HEAD
             //            "遙控器": "remote"
-=======
-//            "遙控器": "remote"
->>>>>>> bc4d4e1 (Fixed - [page] device upate time remove '遙控器')
-=======
-            //            "遙控器": "remote"
->>>>>>> 338f4fa (Fixed - [AI] modify AI decide function content)
         ]
         
         // 取得對應 MQTT 裝置資料（deviceData 為 [String: ApplianceData]）
@@ -101,15 +94,7 @@ struct ContentView: View {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime]
         formatter.timeZone = TimeZone(secondsFromGMT: 8 * 3600) // 台灣時區 +8
-<<<<<<< HEAD
-<<<<<<< HEAD
         
-=======
-
->>>>>>> 29a838e (Fixed - [timeZone] add 台灣時區 +8)
-=======
-        
->>>>>>> 338f4fa (Fixed - [AI] modify AI decide function content)
         // 將 updated 字串轉為 Date 物件（若格式錯誤則離線）
         guard let updatedDate = formatter.date(from: updatedTime.updated) else {
             return false
@@ -147,25 +132,11 @@ struct ContentView: View {
         case "溫濕度":
             return mqttManager.appliances["sensor"]?["updated"]?.value == nil
         case "空調":
-<<<<<<< HEAD
-<<<<<<< HEAD
             return mqttManager
                 .appliances["air_conditioner"]?["updated"]?.value == nil
         case "除濕機":
             return mqttManager
                 .appliances["dehumidifier"]?["updated"]?.value == nil
-=======
-            return mqttManager.appliances["air_conditioner"]?["updated"]?.value == nil
-        case "除濕機":
-            return mqttManager.appliances["dehumidifier"]?["updated"]?.value == nil
->>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
-=======
-            return mqttManager
-                .appliances["air_conditioner"]?["updated"]?.value == nil
-        case "除濕機":
-            return mqttManager
-                .appliances["dehumidifier"]?["updated"]?.value == nil
->>>>>>> 1a28628 (Added - [AlertHelper] done)
         case "遙控器":
             return mqttManager.appliances["remote"]?["updated"]?.value == nil
         case "插座":
@@ -185,8 +156,6 @@ struct ContentView: View {
             "除濕機": "dehumidifier"
         ]
         switch tab {
-<<<<<<< HEAD
-<<<<<<< HEAD
         case "空調", "除濕機":
             guard let deviceKey = tabToDeviceKey[tab],
                   let updatedTime = mqttManager.appBinds[deviceKey] as? String,
@@ -226,11 +195,11 @@ struct ContentView: View {
                 print("\(tab) 上線紀錄時間為空")
                 return false
             }
-                
+            
             let now = Date()
             let timeInterval = now.timeIntervalSince(updatedDate)
             print("\(tab) 記錄時間是否在5min之內 -> \(timeInterval <= 300)")
-                
+            
             return timeInterval <= 300
         case "溫濕度", "遙控器", "插座":
             return false
@@ -239,37 +208,6 @@ struct ContentView: View {
         }
     }
     
-=======
-            case "空調", "除濕機":
-                guard let deviceKey = tabToDeviceKey[tab],
-=======
-        case "空調", "除濕機":
-            guard let deviceKey = tabToDeviceKey[tab],
->>>>>>> 1a28628 (Added - [AlertHelper] done)
-                  let updatedTime = mqttManager.appBinds[deviceKey] as? String,
-                  !updatedTime.isEmpty,
-                  let updatedDate = DateUtils.parseISO8601DateInTaiwanTimezone(from: updatedTime) else {
-                print("\(tab) 上線紀錄時間為空")
-                return false
-            }
-                
-            let now = Date()
-            let timeInterval = now.timeIntervalSince(updatedDate)
-            print("\(tab) 記錄時間是否在5min之內 -> \(timeInterval <= 300)")
-                
-            return timeInterval <= 300
-        case "溫濕度", "遙控器", "插座":
-            return false
-        default:
-            return false
-        }
-    }
-<<<<<<< HEAD
-
->>>>>>> 9e3122f (Added - [loading] add API 'from/app/{User Token}/userdata')
-=======
-    
->>>>>>> 1a28628 (Added - [AlertHelper] done)
     var body: some View {
         ZStack() {
             if(appStore.userToken == nil) {
@@ -279,20 +217,11 @@ struct ContentView: View {
             } else {
                 VStack(spacing: 20) {
                     // ✅ 傳遞 selectedTab 和 status
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 1a28628 (Added - [AlertHelper] done)
                     HeaderName(
-                        selectedTab: $selectedTab,
-                        status: bindingForSelectedTab()
+                        selectedTab: $selectedTab, // title
+                        status: bindingForSelectedTab(), // 顯示內容控制
+                        enterBinding: $enterBinding // 關閉 設備未連線
                     )
-<<<<<<< HEAD
-=======
-                    HeaderName(selectedTab: $selectedTab, status: bindingForSelectedTab())
->>>>>>> fb6af41 (Added - [W20/loading] add login)
-=======
->>>>>>> 1a28628 (Added - [AlertHelper] done)
                     
                     // 測試使用，可去除
                     // Text(mqttManager.loginResponse ?? "等待登入回應...")
@@ -300,102 +229,19 @@ struct ContentView: View {
                     
                     if(isSmartControlConnected) {
                         VStack() {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
                             // 設備已綁定環控，進入 主要控制畫面
-                            if isBindingOrOUpdated(tab: selectedTab) {
-=======
-                            if(selectedTab == "插座" || isBindingOrOUpdated(tab: selectedTab)) {
->>>>>>> fb6af41 (Added - [W20/loading] add login)
-=======
-                            // 插座、遙控器 不會被 device upateTime 控制
-                            if selectedTab == "插座" || selectedTab == "遙控器" || isBindingOrOUpdated(tab: selectedTab) {
->>>>>>> bc4d4e1 (Fixed - [page] device upate time remove '遙控器')
-=======
-                            // 設備已綁定環控，進入 主要控制畫面
-                            if isBindingOrOUpdated(tab: selectedTab) {
->>>>>>> 338f4fa (Fixed - [AI] modify AI decide function content)
+                            if isBindingOrOUpdated(tab: selectedTab) || self.enterBinding {
                                 ZStack() {
                                     /// ✅ 設備已連線
                                     VStack() {
                                         // 根據 selectedTab 顯示對應元件
                                         switch self.selectedTab {
-<<<<<<< HEAD
-<<<<<<< HEAD
-                                        case "溫濕度":
-<<<<<<< HEAD
-=======
-                                        case "溫濕度":
->>>>>>> 1a28628 (Added - [AlertHelper] done)
-                                            Temperature(
-                                                isConnected: $isTempConnected
-                                            )
-                                        case "空調":
-                                            AirConditioner(
-                                                isConnected: $isACConnected
-                                            )
-                                        case "除濕機":
-                                            Dehumidifier(
-                                                isConnected: $isDFConnected
-                                            )
-                                        case "遙控器":
-                                            RemoteControl(
-                                                isConnected: $isREMCConnected
-                                            )
-<<<<<<< HEAD
-=======
-                                            Temperature(isConnected: $isTempConnected)
-                                        case "空調":
-                                            AirConditioner(isConnected: $isACConnected)
-                                        case "除濕機":
-                                            Dehumidifier(isConnected: $isDFConnected)
-                                        case "遙控器":
-                                            RemoteControl(isConnected: $isREMCConnected)
->>>>>>> fb6af41 (Added - [W20/loading] add login)
-=======
->>>>>>> 1a28628 (Added - [AlertHelper] done)
-                                        case "插座":
-                                            ElectricSocket()
-                                        default:
-                                            Spacer()
-                                            Loading(text: "Loading..")
-                                            Spacer()
-                                        }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 1a28628 (Added - [AlertHelper] done)
-                                    }
-                                    
-                                    // 條件一：❌ 無資料 → 顯示 Loading 畫面
-                                    // 條件二：❌ 設備綁定紀錄 <= 5 min → 顯示 Loading 畫面
-                                    // 條件三：❌ 設備未綁定 → 顯示 Loading 畫面
-                                    if isMQTTManagerLoading(tab: selectedTab) || isDeviceRecordToLoading(tab: selectedTab) {
-                                        if !isBindingOrOUpdated(tab: selectedTab) {
-                                            Color.light_green
-                                                .opacity(0.85) // 透明磨砂黑背景
-                                                .edgesIgnoringSafeArea(.all) // 覆蓋整個畫面
-                                            Loading(
-                                                text: "載入\(selectedTab)資料中...",
-                                                color: Color.g_blue
-                                            )
-<<<<<<< HEAD
-                                        }
-                                    }
-
-                                }
-                            } else {
-                                // 設備未連線
-=======
-                                        
-=======
                                             case "溫濕度":
                                                 Temperature(isConnected: $isTempConnected)
                                             case "空調":
-                                                AirConditioner(isConnected: $isACConnected)
+                                                AirConditioner(isConnected: $isACConnected, enterBinding: self.enterBinding)
                                             case "除濕機":
-                                                Dehumidifier(isConnected: $isDFConnected)
+                                                Dehumidifier(isConnected: $isDFConnected, enterBinding: self.enterBinding)
                                             case "遙控器":
                                                 RemoteControl(isConnected: $isREMCConnected)
                                             case "插座":
@@ -404,85 +250,79 @@ struct ContentView: View {
                                                 Spacer()
                                                 Loading(text: "Loading..")
                                                 Spacer()
-=======
->>>>>>> 1a28628 (Added - [AlertHelper] done)
                                         }
->>>>>>> 9e3122f (Added - [loading] add API 'from/app/{User Token}/userdata')
+                                    }
+                                    
+                                    if !self.enterBinding {
+                                        // 條件一：❌ 無資料 → 顯示 Loading 畫面
+                                        // 條件二：❌ 設備綁定紀錄 <= 5 min → 顯示 Loading 畫面
+                                        // 條件三：❌ 設備未綁定 & >= 30min → 顯示 Loading 畫面
+                                        if isMQTTManagerLoading(tab: selectedTab) || isDeviceRecordToLoading(tab: selectedTab) {
+                                            if !isBindingOrOUpdated(tab: selectedTab) {
+                                                Color.light_green
+                                                    .opacity(0.85) // 透明磨砂黑背景
+                                                    .edgesIgnoringSafeArea(.all) // 覆蓋整個畫面
+                                                Loading(
+                                                    text: "載入\(selectedTab)資料中...",
+                                                    color: Color.g_blue
+                                                )
+                                            }
+                                        }
                                     }
 
                                 }
                             } else {
-<<<<<<< HEAD
-                                /// 請開始電源
->>>>>>> fb6af41 (Added - [W20/loading] add login)
-=======
                                 // 設備未連線
->>>>>>> 9e3122f (Added - [loading] add API 'from/app/{User Token}/userdata')
                                 VStack {
                                     Spacer()
                                     Image("unconnect")
                                     Text("設備未連線")
                                         .font(.system(size: 14)) // 调整图标大小
                                         .multilineTextAlignment(.center)
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text("1.請確認設備的網路連線是否正常運作")
+                                        Text("2.點擊右上角的按鈕重新嘗試連接")
+                                    }
+                                    .font(.system(size: 14))
+                                    .foregroundColor(Color.warning)
+                                    .padding() // ✅ 內部 padding：文字不貼邊
+                                    .frame(alignment: .leading) // ✅ 撐滿寬度 + 左對齊
+                                    .background(Color.white)
+                                    .cornerRadius(12)
+                                    .shadow(color: .gray.opacity(0.2), radius: 4, x: 0, y: 2)
+                                    .padding(.horizontal) // ✅ 外部 padding：框不貼螢幕邊
                                     Spacer()
                                 }
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 1a28628 (Added - [AlertHelper] done)
                                 .frame(
                                     maxWidth: .infinity,
                                     maxHeight: .infinity
                                 )
-<<<<<<< HEAD
-=======
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
->>>>>>> fb6af41 (Added - [W20/loading] add login)
-=======
->>>>>>> 1a28628 (Added - [AlertHelper] done)
                             }
                             
                             Spacer()
                             
                             // 底部導航欄
                             NavigationBar(selectedTab: $selectedTab)
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 1a28628 (Added - [AlertHelper] done)
-                                .environmentObject(
-                                    mqttManager
-                                ) // 確保能讀取 availables
+                                .environmentObject(mqttManager) // 確保能讀取 mqttManager
+                                .onChange(of: self.selectedTab, { _,_ in
+                                    self.enterBinding = false // 取消「強制轉綁定頁面」
+
+                                    // 取得綁定資料並重新講綁定結果賦值
+                                    // 只需要 AC & DHF
+                                    isACConnected = mqttManager.availables.contains("air_conditioner")
+                                    isDFConnected = mqttManager.availables.contains("dehumidifier")
+                                })
                         }
                     } else {
                         ZStack() {
                             // ✅ 智能環控 連結
-=======
-                                .environmentObject(MQTTManagerMiddle.shared) // 確保能讀取 availables
-                        }
-                    } else {
-                        ZStack() {
-<<<<<<< HEAD
-                            /// ✅ 智能環控 連結
->>>>>>> fb6af41 (Added - [W20/loading] add login)
-=======
-                            // ✅ 智能環控 連結
->>>>>>> 9e3122f (Added - [loading] add API 'from/app/{User Token}/userdata')
                             AddSmartControlView(
                                 isShowingSmartControl: $isShowingSmartControl,  // 是否要開始 智慧環控連線 頁面，默認：關閉
                                 isConnected: $isSmartControlConnected // 連線狀態
                             )
                             
                             // ❌ 無資料 → 顯示 Loading 畫面
-<<<<<<< HEAD
-<<<<<<< HEAD
                             if (mqttManager.serverLoading) {
-=======
-                            if (MQTTManagerMiddle.shared.serverLoading) {
->>>>>>> fb6af41 (Added - [W20/loading] add login)
-=======
-                            if (mqttManager.serverLoading) {
->>>>>>> 1a28628 (Added - [AlertHelper] done)
                                 Color.light_green.opacity(0.85) // 透明磨砂黑背景
                                     .edgesIgnoringSafeArea(.all) // 覆蓋整個畫面
                                 Loading(text: "環控確認中...",color: Color.g_blue)
@@ -494,60 +334,22 @@ struct ContentView: View {
                 .background(Color.light_green.opacity(1))
                 .animation(.easeInOut, value: appStore.showPopup)
                 .onAppear {
-<<<<<<< HEAD
-<<<<<<< HEAD
                     // mqttManager.connectMQTT() // 當 isConnected 變為 true，啟動 MQTT
                     mqttManager.connect()// 啟動 MQTT
-<<<<<<< HEAD
                     
                 }
                 .onDisappear {
                     mqttManager.disconnect() // 離開畫面 斷開 MQTT 連線
                 }
-                .onChange(
-                    of: mqttManager.isConnected
-                ) { oldConnect, newConnect in
-=======
-                    //                mqttManager.connectMQTT() // 當 isConnected 變為 true，啟動 MQTT
-=======
-                    // mqttManager.connectMQTT() // 當 isConnected 變為 true，啟動 MQTT
->>>>>>> 9e3122f (Added - [loading] add API 'from/app/{User Token}/userdata')
-                    MQTTManagerMiddle.shared.connect()// 啟動 MQTT
-=======
->>>>>>> 1a28628 (Added - [AlertHelper] done)
-                    
-                }
-                .onDisappear {
-                    mqttManager.disconnect() // 離開畫面 斷開 MQTT 連線
-                }
-<<<<<<< HEAD
                 .onChange(of: mqttManager.isConnected) { oldConnect, newConnect in
->>>>>>> fb6af41 (Added - [W20/loading] add login)
-=======
-                .onChange(
-                    of: mqttManager.isConnected
-                ) { oldConnect, newConnect in
->>>>>>> 1a28628 (Added - [AlertHelper] done)
                     print("[入口] isConnected:  \(oldConnect) \(newConnect)")
                     // 連線MQTT
                     if newConnect {
                         //  mqttManager.publishApplianceUserLogin(username: "app", password: "app:ppa")
                         //  MQTTManagerMiddle.shared.login(username: "user", password: "app:ppa")
-<<<<<<< HEAD
-<<<<<<< HEAD
                         //  mqttManager.publishTelemetryCommand(subscribe: true)
                         mqttManager.startTelemetry() // 接收家電資訊指令
                         //  mqttManager.publishCapabilities()
-=======
-                        //                    mqttManager.publishTelemetryCommand(subscribe: true)
-                        mqttManager.startTelemetry() // 接收家電資訊指令
-                        //                    mqttManager.publishCapabilities()
->>>>>>> fb6af41 (Added - [W20/loading] add login)
-=======
-                        //  mqttManager.publishTelemetryCommand(subscribe: true)
-                        mqttManager.startTelemetry() // 接收家電資訊指令
-                        //  mqttManager.publishCapabilities()
->>>>>>> 1a28628 (Added - [AlertHelper] done)
                         mqttManager.requestCapabilities() // 查詢 家電參數讀寫能力 指令
                     }
                 }
@@ -563,13 +365,11 @@ struct ContentView: View {
                     isREMCConnected = availables.contains("remote")
                 }
                 
-<<<<<<< HEAD
-<<<<<<< HEAD
                 // [全局][自訂彈窗] 提供空調 與 遙控器 頁面使用
                 if mqttManager.decisionControl {
                     CustomPopupView(
                         isPresented: $mqttManager.decisionControl,
- // 開關
+                        // 開關
                         title: appStore.title,
                         message: mqttManager.decisionMessage,
                         onConfirm: {
@@ -602,76 +402,6 @@ struct ContentView: View {
         //                Text("AI決策已關閉")
         //            }
         //        )
-=======
-            }
-            .onDisappear {
-                MQTTManagerMiddle.shared.disconnect() // 離開畫面 斷開 MQTT 連線
-            }
-            .onChange(of: mqttManager.isConnected) { oldConnect, newConnect in
-                print("[入口] isConnected:  \(oldConnect) \(newConnect)")
-                // 連線MQTT
-                if newConnect {
-                    //  mqttManager.publishApplianceUserLogin(username: "app", password: "app:ppa")
-                    //  MQTTManagerMiddle.shared.login(username: "user", password: "app:ppa")
-                    //                    mqttManager.publishTelemetryCommand(subscribe: true)
-                    mqttManager.startTelemetry() // 接收家電資訊指令
-                    //                    mqttManager.publishCapabilities()
-                    mqttManager.requestCapabilities() // 查詢 家電參數讀寫能力 指令
-=======
-                // [全局][自訂彈窗] 提供空調 與 遙控器 頁面使用
-                if mqttManager.decisionControl {
-                    CustomPopupView(
-                        isPresented: $mqttManager.decisionControl,
- // 開關
-                        title: appStore.title,
-                        message: mqttManager.decisionMessage,
-                        onConfirm: {
-                            mqttManager
-                                .setDecisionAccepted(
-                                    accepted: true
-                                ) // [MQTT] AI決策
-                            mqttManager.decisionEnabled = true
-                        },
-                        onCancel: {
-                            mqttManager
-                                .setDecisionAccepted(
-                                    accepted: false
-                                ) // [MQTT] AI決策
-                        }
-                    )
->>>>>>> fb6af41 (Added - [W20/loading] add login)
-                }
-            }
-        }
-<<<<<<< HEAD
-        .alert("能源管家提示",
-               isPresented: $mqttManager.showDeviceAlert,
-               actions: {
-            Button("好的", role: .cancel) {
-                print("執行 -> AI決策關閉")
-                mqttManager.decisionEnabled = false
-            }
-        },
-               message: {
-            Text("AI決策已關閉")
-        }
-        )
->>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
-=======
-        //        .alert(
-        //            "能源管家提示",
-        //            isPresented: $mqttManager.showDeviceAlert,
-        //            actions: {
-        //                Button("好的", role: .cancel) {
-        //                    print("執行 -> AI決策關閉")
-        //                    mqttManager.decisionEnabled = false
-        //                }
-        //            },
-        //            message: {
-        //                Text("AI決策已關閉")
-        //            }
-        //        )
->>>>>>> 1a28628 (Added - [AlertHelper] done)
     }
 }
 

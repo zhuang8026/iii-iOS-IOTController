@@ -11,21 +11,14 @@ import SwiftUI
 struct HeaderName: View {
     @EnvironmentObject var appStore: AppStore  // 使用全域狀態
     @ObservedObject var mqttManager = MQTTManagerMiddle.shared
-<<<<<<< HEAD
-<<<<<<< HEAD
     
-=======
-
->>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
-=======
-    
->>>>>>> 8bdcbdb (Upgrade - [v1.0.1] demo)
     @Binding var selectedTab: String // 標題名稱
     @Binding var status: Bool // 是否要顯示返回（false -> back, true -> show title）
+    @Binding var enterBinding: Bool // 關閉 設備未連線
     
     @State private var isAnimating = false // AI決策動畫
     @State private var showPopup = false //
-
+    
     @State private var isLogout = false // 是否登出用戶
     @State private var isMessage = "" // 是否登出用戶
     
@@ -39,11 +32,11 @@ struct HeaderName: View {
             completion(false)
             return
         }
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
         request.setValue("application/json", forHTTPHeaderField: "Accept")
-
+        
         if let token = UserDefaults.standard.string(forKey: "MQTTAccessToken") {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
             print("登出 -> \(token)")
@@ -52,7 +45,7 @@ struct HeaderName: View {
             UserDefaults.standard.synchronize()
             appStore.userToken = nil
         }
-
+        
         URLSession.shared.dataTask(with: request) { data, response, error in
             guard
                 let data = data,
@@ -63,7 +56,7 @@ struct HeaderName: View {
                 completion(false)
                 return
             }
-
+            
             do {
                 if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
                    let code = json["code"] as? Int,
@@ -83,7 +76,7 @@ struct HeaderName: View {
     
     var body: some View {
         HStack {
-            if status {
+            if self.status {
                 // 改成返回按鈕
                 Image("arrow-left")
                     .font(.system(size: 20))
@@ -138,35 +131,28 @@ struct HeaderName: View {
                 // 右側垃圾桶或透明佔位符
                 if (showDeleteIconSetting(tab: selectedTab)) {
                     Button(action: {
-                        showPopup = true
+                        self.showPopup = true
                     }) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-                        Image(systemName: "link.badge.plus") // 垃圾桶
-=======
-                        Image(systemName: "personalhotspot.slash") // 垃圾桶
->>>>>>> 3ae4c29 (Fixed - [page] ai decision function modify)
-=======
-                        Image(systemName: "link.badge.plus") // 垃圾桶
->>>>>>> 1a28628 (Added - [AlertHelper] done)
-                            .font(.system(size: 20)) // 調整圖示大小
+                        Image(systemName: "house.badge.wifi") // 重新連接
+                            .font(.system(size: 22)) // 調整圖示大小
                             .foregroundColor(Color.g_blue) // 確保顏色存在
                             .contentShape(Rectangle()) // 🔧 指定觸控區形狀，避免預設 highlight
                             .background(Color.clear) // 🔧 確保不會有點擊背景效果
                             .overlay {
                                 // [全局][自訂彈窗] 提供空調 與 遙控器 頁面使用
-                                if showPopup {
+                                if self.showPopup {
                                     CustomPopupView(
                                         isPresented: $showPopup, // 開關
                                         title: "重新連線",
                                         message:  "是否需重新連線?",
                                         onConfirm: {
-                                            showPopup = false // 關閉視窗
-                                            status = false // 回到 新增畫面
+                                            self.showPopup = false // 關閉視窗
+//                                            self.status = false // 回到 綁定畫面
+                                            self.enterBinding = true // 關閉 設備未連線
                                         },
                                         onCancel: {
-                                            showPopup = false // 關閉視窗
-                                            status = true // 保持畫面
+                                            self.showPopup = false // 關閉視窗
+//                                            self.status = true // 保持畫面
                                         }
                                     )
                                 }
@@ -183,9 +169,9 @@ struct HeaderName: View {
                 // 返回上一層
                 Image("arrow-left") // 改成返回按鈕
                     .font(.system(size: 20))
-//                    .onTapGesture {
-//                        status = true // ✅ 點擊後切換 status
-//                    }
+                //                    .onTapGesture {
+                //                        status = true // ✅ 點擊後切換 status
+                //                    }
                     .onTapGesture {
                         logout { success in
                             if success {

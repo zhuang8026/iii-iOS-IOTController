@@ -48,7 +48,7 @@ struct Temperature: View {
     }
     
     var body: some View {
-        if (isConnected) {
+        if (self.isConnected) {
             /// ✅ 設備已連線
             VStack(spacing: 9) {
                 // 取得 sensor 數據
