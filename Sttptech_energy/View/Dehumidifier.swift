@@ -9,6 +9,7 @@ import SwiftUI
 
 struct Dehumidifier: View {
     @Binding var isConnected: Bool // 設備藍芽是否已連線
+    let enterBinding: Bool
     //    @EnvironmentObject var appStore: AppStore  // 使用全域狀態
     //    @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
     
@@ -28,14 +29,7 @@ struct Dehumidifier: View {
     @State private var fanSpeed: String = "auto" // 風速設定變數-> API cfg_fan_level
     
     // 首次進入畫面不觸法 onchange
-<<<<<<< HEAD
-<<<<<<< HEAD
     @State private var toggle = false // 開關
-=======
->>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
-=======
-    @State private var toggle = false // 開關
->>>>>>> 1a28628 (Added - [AlertHelper] done)
     @State private var humdifPicker = false // 除濕百分比
     @State private var timePicker = false // 定時
     @State private var modePicker = false // 模式
@@ -85,19 +79,9 @@ struct Dehumidifier: View {
         if let modeStrings = DF_Capabilities["cfg_mode"] {
             let modeValues = modeStrings
                 .filter { $0 != "read" }               // ❌ 排除 "read"
-<<<<<<< HEAD
-<<<<<<< HEAD
             if(!modeValues.isEmpty) {
                 self.modeOptions = modeValues
             }
-=======
-            self.modeOptions = modeValues
->>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
-=======
-            if(!modeValues.isEmpty) {
-                self.modeOptions = modeValues
-            }
->>>>>>> 8bdcbdb (Upgrade - [v1.0.1] demo)
         }
         
         // 解析 `cfg_fan_level` -> Array ("read", "auto", "low", "medium", "high", "strong", "max")
@@ -175,17 +159,13 @@ struct Dehumidifier: View {
     }
     
     var body: some View {
-        if (isConnected) {
+        if (isConnected && !self.enterBinding) {
             ZStack {
                 VStack(alignment: .leading, spacing: 20) {
                     // 電源開關
                     PowerToggle(isPowerOn: $isPowerOn)
                     // 🔥 監聽 isPowerOn 的變化
                         .onChange(of: isPowerOn) { oldVal, newVal in
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> 1a28628 (Added - [AlertHelper] done)
                             if toggle {
                                 print("除濕機開關: \(newVal)")
                                 let paylodModel: [String: Any] = ["cfg_power": newVal ? "on" : "off"]
@@ -194,14 +174,6 @@ struct Dehumidifier: View {
                                 self.toggle = true
                             }
                             
-<<<<<<< HEAD
-=======
-                            print("除濕機開關: \(newVal)")
-                            let paylodModel: [String: Any] = ["cfg_power": newVal ? "on" : "off"]
-                            postDehumidifierSetting(mode: paylodModel)
->>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
-=======
->>>>>>> 1a28628 (Added - [AlertHelper] done)
                         }
                     if isPowerOn {
                         /// 設定
@@ -376,7 +348,7 @@ struct Dehumidifier: View {
                             Spacer()
                             Image("open-power")
                             Text("請先啟動設備")
-                                .font(.body)
+                                .font(.system(size: 14)) // 调整图标大小
                                 .multilineTextAlignment(.center)
                             Spacer()
                         }
@@ -394,7 +366,7 @@ struct Dehumidifier: View {
                 
             }
         } else {
-            /// ✅ 設備已斷線
+            // ✅ 設備已斷線
             AddDeviceView(
                 isShowingNewDeviceView: $isShowingNewDeviceView,
                 selectedTab: $selectedTab,

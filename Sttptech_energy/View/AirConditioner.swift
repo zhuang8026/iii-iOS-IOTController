@@ -9,7 +9,8 @@ import SwiftUI
 
 struct AirConditioner: View {
     @Binding var isConnected: Bool // 設備藍芽是否已連線
-    
+    let enterBinding: Bool
+
     // 控制提示
     @EnvironmentObject var appStore: AppStore  // 全局倉庫
     //    @EnvironmentObject var mqttManager: MQTTManager // 取得 MQTTManager
@@ -110,24 +111,14 @@ struct AirConditioner: View {
     //MARK: - HStack 控制水平排列，VStack 控制垂直排列
     var body: some View {
         ZStack {
-            if (isConnected) {
+            if (isConnected && !self.enterBinding) {
                 VStack(alignment: .leading, spacing: 20) {
                     PowerToggle(isPowerOn: $isPowerOn) { newVal in
                         print("AC power: \(newVal)")
                         let paylodModel: [String: Any] = ["cfg_power": newVal ? "on" : "off"]
-<<<<<<< HEAD
-<<<<<<< HEAD
                         postAirConditionerRemote(mode: paylodModel) // 送出資料
                         MQTTManagerMiddle.shared.startTelemetry() // 接收家電資訊指令
                         MQTTManagerMiddle.shared.requestCapabilities() // 查詢 家電參數讀寫能力 指令
-=======
-                        postAirConditionerRemote(mode: paylodModel)
->>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
-=======
-                        postAirConditionerRemote(mode: paylodModel) // 送出資料
-                        MQTTManagerMiddle.shared.startTelemetry() // 接收家電資訊指令
-                        MQTTManagerMiddle.shared.requestCapabilities() // 查詢 家電參數讀寫能力 指令
->>>>>>> 3ae4c29 (Fixed - [page] ai decision function modify)
                     }
                     // 🔥 監聽 isPowerOn 的變化
                     // .onChange(of: isPowerOn) { oldVal, newVal in
@@ -204,15 +195,7 @@ struct AirConditioner: View {
                                 maxTemperature: $maxTemp  // max temp
                             ) /// 溫度控制視圖
                             // 🔥 監聽 temperature 的變化
-<<<<<<< HEAD
-<<<<<<< HEAD
                             .onChange(of: temperature) { _, newVal in
-=======
-                            .onChange(of: temperature) { newVal in
->>>>>>> f2fbd51 (Fixed - [UI] login UI tracking firtt)
-=======
-                            .onChange(of: temperature) { _, newVal in
->>>>>>> 1a28628 (Added - [AlertHelper] done)
                                 print("送出溫度:", newVal)
                                 let paylodModel: [String: Any] = ["cfg_temperature": String(newVal)]
                                 postAirConditionerRemote(mode: paylodModel)
@@ -225,7 +208,7 @@ struct AirConditioner: View {
                             Spacer()
                             Image("open-power")
                             Text("請先啟動設備")
-                                .font(.body)
+                                .font(.system(size: 14)) // 调整图标大小
                                 .multilineTextAlignment(.center)
                             Spacer()
                         }
@@ -246,7 +229,7 @@ struct AirConditioner: View {
                     updateAirConditionerData()
                 }
             } else {
-                /// ✅ 設備已斷線
+                // ✅ 設備已斷線
                 AddDeviceView(
                     isShowingNewDeviceView: $isShowingNewDeviceView,
                     selectedTab: $selectedTab,
