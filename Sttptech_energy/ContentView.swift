@@ -16,7 +16,7 @@ struct ContentView: View {
     
     @State private var selectedTab = "" // 選擇設備控制
     @State private var status = false // 控制顯示標題名稱（內含 返回 icon）
-    @State private var enterBinding = false // // 關閉 設備未連線 or 主畫面
+    @State private var enterBinding = false // 關閉 設備未連線 or 主畫面
     @State private var isShowingSmartControl = false // [pop-up] 是否要開始 智慧環控連線 頁面，默認：關閉
     @State private var isSmartControlConnected = false // [status] 連線狀態，默認：API GET 告知
     
@@ -103,7 +103,7 @@ struct ContentView: View {
         let now = Date()
         let timeInterval = now.timeIntervalSince(updatedDate)
         
-        // 若差距在 300 分鐘內，代表在線，否則離線
+        // 若差距在 30 分鐘內，代表在線，否則離線
         print("\(tab) -> \(timeInterval <= 1800 ? "資料已更新":"資料未更新")")
         return timeInterval <= 1800 // 300分鐘 = 1800秒
     }
@@ -198,6 +198,7 @@ struct ContentView: View {
             
             let now = Date()
             let timeInterval = now.timeIntervalSince(updatedDate)
+            
             print("\(tab) 記錄時間是否在5min之內 -> \(timeInterval <= 300)")
             
             return timeInterval <= 300
@@ -207,7 +208,7 @@ struct ContentView: View {
             return false
         }
     }
-    
+
     var body: some View {
         ZStack() {
             if(appStore.userToken == nil) {
@@ -236,40 +237,53 @@ struct ContentView: View {
                                     VStack() {
                                         // 根據 selectedTab 顯示對應元件
                                         switch self.selectedTab {
-                                            case "溫濕度":
-                                                Temperature(isConnected: $isTempConnected)
-                                            case "空調":
-                                                AirConditioner(isConnected: $isACConnected, enterBinding: self.enterBinding)
-                                            case "除濕機":
-                                                Dehumidifier(isConnected: $isDFConnected, enterBinding: self.enterBinding)
-                                            case "遙控器":
-                                                RemoteControl(isConnected: $isREMCConnected)
-                                            case "插座":
-                                                ElectricSocket()
-                                            default:
-                                                Spacer()
-                                                Loading(text: "Loading..")
-                                                Spacer()
+                                        case "溫濕度":
+                                            Temperature(isConnected: $isTempConnected)
+                                        case "空調":
+                                            AirConditioner(isConnected: $isACConnected, enterBinding: self.enterBinding)
+                                        case "除濕機":
+                                            Dehumidifier(isConnected: $isDFConnected, enterBinding: self.enterBinding)
+                                        case "遙控器":
+                                            RemoteControl(isConnected: $isREMCConnected)
+                                        case "插座":
+                                            ElectricSocket()
+                                        default:
+                                            Spacer()
+                                            Loading(text: "Loading..")
+                                            Spacer()
                                         }
                                     }
                                     
+                                    // enterBinding -> 強制進入綁定按鈕使用
+                                    // true  -> 進入綁定 不顯示 loading
+                                    // false -> 不進入綁定 顯示 loading
                                     if !self.enterBinding {
                                         // 條件一：❌ 無資料 → 顯示 Loading 畫面
+                                        if isMQTTManagerLoading(tab: selectedTab) {
+                                            Color.light_green
+                                                .opacity(0.85) // 透明磨砂黑背景
+                                                .edgesIgnoringSafeArea(.all) // 覆蓋整個畫面
+                                            Loading(
+                                                text: "載入\(selectedTab)資料中...",
+                                                color: Color.g_blue
+                                            )
+                                        }
+                                        
                                         // 條件二：❌ 設備綁定紀錄 <= 5 min → 顯示 Loading 畫面
                                         // 條件三：❌ 設備未綁定 & >= 30min → 顯示 Loading 畫面
-                                        if isMQTTManagerLoading(tab: selectedTab) || isDeviceRecordToLoading(tab: selectedTab) {
-                                            if !isBindingOrOUpdated(tab: selectedTab) {
+                                        if isDeviceRecordToLoading(tab: selectedTab) { // <= 5min
+                                            if !isBindingOrOUpdated(tab: selectedTab) { // <= 30min
                                                 Color.light_green
                                                     .opacity(0.85) // 透明磨砂黑背景
                                                     .edgesIgnoringSafeArea(.all) // 覆蓋整個畫面
                                                 Loading(
-                                                    text: "載入\(selectedTab)資料中...",
+                                                    text: "檢查\(selectedTab)資料中...",
                                                     color: Color.g_blue
                                                 )
                                             }
                                         }
                                     }
-
+                                    
                                 }
                             } else {
                                 // 設備未連線
@@ -306,11 +320,6 @@ struct ContentView: View {
                                 .environmentObject(mqttManager) // 確保能讀取 mqttManager
                                 .onChange(of: self.selectedTab, { _,_ in
                                     self.enterBinding = false // 取消「強制轉綁定頁面」
-
-                                    // 取得綁定資料並重新講綁定結果賦值
-                                    // 只需要 AC & DHF
-                                    isACConnected = mqttManager.availables.contains("air_conditioner")
-                                    isDFConnected = mqttManager.availables.contains("dehumidifier")
                                 })
                         }
                     } else {

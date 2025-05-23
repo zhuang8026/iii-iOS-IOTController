@@ -356,7 +356,6 @@ struct Dehumidifier: View {
                     }
                 }
                 .onAppear {
-                    MQTTManagerMiddle.shared.setRecord(appBind: "dehumidifier") // 紀錄設備綁定時間
                     checkDehumidifierCapabilities() // 檢查設備可讀取資料
                     updateDehumidifierData() // 畫面載入時初始化數據
                 }

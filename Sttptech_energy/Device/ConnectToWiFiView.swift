@@ -203,6 +203,7 @@ struct ConnectToWiFiView: View {
                 DevicePushOnlineView(
                     selectedTab: $selectedTab,
                     isConnected: $isConnected,
+                    isPresented: $isPresented,
                     onCancel: {
                         self.startConnectDevice = false
                     }
