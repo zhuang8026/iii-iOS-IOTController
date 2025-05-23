@@ -31,7 +31,7 @@ final class MQTTManagerMiddle: NSObject, ObservableObject {
     // MARK: - 家電總資料
     @Published var appliances: [String: [String: ApplianceData]] = [:] // 安裝的家電參數狀態
     
-    
+
     private let appID = "1d51e92d-e623-41dd-b367-d955a0d44d66"
     
     // MARK: - MQTT
@@ -154,6 +154,7 @@ final class MQTTManagerMiddle: NSObject, ObservableObject {
     func setRecord(appBind: String) {
         print("🚀🚀🚀 送出\(appBind)紀錄時間 >>>>>>>>>>>>>>")
         deviceService.publishSetRecord(appBind: appBind)
+        
     }
     
     // [對外]

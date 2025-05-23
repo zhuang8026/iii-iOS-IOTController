@@ -9,8 +9,8 @@ import SwiftUI
 struct UserLogin: View {
     @EnvironmentObject var appStore: AppStore
 
-    @State private var username: String = "sea.han@msa.hinet.net"
-    @State private var password: String = "Enargy17885@"
+    @State private var username: String = "sea.han@msa.hinet.net" // sea.han@msa.hinet.net
+    @State private var password: String = "Enargy17885@" // Enargy17885@
     @State private var isPasswordVisible: Bool = false
     //    @State private var loginToken: String?
     @State private var errorMessage: String?

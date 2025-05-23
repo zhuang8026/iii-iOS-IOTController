@@ -15,6 +15,7 @@ struct DevicePushOnlineView: View {
 
     @Binding var selectedTab: String // 標題名稱
     @Binding var isConnected: Bool // 設備藍芽是否已連線
+    @Binding var isPresented: Bool // 連接dongle頁面控制
 
     @State private var wifiList: [ApInfo] = []
     
@@ -151,7 +152,20 @@ struct DevicePushOnlineView: View {
                                 security: $wifiSecurity,
                                 isConnected: $isConnected
                             ) {
-                                showPasswordSheet = false // 點擊送出後關閉
+                                // 點擊送出後關閉
+                                showPasswordSheet = false // 關閉畫面
+                                isPresented = false // 關閉畫面
+                                let bindMapping: [String: String] = [
+                                    "冷氣": "air_conditioner",
+                                    "除濕機": "dehumidifier"
+                                ]
+
+                                if let bindType = bindMapping[selectedTab] {
+                                    MQTTManagerMiddle.shared.setRecord(appBind: bindType)
+                                }
+
+                                MQTTManagerMiddle.shared.startTelemetry() // 接收家電資訊指令
+                                MQTTManagerMiddle.shared.requestCapabilities() // 查詢 家電參數讀寫能力 指令
                             }
                         }
                         

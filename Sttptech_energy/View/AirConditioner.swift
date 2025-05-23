@@ -216,7 +216,6 @@ struct AirConditioner: View {
                     }
                 }
                 .onAppear {
-                    MQTTManagerMiddle.shared.setRecord(appBind: "air_conditioner") // 紀錄設備綁定時間
                     checkAirConditionerCapabilities() // 檢查 設備可讀取資料
                     updateAirConditionerData()        // 載入 畫面時初始化數據
                 }
