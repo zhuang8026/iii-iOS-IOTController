@@ -175,6 +175,13 @@ final class MQTTManagerMiddle: NSObject, ObservableObject {
         
     }
     
+    // [對外] 紀錄設備紀錄時間
+    func setDeviceToken(deviceToken: String) {
+        print("🚀🚀🚀 送出deviceToken\(deviceToken)")
+        deviceService.publishDeviceToken(deviceToken: deviceToken)
+        
+    }
+
     // [對外]
     func startTelemetry() {
         self.serverLoading = true // 環控頁面loading
