@@ -300,7 +300,9 @@ struct ContentView: View {
                                         .multilineTextAlignment(.center)
                                     VStack(alignment: .leading, spacing: 8) {
                                         Text("1.請確認設備的網路連線是否正常運作")
-                                        Text("2.點擊右上角的按鈕重新嘗試連接")
+                                        if self.selectedTab == "空調" || self.selectedTab == "除濕機" {
+                                            Text("2.點擊右上角的按鈕重新嘗試連接")
+                                        }
                                     }
                                     .font(.system(size: 14))
                                     .foregroundColor(Color.warning)
