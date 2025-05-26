@@ -1,0 +1,35 @@
+{
+    "aps": {
+        "alert": {
+        "title": "執行AI決策",
+        "body": "這是後端推播測試訊息"
+        },
+        "badge": 1,
+        "sound": "default"
+    },
+    "notify": {
+        "ac_outlet": {
+            "cfg_power": "on",
+            "op_power_watt": "28.2",
+            "updated": "2025-05-22T02:13:34Z"
+        },
+        "air_conditioner": {
+            "cfg_fan_level": "auto",
+            "cfg_mode": "cool",
+            "cfg_power": "off",
+            "cfg_temperature": "22",
+            "op_temperature": "0",
+            "updated": "2025-05-23T07:52:39Z"
+        },
+        "dehumidifier": {
+            "cfg_fan_level": "high",
+            "cfg_humidity": "54",
+            "cfg_mode": "manual",
+            "cfg_power": "on",
+            "cfg_timer": "off",
+            "op_humidity": "60",
+            "op_water_full_alarm": "normal",
+            "updated": "2025-05-20T10:38:58Z"
+        }
+    }
+}

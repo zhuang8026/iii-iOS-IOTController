@@ -47,7 +47,7 @@ final class MQTTManagerMiddle: NSObject, ObservableObject {
     private var deviceService: MQTTDeviceService!
     
     // MARK: - 五大設備
-    private var decisionService: MQTTDecisionService!
+    private var decisionService: MQTTAIDecisionService!
     
     // MARK: - 用戶 token
     private var userToken: String {
@@ -88,7 +88,7 @@ final class MQTTManagerMiddle: NSObject, ObservableObject {
         )
         
         // 啟動 確認用戶接受AI服務 服務
-        decisionService = MQTTDecisionService(
+        decisionService = MQTTAIDecisionService(
             mqtt: connectionService.instance,
             userTokenProvider: {
                 return self.userToken ?? ""
@@ -488,7 +488,20 @@ func returnAIDecisionText(from data: [String: Any]) -> String {
     }
     
     // MARK: - 書安通知寫死這句話 20250521
-    aiReply = "依照您現在的室溫、濕度狀態，我們建議把\(airconAI != "" ? "冷氣\(airconAI)" : "")\(dehumidifierAI != "" ? "，除濕機\(dehumidifierAI)" : "")\(socketAI != "" ? "，再將電扇\(socketAI)" : "")，這樣就能因應環境變化，保持涼爽舒適，又輕鬆省電，快試試看吧！"
+    var suggestionParts: [String] = []
+
+    if airconAI != "" {
+        suggestionParts.append("冷氣\(airconAI)")
+    }
+    if dehumidifierAI != "" {
+        suggestionParts.append("除濕機\(dehumidifierAI)")
+    }
+    if socketAI != "" {
+        suggestionParts.append("再將電扇\(socketAI)")
+    }
+
+    let finalAdvice = suggestionParts.joined(separator: "，")
+    aiReply = "依照您現在的室溫、濕度狀態，我們建議把\(finalAdvice)，這樣就能因應環境變化，保持涼爽舒適，又輕鬆省電，快試試看吧！"
     
     return aiReply.trimmingCharacters(in: .whitespacesAndNewlines)
     
