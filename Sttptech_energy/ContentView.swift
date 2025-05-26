@@ -31,6 +31,11 @@ struct ContentView: View {
     //    @AppStorage("isESTConnected")
     @State private var isESTConnected = true    // ✅ 插座 記住連線狀態
     
+    let tabToDeviceKey: [String: String] = [
+        "空調": "air_conditioner",
+        "除濕機": "dehumidifier"
+    ]
+    
     // 根據 selectedTab 動態決定 `status`
     private func bindingForSelectedTab() -> Binding<Bool> {
         switch selectedTab {
@@ -58,7 +63,6 @@ struct ContentView: View {
             "除濕機": "dehumidifier",
             "遙控器": "remote"
         ]
-        
         // 取得對應 MQTT 裝置資料（deviceData 為 [String: ApplianceData]）
         guard let deviceKey = tabToDeviceKey[tab]
         else {
@@ -104,8 +108,13 @@ struct ContentView: View {
         let timeInterval = now.timeIntervalSince(updatedDate)
         
         // 若差距在 30 分鐘內，代表在線，否則離線
-        print("\(tab) -> \(timeInterval <= 1800 ? "資料已更新":"資料未更新")")
-        return timeInterval <= 1800 // 300分鐘 = 1800秒
+        // 判斷是否在 5 分鐘內
+        if timeInterval <= 1800 {
+            print("✅ \(tab) 數據在 30 分鐘內更新")
+        } else {
+            print("⚠️ \(tab) 數據超過 30 分鐘未更新")
+        }
+        return timeInterval <= 1800 // 30分鐘 = 1800秒
     }
     
     // 判斷設備是否 綁定 或 設備上線
@@ -132,11 +141,9 @@ struct ContentView: View {
         case "溫濕度":
             return mqttManager.appliances["sensor"]?["updated"]?.value == nil
         case "空調":
-            return mqttManager
-                .appliances["air_conditioner"]?["updated"]?.value == nil
+            return mqttManager.appliances["air_conditioner"]?["updated"]?.value == nil
         case "除濕機":
-            return mqttManager
-                .appliances["dehumidifier"]?["updated"]?.value == nil
+            return mqttManager.appliances["dehumidifier"]?["updated"]?.value == nil
         case "遙控器":
             return mqttManager.appliances["remote"]?["updated"]?.value == nil
         case "插座":
@@ -208,7 +215,7 @@ struct ContentView: View {
             return false
         }
     }
-
+    
     var body: some View {
         ZStack() {
             if(appStore.userToken == nil) {
@@ -257,31 +264,29 @@ struct ContentView: View {
                                     // enterBinding -> 強制進入綁定按鈕使用
                                     // true  -> 進入綁定 不顯示 loading
                                     // false -> 不進入綁定 顯示 loading
-                                    if !self.enterBinding {
-                                        // 條件一：❌ 無資料 → 顯示 Loading 畫面
-                                        if isMQTTManagerLoading(tab: selectedTab) {
-                                            Color.light_green
-                                                .opacity(0.85) // 透明磨砂黑背景
-                                                .edgesIgnoringSafeArea(.all) // 覆蓋整個畫面
-                                            Loading(
-                                                text: "載入\(selectedTab)資料中...",
-                                                color: Color.g_blue
-                                            )
-                                        }
-                                        
-                                        // 條件二：❌ 設備綁定紀錄 <= 5 min → 顯示 Loading 畫面
-                                        // 條件三：❌ 設備未綁定 & >= 30min → 顯示 Loading 畫面
-                                        if isDeviceRecordToLoading(tab: selectedTab) { // <= 5min
-                                            if !isBindingOrOUpdated(tab: selectedTab) { // <= 30min
-                                                Color.light_green
-                                                    .opacity(0.85) // 透明磨砂黑背景
-                                                    .edgesIgnoringSafeArea(.all) // 覆蓋整個畫面
-                                                Loading(
-                                                    text: "檢查\(selectedTab)資料中...",
-                                                    color: Color.g_blue
-                                                )
-                                            }
-                                        }
+                                    //                                    if !self.enterBinding {
+                                    // 條件一：❌ 無資料 → 顯示 Loading 畫面
+                                    if isMQTTManagerLoading(tab: selectedTab) {
+                                        Color.light_green
+                                            .opacity(0.85) // 透明磨砂黑背景
+                                            .edgesIgnoringSafeArea(.all) // 覆蓋整個畫面
+                                        Loading(
+                                            text: "載入\(selectedTab)資料中...",
+                                            color: Color.g_blue
+                                        )
+                                    }
+                                    
+                                    // 先判斷 資料<=30min,再判斷記錄時間<=5min
+                                    if isDeviceRecordToLoading(tab: selectedTab) {
+                                        // 資料更新時間 <= 30min
+                                        // 處理 loading 狀態中
+                                        Color.light_green
+                                            .opacity(0.85) // 透明磨砂黑背景
+                                            .edgesIgnoringSafeArea(.all) // 覆蓋整個畫面
+                                        Loading(
+                                            text: "檢查\(selectedTab)資料中...",
+                                            color: Color.g_blue
+                                        )
                                     }
                                     
                                 }

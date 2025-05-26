@@ -31,7 +31,7 @@ final class MQTTManagerMiddle: NSObject, ObservableObject {
     // MARK: - 家電總資料
     @Published var appliances: [String: [String: ApplianceData]] = [:] // 安裝的家電參數狀態
     
-
+    
     private let appID = "1d51e92d-e623-41dd-b367-d955a0d44d66"
     
     // MARK: - MQTT
@@ -299,7 +299,7 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
                             } else {
                                 // ✅ 無錯誤，正常更新
                                 self.serverLoading = json.isEmpty
-//                                print("MQTT 是否已取得資料: \(self.serverLoading)")
+                                //                                print("MQTT 是否已取得資料: \(self.serverLoading)")
                             }
                             
                             // 已綁定家電 確認
@@ -323,7 +323,7 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
                                     }
                                 }
                                 self.appBinds = result
-                                print("設備綁定紀錄:\(self.appBinds)")
+                                print("設備綁定紀錄: \(self.appBinds)")
                             }
                             
                             // AI決策啟動 確認
@@ -347,14 +347,15 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
                                 
                                 self.appliances = parsed
                                 
-                                //                        print("✅ 成功接收到家電資料: \(self.appliances)")
-                                //                        if let mqtt_data = parsed["dehumidifier"] {
-                                //                            print("✅ 「sensor」溫濕度數據: \(mqtt_data)")
-                                //                            print("✅ 「air_conditioner」冷氣數據: \(mqtt_data)")
-                                //                            print("✅ 「dehumidifier」除濕機數據: \(mqtt_data)")
-                                //                            print("✅ 「sensor」遙控器數據: \(mqtt_data)")
+                                //                                print("✅ 成功接收到家電資料: \(self.appliances)")
+                                //                                if let mqtt_data = self.appliances["air_conditioner"] {
+                                //                                    print("✅ 「sensor」溫濕度數據: \(mqtt_data)")
+                                //                                    print("✅ 「air_conditioner」冷氣數據: \(mqtt_data)")
+                                //                                    print("✅ 「dehumidifier」除濕機數據: \(mqtt_data)")
+                                //                                    print("✅ 「sensor」遙控器數據: \(mqtt_data)")
+                                //
+                                //                                }
                                 
-                                //                        }
                             }
                         }
                     } catch {

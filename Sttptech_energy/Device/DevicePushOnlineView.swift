@@ -156,12 +156,13 @@ struct DevicePushOnlineView: View {
                                 showPasswordSheet = false // 關閉畫面
                                 isPresented = false // 關閉畫面
                                 let bindMapping: [String: String] = [
-                                    "冷氣": "air_conditioner",
+                                    "空調": "air_conditioner",
                                     "除濕機": "dehumidifier"
                                 ]
-
+                                print("\(selectedTab) -> 綁定資料送出")
                                 if let bindType = bindMapping[selectedTab] {
                                     MQTTManagerMiddle.shared.setRecord(appBind: bindType)
+                                    print("\(bindType) -> 綁定資料送出")
                                 }
 
                                 MQTTManagerMiddle.shared.startTelemetry() // 接收家電資訊指令
