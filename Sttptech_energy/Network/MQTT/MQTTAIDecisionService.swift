@@ -3,7 +3,7 @@ import Foundation
 import CocoaMQTT
 
 // MARK: - AI決策 啟動 與 訊息收集
-final class MQTTDecisionService {
+final class MQTTAIDecisionService {
     private let mqtt: CocoaMQTT
     private let userToken: () -> String
     

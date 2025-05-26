@@ -47,11 +47,30 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         print("❌ 無法註冊 APNs: \(error.localizedDescription)")
     }
 
-    // 前景收到通知時處理方式
+    // MARK: - 推播收到時（前景）
     func userNotificationCenter(_ center: UNUserNotificationCenter,
                                 willPresent notification: UNNotification,
-                                withCompletionHandler completionHandler:
-                                @escaping (UNNotificationPresentationOptions) -> Void) {
+                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        let userInfo = notification.request.content.userInfo
+            print("✅ 前景收到推播資料: \(userInfo)")
+        // 嘗試解析 notify 並顯示文字
+//        if let notify = userInfo["notify"] as? [String: Any] {
+//            let message = returnAIDecisionText(from: notify)
+//            showAIDecisionAlert(message: message)
+//        }
+
         completionHandler([.banner, .sound, .badge])
     }
+    
+    // MARK: - 顯示 AI 建議的彈窗
+//    func showAIDecisionAlert(message: String) {
+//        DispatchQueue.main.async {
+//            if let rootVC = UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.rootViewController {
+//                let alert = UIAlertController(title: "AI 決策建議", message: message, preferredStyle: .alert)
+//                alert.addAction(UIAlertAction(title: "了解", style: .default, handler: nil))
+//                rootVC.present(alert, animated: true, completion: nil)
+//            }
+//        }
+//    }
+    
 }
