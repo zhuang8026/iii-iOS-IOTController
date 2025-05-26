@@ -40,6 +40,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         let token = tokenParts.joined()
         print("📱 Device Token: \(token)")
         // 你可以把 token 傳到後端儲存
+        MQTTManagerMiddle.shared.setDeviceToken(deviceToken: token)
     }
 
     // 推播註冊失敗

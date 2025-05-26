@@ -53,6 +53,15 @@ final class MQTTDeviceService {
         publish(payload, to: "from/app/\(userToken())/userdata")
     }
 
+    // 發送 (publish) App上拋 “(mobile client) device token”
+    func publishDeviceToken(deviceToken: String) {
+        let payload: [String: Any] = [
+            "ios": deviceToken
+        ]
+        publish(payload, to: "from/app/\(userToken())/client/tokens")
+    }
+    
+    
     // 發送 (publish)
     private func publish(_ payload: [String: Any], to topic: String) {
         guard mqtt.connState == .connected else {
