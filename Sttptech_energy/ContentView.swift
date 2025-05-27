@@ -63,7 +63,7 @@ struct ContentView: View {
             "除濕機": "dehumidifier",
             "遙控器": "remote"
         ]
-        // 取得對應 MQTT 裝置資料（deviceData 為 [String: ApplianceData]）
+        // 取得對應 MQTT 裝置資料（deviceData 為 [String: electricData]）
         guard let deviceKey = tabToDeviceKey[tab]
         else {
             // 若找不到 key 或資料，視為離線
@@ -85,7 +85,7 @@ struct ContentView: View {
             //            "遙控器": "remote"
         ]
         
-        // 取得對應 MQTT 裝置資料（deviceData 為 [String: ApplianceData]）
+        // 取得對應 MQTT 裝置資料（deviceData 為 [String: electricData]）
         guard let deviceKey = tabToDeviceKey[tab],
               let deviceData = mqttManager.appliances[deviceKey],
               let updatedTime = deviceData["updated"]

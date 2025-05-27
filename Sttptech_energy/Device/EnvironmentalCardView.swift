@@ -57,6 +57,8 @@ struct EnvironmentalCardView: View {
             
             HStack(alignment: .center, spacing: 8) {
                 Image("co2") // CO₂ 圖示 (可換成自定義圖片)
+                .resizable()
+                .scaledToFit()
 
                 VStack(alignment: .leading, spacing: 0) {
                     Text("二氧化碳")
@@ -78,8 +80,8 @@ struct EnvironmentalCardView: View {
             // 第二個卡片 (溫度)
             HStack(alignment: .center, spacing: 8) {
                 Image("normal-temperature") // CO₂ 圖示 (可換成自定義圖片)
-//                        .resizable()
-//                        .scaledToFit()
+                .resizable()
+                .scaledToFit()
                 
                 VStack(alignment: .leading, spacing: 0) {
                     Text("溫度")

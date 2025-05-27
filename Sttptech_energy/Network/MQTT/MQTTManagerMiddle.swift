@@ -29,7 +29,7 @@ final class MQTTManagerMiddle: NSObject, ObservableObject {
     // MARK: - MQTT 是否已取得資料（loading畫面）
     @Published var serverLoading: Bool = true
     // MARK: - 家電總資料
-    @Published var appliances: [String: [String: ApplianceData]] = [:] // 安裝的家電參數狀態
+    @Published var appliances: [String: [String: electricData]] = [:] // 安裝的家電參數狀態
     
     
     private let appID = "1d51e92d-e623-41dd-b367-d955a0d44d66"
@@ -159,7 +159,7 @@ final class MQTTManagerMiddle: NSObject, ObservableObject {
     
     // [對外] 紀錄設備紀錄時間
     func setDeviceToken(deviceToken: String) {
-        print("🚀🚀🚀 送出deviceToken\(deviceToken)")
+        print("🚀🚀🚀 送出deviceToken -> \(deviceToken)")
         deviceService.publishDeviceToken(deviceToken: deviceToken)
         
     }
@@ -225,6 +225,24 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
         if topic == "to/app/\(userToken)/appliance/edge" {
             // 可加 smart 綁定狀態解析
             print("📬 收到智慧環控 edge 回應: \(payload)")
+            DispatchQueue.main.async {
+                if let data = payload.data(using: .utf8) {
+                    do {
+                        if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                            // ✅ 檢查是否出現 error
+                            if let errorMessage = json["error"] as? String {
+                                print("❗發生錯誤：\(errorMessage)")
+                                AlertHelper.showAlert(title: "錯誤通知", message: "\(errorMessage)")
+                                self.isSmartBind = false
+                            }
+                        }
+                    } catch {
+                        print("❗JSON 解析錯誤: \(error.localizedDescription)")
+                    }
+                } else {
+                    print("❗payload 無法轉成 UTF-8 Data: \(payload)")
+                }
+            }
         }
         
         // MARK: - AI決策建議 回應
@@ -322,14 +340,14 @@ extension MQTTManagerMiddle: CocoaMQTTDelegate {
                             
                             // 所有設備資料 取得
                             if let appliancesData = json["appliances"] as? [String: [String: Any]] {
-                                var parsed: [String: [String: ApplianceData]] = [:]
+                                var parsed: [String: [String: electricData]] = [:]
                                 
                                 for (device, parameters) in appliancesData {
-                                    var deviceData: [String: ApplianceData] = [:]
+                                    var deviceData: [String: electricData] = [:]
                                     for (param, value) in parameters {
                                         let valueStr = String(describing: value)
                                         let updated = parameters["updated"].flatMap { String(describing: $0) } ?? ""
-                                        deviceData[param] = ApplianceData(value: valueStr, updated: updated)
+                                        deviceData[param] = electricData(value: valueStr, updated: updated)
                                     }
                                     parsed[device] = deviceData
                                 }

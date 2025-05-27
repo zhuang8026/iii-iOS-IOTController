@@ -13,7 +13,7 @@ struct MacCodeInfo: Codable {
 }
 
 struct ConnectToMacCodeView: View {
-    //    @EnvironmentObject var mqttManager: MQTTManager // 從環境取得 MQTTManager
+    @ObservedObject var mqttManager = MQTTManagerMiddle.shared // 從環境取得 MQTTManager
     @EnvironmentObject var appStore: AppStore  // 使用全域狀態
     
     @Binding var isPresented: Bool  // 綁定來控制顯示/隱藏
@@ -115,6 +115,13 @@ struct ConnectToMacCodeView: View {
         .onTapGesture {
             //            isFieldFocused = false  // 點擊畫面時取消鍵盤焦點
         }
+        .onReceive(mqttManager.$isSmartBind) { newVal in
+            print("智慧環控綁定狀態變化：\(newVal)")
+            if !newVal {
+                macLoading = false
+                isConnected = false
+            }
+        }
         .fullScreenCover(isPresented: $showScanner) {
             QRCodeScannerView(
                 onScan: { scanned in
@@ -142,11 +149,10 @@ struct ConnectToMacCodeView: View {
         //        mqttManager.publishBindSmart(deviceMac: deviceMac) // 發布「智慧環控連接」發送指令
         
         // 「智慧環控連接
-        MQTTManagerMiddle.shared.bindSmartDevice(mac: deviceMac)
-        
-        
-        if (MQTTManagerMiddle.shared.isSmartBind) {
-            print("環控狀態：\(MQTTManagerMiddle.shared.isSmartBind)，前往溫濕度view")
+        mqttManager.bindSmartDevice(mac: deviceMac)
+
+        if (mqttManager.isSmartBind) {
+            print("環控狀態：\(mqttManager.isSmartBind)，前往溫濕度view")
             macLoading = false // ✅ 綁定成功, 關閉加在動畫
             isConnected = true // ✅ 更新連線狀態,前往溫濕度
         } else {
