@@ -27,7 +27,7 @@ class MQTTManager: NSObject, ObservableObject {
     // MARK: - MQTT 是否已取得資料（loading畫面）
     @Published var serverLoading: Bool = true
     // MARK: - 家電總資料
-    @Published var appliances: [String: [String: ApplianceData]] = [:] // 安裝的家電參數狀態
+    @Published var appliances: [String: [String: electricData]] = [:] // 安裝的家電參數狀態
     
     let AppID = "1d51e92d-e623-41dd-b367-d955a0d44d66" // 測試使用
     var userToken:String = "7qrVLM21MSv8wJLx2V8ypwvKW70infl5z1hTgG7rUgjdpM5F29Rp1AkxxPImK8BlQFgk04grz21FPaMLlLTOhztEcIP7I62xSXtZs342ZqqOOqQKlB9gDUsAqclymiYVfF8mrVJUkPyFaJwuUlLt10L2G8I0WK6r3BKyXwI4XMxHnNPGWg1LckiLMZH6wpW5mbGk6TdgRcLSJxxK2WUmEUhqP1uU2kA8kUX9IVNlEPCmD5qmFJELPdSodAGMgvJscPeKLiztPGLoZ6UulpPKpGdkozEAV95jEXv9XcWt9W1ADefIU5bXse3D4IYgWXXXIdwzW3PrgGeFE08p5UxlnC2Q9PuCRY9vwJIDQV7ETP7wBk9YTRbdZkQpADtMnFAWx5qFnkP0GYFV43lennI3ExHszDz" // 測試 Token
@@ -441,17 +441,17 @@ extension MQTTManager: CocoaMQTTDelegate {
                     // MARK: - 所有電器資料
                     // 解析 appliances
                     if let appliancesData = json["appliances"] as? [String: [String: Any]] {
-                        var parsedAppliances: [String: [String: ApplianceData]] = [:]
+                        var parsedAppliances: [String: [String: electricData]] = [:]
                         
                         for (device, parameters) in appliancesData {
-                            var deviceData: [String: ApplianceData] = [:]
+                            var deviceData: [String: electricData] = [:]
                             for (param, value) in parameters {
                                 //                                if param == "updated" {
                                 //                                    continue // Skip the general updated field
                                 //                                }
                                 let valueStr = String(describing: value)
                                 let updated = parameters["updated"].flatMap { String(describing: $0) } ?? ""
-                                deviceData[param] = ApplianceData(value: valueStr, updated: updated)
+                                deviceData[param] = electricData(value: valueStr, updated: updated)
                             }
                             parsedAppliances[device] = deviceData
                         }

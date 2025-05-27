@@ -26,7 +26,7 @@ struct ApplianceCapabilitiesResponse: Codable {
 }
 
 // 家電數據結構
-struct ApplianceData: Equatable {
+struct electricData: Equatable {
     var value: String
     var updated: String
 }
