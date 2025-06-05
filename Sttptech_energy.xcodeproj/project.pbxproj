@@ -527,21 +527,23 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = Sttptech_energy/Sttptech_energy.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_ASSET_PATHS = "\"Sttptech_energy/Preview Content\"";
 				DEVELOPMENT_TEAM = 856VG2FXU5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Sttptech-energy-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "智慧家電管理工具";
+				INFOPLIST_KEY_CFBundleDisplayName = "智慧家電管理";
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "此應用程式需要使用藍牙來連接和通訊";
 				INFOPLIST_KEY_NSCameraUsageDescription = "我們需要使用您的相機來掃描 Wi-Fi QR Code";
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "此應用程式需要存取本地網路以連接 Wi-Fi";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "此應用程式需要存取本地網路以連接設備";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "我們需要您允許位置權限以搜尋附近的 Wi-Fi 網路";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "此應用程式需要存取您的位置以連接 Wi-Fi";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "此應用程式需要存取您的位置以搜尋 Wi-Fi 設備";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "需要 Wi-Fi 權限以連接裝置";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -552,8 +554,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "William.Sttptech-energy";
+				MARKETING_VERSION = 2.3;
+				PRODUCT_BUNDLE_IDENTIFIER = com.chuang.aiotTool;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
@@ -571,21 +573,23 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CODE_SIGN_ENTITLEMENTS = Sttptech_energy/Sttptech_energy.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_ASSET_PATHS = "\"Sttptech_energy/Preview Content\"";
 				DEVELOPMENT_TEAM = 856VG2FXU5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Sttptech-energy-Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "智慧家電管理工具";
+				INFOPLIST_KEY_CFBundleDisplayName = "智慧家電管理";
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "此應用程式需要使用藍牙來連接和通訊";
 				INFOPLIST_KEY_NSCameraUsageDescription = "我們需要使用您的相機來掃描 Wi-Fi QR Code";
-				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "此應用程式需要存取本地網路以連接 Wi-Fi";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "此應用程式需要存取本地網路以連接設備";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "我們需要您允許位置權限以搜尋附近的 Wi-Fi 網路";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "此應用程式需要存取您的位置以連接 Wi-Fi";
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "此應用程式需要存取您的位置以搜尋 Wi-Fi 設備";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "需要 Wi-Fi 權限以連接裝置";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -596,8 +600,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "William.Sttptech-energy";
+				MARKETING_VERSION = 2.3;
+				PRODUCT_BUNDLE_IDENTIFIER = com.chuang.aiotTool;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;

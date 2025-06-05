@@ -2,27 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<!-- 藍牙 -->
-	<key>NSBluetoothWhenInUseUsageDescription</key>
-	<string>此應用程式需要藍牙來搜尋和連接設備</string>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>bluetooth-central</string>
-		<string>bluetooth-peripheral</string>
-		<string>remote-notification</string>
-	</array>
-
-	<!-- Wi-Fi 網路 -->
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>需要 Wi-Fi 權限以連接裝置</string>
-
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>我們需要您允許位置權限以搜尋附近的 Wi-Fi 網路</string>
-
-	<key>NSLocalNetworkUsageDescription</key>
-	<string>此應用程式需要存取本地網路以連接設備</string>
-
-	<!-- 允許不安全的 HTTPS -->
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
@@ -31,15 +10,22 @@
 		<dict>
 			<key>192.168.30.1</key>
 			<dict>
-				<key>NSIncludesSubdomains</key>
-				<true/>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
 				<key>NSExceptionRequiresForwardSecrecy</key>
 				<false/>
+				<key>NSIncludesSubdomains</key>
+				<true/>
 			</dict>
 		</dict>
 	</dict>
-
+	<key>NSBluetoothWhenInUseUsageDescription</key>
+	<string>此應用程式需要藍牙來搜尋和連接設備</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>bluetooth-central</string>
+		<string>bluetooth-peripheral</string>
+		<string>remote-notification</string>
+	</array>
 </dict>
 </plist>
