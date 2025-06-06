@@ -61,6 +61,12 @@ iii-iOS-IOTController/
 └── README.md
 ```
 
+## 主要開發者
+
+| 姓名                      | GitHub                                       | 聯絡方式             |
+| ------------------------- | -------------------------------------------- | -------------------- |
+| 莊杰翰 (Chuang Chieh Han) | [@zhuang8026](https://github.com/zhuang8026) | chuang8026@gmail.com |
+
 ## 介面截圖
 
 <p align="center">
