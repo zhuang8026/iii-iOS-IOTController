@@ -63,6 +63,12 @@ iii-iOS-IOTController/
 
 ## 介面截圖
 
+<p align="center">
+  <img src="Images/bluetooth.png" alt="Bluetooth UI" width="30%" style="margin-right: 10px;" />
+  <img src="Images/wifi_setup.png" alt="Wi-Fi Setup" width="30%" style="margin-right: 10px;" />
+  <img src="Images/aircon.png" alt="AC Control" width="30%" />
+</p>
+
 ### 登入畫面
 
 ![AC Control](Images/login.png)
