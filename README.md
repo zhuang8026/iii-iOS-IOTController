@@ -67,21 +67,8 @@ iii-iOS-IOTController/
   <img src="Images/login.png" alt="登入畫面" width="25%" style="margin-right: 10px;" />
   <img src="Images/temp.png" alt="溫濕度畫面" width="25%" style="margin-right: 10px;" />
   <img src="Images/ac.png" alt="空調控制畫面" width="25%" style="margin-right: 10px;" />
-  <img src="Images/remote.pn" alt="紅外線控制畫面" width="25%" />
+  <img src="Images/remote.png" alt="紅外線控制畫面" width="25%" />
 </p>
 
-### 登入畫面
-
-![AC Control](Images/login.png)
-
-### 溫濕度畫面
-
-![AC Control](Images/temp.png)
-
-### 空調控制畫面
-
-![AC Control](Images/ac.png)
-
-### 紅外線控制畫面
-
-![AC Control](Images/remote.png)
+<!-- ### 登入畫面
+![AC Control](Images/login.png) -->
