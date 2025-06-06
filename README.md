@@ -64,10 +64,10 @@ iii-iOS-IOTController/
 ## 介面截圖
 
 <p align="center">
-  <img src="Images/login.png" alt="登入畫面" width="25%" style="margin-right: 10px;" />
-  <img src="Images/temp.png" alt="溫濕度畫面" width="25%" style="margin-right: 10px;" />
-  <img src="Images/ac.png" alt="空調控制畫面" width="25%" style="margin-right: 10px;" />
-  <img src="Images/remote.png" alt="紅外線控制畫面" width="25%" />
+  <img src="Images/login.png" alt="登入畫面" width="24%" style="margin-right: 10px;" />
+  <img src="Images/temp.png" alt="溫濕度畫面" width="24%" style="margin-right: 10px;" />
+  <img src="Images/ac.png" alt="空調控制畫面" width="24%" style="margin-right: 10px;" />
+  <img src="Images/remote.png" alt="紅外線控制畫面" width="24%" />
 </p>
 
 <!-- ### 登入畫面
